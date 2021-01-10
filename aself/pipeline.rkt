@@ -39,3 +39,13 @@
      #'(let* ([g (expand-it f)]
               [b (g a)])
          (->> b fs ...))]))
+
+(module+ test
+  (require rackunit)
+
+  (test-case "->> pipeline"
+    (define a (->> 10
+                   (λ (x) (+ 1 x))
+                   (+ it it)
+                   (- it 1)))
+    (check-equal? 21 a)))
