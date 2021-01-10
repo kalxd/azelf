@@ -1,9 +1,11 @@
 #lang racket/base
 
 (require racket/stxparam
-         (for-syntax racket/base))
+         (for-syntax racket/base
+                     racket/list))
 
-(provide ->>)
+(provide ->>
+         <-<)
 
 (define-syntax-parameter it
   (λ (stx)
@@ -49,3 +51,18 @@
                    (+ it it)
                    (- it 1)))
     (check-equal? 21 a)))
+
+(define-syntax (<-< stx)
+  (syntax-case stx ()
+    [(_ f ...)
+     (let* ([fs (syntax->datum #'(f ...))]
+            [gs (for/list ([f fs])
+                  `(expand-it ,f))])
+       (with-syntax ([(fs ...) gs])
+         #'(compose fs ...)))]))
+
+(module+ test
+  (test-case "<-< compose"
+    (define f (<-< number->string (+ 10 it)))
+
+    (check-equal? "20" (f 10))))
