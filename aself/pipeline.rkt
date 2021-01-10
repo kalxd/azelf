@@ -3,8 +3,7 @@
 (require racket/stxparam
          (for-syntax racket/base))
 
-(provide ->>
-         tap)
+(provide ->>)
 
 (define-syntax-parameter it
   (λ (stx)
@@ -40,8 +39,3 @@
      #'(let* ([g (expand-it f)]
               [b (g a)])
          (->> b fs ...))]))
-
-(define (tap f)
-  (λ (x)
-    (f x)
-    x))
