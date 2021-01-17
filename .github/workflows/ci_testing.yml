@@ -31,6 +31,9 @@ jobs:
           architecture: 'x64'
           distribution: 'full'
           version: '7.2'
+          
+      - name: Install Dependencies
+        run: raco pkg install --batch --auto
 
       - name: Run Testing
-        run: raco test main.rkt
+        run: raco test -x -p azelf
