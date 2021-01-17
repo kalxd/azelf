@@ -1,22 +1,23 @@
 #lang racket/base
 
 (require racket/generic
-         (for-syntax racket/base))
+         (only-in "../internal/macro.rkt"
+                  macro/id
+                  macro/remap))
 
 (provide gen:Show
          Show?
          Show/c)
 
-(define-syntax-rule (id gen-method)
-  (define (gen-method value)
-    value))
-
-(define-syntax-rule (remap gen-method map-method)
-  (define (gen-method x)
-    (map-method x)))
-
 (define-generics Show
   (->string Show)
   #:defaults
-  [(string? (id ->string))
-   (number? (remap ->string number->string))])
+  [(string? (macro/id ->string))
+   (number? (macro/remap ->string number->string))])
+
+(module+ test
+  (require rackunit)
+
+  (test-case "Show typeclass"
+    (check-equal? "1" (->string "1"))
+    (check-equal? "1" (->string 1))))
