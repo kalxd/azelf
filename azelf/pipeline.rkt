@@ -5,7 +5,8 @@
                      racket/list))
 
 (provide ->>
-         <-<)
+         <-<
+         it)
 
 (define-syntax-parameter it
   (λ (stx)

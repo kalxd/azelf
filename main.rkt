@@ -1,5 +1,8 @@
 #lang racket/base
 
-(require "./azelf/pipeline.rkt")
+(require "./azelf/pipeline.rkt"
+         racket/contract)
 
-(provide (all-from-out "./azelf/pipeline.rkt"))
+(provide (all-from-out "./azelf/pipeline.rkt")
+         (all-from-out racket/base
+                       racket/contract))
