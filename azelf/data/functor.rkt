@@ -6,7 +6,8 @@
 
 (provide gen:Functor
          Functor?
-         Functor/c)
+         Functor/c
+         fmap)
 
 (define-generics Functor
   (fmap f Functor)
