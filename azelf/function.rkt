@@ -12,16 +12,16 @@
   (syntax-case stx ()
     [(_ (name arg ...) body ...)
      #'(begin
-         (define g (let ()
-                     (define/contract (f arg ...)
+         (define f (let ()
+                     (define/contract (name arg ...)
                        body ...)
-                     f))
-         (define name (curry g)))]))
+                     name))
+         (define name (curry f)))]))
 
 (module+ test
   (require rackunit)
 
-  (test-case "<functiond>: define/curry"
+  (test-case "<function>: define/curry"
     (define/curry (my/sub x y)
       (->i ([x positive?]
             [y (x) (<=/c x)])
