@@ -1,6 +1,8 @@
 #lang racket/base
 
 (require racket/generic
+         (only-in racket/function
+                  const)
          (only-in "../internal/macro.rkt"
                   macro/id))
 
@@ -12,6 +14,7 @@
 (define-generics Functor
   (fmap f Functor)
   (<$> f Functor)
+  (<$ a Functor)
   #:defaults
   ([sequence? (define (fmap f Functor)
                 (for/list ([x Functor])
@@ -19,7 +22,10 @@
    [procedure? (define fmap compose)])
   #:fallbacks
   [(define/generic self/fmap fmap)
-   (define <$> self/fmap)])
+   (define <$> self/fmap)
+   (define (<$ a Functor)
+     (self/fmap (const a)
+                Functor))])
 
 (module+ test
   (require rackunit)
@@ -27,4 +33,8 @@
     (check-equal? (list 2 3)
                   (fmap add1 (list 1 2)))
     (check-equal? (fmap number? (list 1 "2" 3 "4"))
-                  (<$> number? (list 1 "2" 3 "4")))))
+                  (<$> number? (list 1 "2" 3 "4"))))
+
+  (test-case "<Functor>:<$"
+    (check-equal? (list 1 1 1)
+                  (<$ 1 (list 4 5 6)))))
