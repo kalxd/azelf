@@ -8,5 +8,5 @@
     value))
 
 (define-syntax-rule (macro/remap gen-method map-method)
-  (define (gen-method x)
-    (map-method x)))
+  (define (gen-method . args)
+    (apply map-method args)))
