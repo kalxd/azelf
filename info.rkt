@@ -1,5 +1,5 @@
 #lang info
-(define collection 'multi)
+(define collection "azelf")
 (define deps '("base"))
 (define build-deps '("scribble-lib" "racket-doc" "rackunit-lib"))
 (define scribblings '(("scribblings/azelf.scrbl" ())))
