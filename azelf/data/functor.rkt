@@ -15,6 +15,7 @@
   (fmap f Functor)
   (<$> f Functor)
   (<$ a Functor)
+  ($> Functor a)
   #:defaults
   ([sequence? (define (fmap f Functor)
                 (for/list ([x Functor])
@@ -25,7 +26,9 @@
    (define <$> self/fmap)
    (define (<$ a Functor)
      (self/fmap (const a)
-                Functor))])
+                Functor))
+   (define ($> Functor a)
+     (self/fmap (const a) Functor))])
 
 (module+ test
   (require rackunit)
@@ -37,4 +40,8 @@
 
   (test-case "<Functor>:<$"
     (check-equal? (list 1 1 1)
-                  (<$ 1 (list 4 5 6)))))
+                  (<$ 1 (list 4 5 6))))
+
+  (test-case "<Functor>:$>"
+    (check-equal? (list 1 1 1)
+                  ($> (list 1 2 3) 1))))
