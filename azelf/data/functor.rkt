@@ -9,7 +9,10 @@
 (provide gen:Functor
          Functor?
          Functor/c
-         fmap)
+         fmap
+         <$>
+         <$
+         $>)
 
 (define-generics Functor
   (fmap f Functor)
