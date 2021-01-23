@@ -70,16 +70,28 @@
       nothing))
 
 (module+ test
-  (require rackunit)
+  (require rackunit
+           (only-in racket/function
+                    identity))
   (define just (Just 1))
 
   (test-case "<Maybe>:Functor"
-    (define value 1)
-    (define x (fmap add1 (Just value)))
-    (define y (Just (add1 value)))
-    (check-equal? x y)
-    (check-eq? nothing
-               (fmap add1 nothing)))
+    (define value (Just 1))
+
+    (test-equal? "Identity Just"
+                 (fmap identity value)
+                 value)
+
+    (test-equal? "Identity Nothing"
+                 (fmap identity nothing)
+                 nothing)
+
+    (let ([compose-f (compose number->string add1)]
+          [fcompose-f (λ (x) (fmap number->string x))]
+          [fcompose-g (λ (x) (fmap add1 x))])
+      (test-equal? "Composition Just"
+                   (fmap compose-f value)
+                   ((compose fcompose-f fcompose-g) value))))
 
   (test-case "<Maybe>:maybe"
     (check-equal? 0 (maybe 0 add1 nothing))
