@@ -7,8 +7,14 @@
 
 (provide Maybe/c
          Nothing
+         Nothing?
          nothing
-         Just)
+         Just
+         Just?
+
+         maybe
+         maybe->
+         ->maybe)
 
 (struct Nothing []
   #:transparent
@@ -48,19 +54,42 @@
     [(Just x) (f x)]
     [_ def]))
 
+(define/contract (maybe-> x value)
+  (->i ([x any/c]
+        [f (Maybe/c any/c)])
+       [result (x f) (or/c x any/c)])
+  (match value
+    [(Just a) a]
+    [_ x]))
+
+(define/contract (->maybe x)
+  (->i ([x any/c])
+       [result (x) (Maybe/c x)])
+  (if x
+      (Just x)
+      nothing))
+
 (module+ test
   (require rackunit)
   (define just (Just 1))
 
-  (test-case "Maybe:maybe"
-    (check-equal? 0 (maybe 0 add1 nothing))
-    (check-equal? 2 (maybe 0 add1 just))
-    (check-equal? "1" (maybe 0 number->string just)))
-
-  (test-case "Maybe:Functor"
+  (test-case "<Maybe>:Functor"
     (define value 1)
     (define x (fmap add1 (Just value)))
     (define y (Just (add1 value)))
     (check-equal? x y)
     (check-eq? nothing
-               (fmap add1 nothing))))
+               (fmap add1 nothing)))
+
+  (test-case "<Maybe>:maybe"
+    (check-equal? 0 (maybe 0 add1 nothing))
+    (check-equal? 2 (maybe 0 add1 just))
+    (check-equal? "1" (maybe 0 number->string just)))
+
+  (test-case "<Maybe>:maybe->"
+    (check-equal? 1 (maybe-> 1 nothing))
+    (check-equal? 1 (maybe-> 2 (Just 1))))
+
+  (test-case "<Maybe>:->maybe"
+    (check-equal? (Just 1) (->maybe 1))
+    (check-equal? nothing (->maybe #f))))
