@@ -1,8 +1,9 @@
 #lang racket/base
 
-(require "./azelf/pipeline.rkt"
-         racket/contract)
+(require (only-in "./internal/macro.rkt"
+                  export-from))
 
-(provide (all-from-out "./azelf/pipeline.rkt")
-         (all-from-out racket/base
-                       racket/contract))
+(export-from racket/base
+             racket/contract
+
+             "./function/main.rkt")

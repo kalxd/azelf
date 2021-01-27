@@ -2,8 +2,7 @@
 #lang racket/base
 
 (require racket/contract
-         (only-in "../function.rkt"
-                  define/curry))
+         (for-syntax racket/base))
 
 (provide (all-defined-out))
 
@@ -15,7 +14,9 @@
   (define (gen-method . args)
     (apply map-method args)))
 
-(define-syntax-rule (macro/remap/curry2 gen-method map-method)
-  (define/curry (gen-method a b)
-    (-> any any any)
-    (map-method a b)))
+(define-syntax (export-from stx)
+  (syntax-case stx ()
+    [(_ name ...)
+     #'(begin
+         (require name ...)
+         (provide (all-from-out name ...)))]))
