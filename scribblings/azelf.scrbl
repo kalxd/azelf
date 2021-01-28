@@ -9,4 +9,6 @@
 
 @bold{重回Haskell时光！}
 
+@table-of-contents[]
+
 @include-section["maybe.scrbl"]
