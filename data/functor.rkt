@@ -3,8 +3,6 @@
 (require racket/generic
          (only-in racket/function
                   const)
-         (only-in "../internal/macro.rkt"
-                  macro/id)
          (only-in "./pair.rkt"
                   pair->values))
 

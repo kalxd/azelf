@@ -1,10 +1,12 @@
 #lang scribble/manual
-@require[@for-label[azelf/base
-                    racket/base]]
+@require[@for-label[azelf
+                    racket]]
 
 @title{azelf}
 @author{XGLey}
 
 @defmodule[azelf]
 
-Package Description Here
+@bold{重回Haskell时光！}
+
+@include-section["maybe.scrbl"]
