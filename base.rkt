@@ -12,4 +12,5 @@
              "./data/show.rkt"
              "./data/functor.rkt"
 
-             "./data/maybe.rkt")
+             "./data/maybe.rkt"
+             "./data/either.rkt")
