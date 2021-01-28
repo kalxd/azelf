@@ -6,7 +6,7 @@
 
 @bold{Nil}的安全类型，在类型上避免空指针错误。
 
-@section{类型定义}
+@section{Maybe类型定义}
 
 @defproc*[([(Just? [a any/c]) boolean?]
 		   [(Nothing? [a any/c]) boolean?])]{

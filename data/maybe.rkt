@@ -14,7 +14,8 @@
 
          maybe
          maybe->
-         ->maybe)
+         ->maybe
+         maybe/catch)
 
 (module+ test
   (require rackunit

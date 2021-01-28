@@ -12,3 +12,4 @@
 @table-of-contents[]
 
 @include-section["maybe.scrbl"]
+@include-section["either.scrbl"]
