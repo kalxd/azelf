@@ -4,7 +4,9 @@
          (only-in racket/function
                   const)
          (only-in "../internal/macro.rkt"
-                  macro/id))
+                  macro/id)
+         (only-in "./pair.rkt"
+                  pair->values))
 
 (provide gen:Functor
          Functor?
@@ -23,7 +25,10 @@
   ([sequence? (define (fmap f Functor)
                 (for/list ([x Functor])
                   (f x)))]
-   [procedure? (define fmap compose)])
+   [procedure? (define fmap compose)]
+   [pair? (define (fmap f x)
+            (define-values (a b) (pair->values x))
+            (cons a (f b)))])
   #:fallbacks
   [(define/generic self/fmap fmap)
    (define <$> self/fmap)
