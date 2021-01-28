@@ -6,4 +6,10 @@
 (export-from racket/base
              racket/contract
 
-             "./function/main.rkt")
+             "./function/main.rkt"
+             "./function/pipeline.rkt"
+
+             "./data/show.rkt"
+             "./data/functor.rkt"
+
+             "./data/maybe.rkt")
