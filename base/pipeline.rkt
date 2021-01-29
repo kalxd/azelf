@@ -64,8 +64,8 @@
        (with-syntax ([(fs ...) gs])
          #'(compose fs ...)))]))
 
- (module+ test
-   (test-case "<-< compose"
-     (define f (<-< number->string (+ 10 it)))
+(module+ test
+  (test-case "<-< compose"
+    (define f (<-< number->string (+ 10 it)))
 
-     (check-equal? "20" (f 10))))
+    (check-equal? "20" (f 10))))
