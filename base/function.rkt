@@ -5,10 +5,30 @@
          racket/function
          (for-syntax racket/base))
 
-(provide define/curry)
+(provide define/curry
+         curry/contract)
+
+(define-syntax (define/curry stx)
+  (syntax-case stx ()
+    [(_ (name arg ...) body ...)
+     #'(begin
+         (define f (let ()
+                     (define (name arg ...)
+                       body ...)
+                     name))
+         (define name (curry f)))]))
+
+(module+ test
+  (require rackunit)
+  (define/curry (my/add x y z)
+    (+ x y z))
+
+  (test-case "<Function>:define/curry"
+    (check-equal? 3 (my/add 1 1 1))
+    (check-equal? 3 ((my/add 1 1) 1))))
 
 ;;; 一次性结合了define/contract和curry，意义非比寻常。
-(define-syntax (define/curry stx)
+(define-syntax (curry/contract stx)
   (syntax-case stx ()
     [(_ (name arg ...) body ...)
      #'(begin
@@ -22,7 +42,7 @@
   (require rackunit)
 
   (test-case "<function>: define/curry"
-    (define/curry (my/sub x y)
+    (curry/contract (my/sub x y)
       (->i ([x positive?]
             [y (x) (<=/c x)])
            [result positive?])
