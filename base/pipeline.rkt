@@ -4,9 +4,9 @@
          (for-syntax racket/base
                      racket/list))
 
-(provide ->>
-         <-<
-         it)
+(provide it
+         ->>
+         <-<)
 
 (define-syntax-parameter it
   (λ (stx)
@@ -20,32 +20,43 @@
            [(list? x) (has-it? x)]
            [else (eq? 'it x)]))))
 
-(define-for-syntax (expand-it f)
-  (define ff (syntax->datum f))
-  (if (has-it? ff)
-      (syntax-case ff ()
-        [(body ...)
+(define-syntax (expand-it stx)
+  (define stx-list (syntax->datum stx))
+
+  (if (has-it? stx-list)
+      (syntax-case stx ()
+        [(_ (op ...))
          #'(λ (arg)
              (syntax-parameterize ([it (make-rename-transformer #'arg)])
-               (body ...)))])
-      f))
+               (op ...)))])
+
+      (syntax-case stx ()
+        [(_ fn) #'fn])))
 
 (define-syntax (->> stx)
   (syntax-case stx ()
     [(_ a) #'a]
 
     [(_ a f)
-     (let ([g (expand-it #'f)])
-       (with-syntax ([g g])
-         #'(g a)))]
+     #'(let ([g (expand-it f)])
+         (g a))]
 
     [(_ a f fs ...)
-     (let ([g (expand-it #'f)])
-       (with-syntax ([g g])
-         #'(let ([b (g a)])
-             (->> b fs ...))))]))
+     #'(let* ([g (expand-it f)]
+              [b (g a)])
+         (->> b fs ...))]))
 
-(module+ test
+
+(define-syntax (<-< stx)
+  (syntax-case stx ()
+    [(_ f ...)
+     (let* ([fs (syntax->list #'(f ...))]
+            [gs (for/list ([f fs])
+                  `(expand-it ,f))])
+       (with-syntax ([(fs ...) gs])
+         #'(compose fs ...)))]))
+
+(module* test #f
   (require rackunit)
 
   (test-case "->> pipeline"
@@ -53,18 +64,8 @@
                    (λ (x) (+ 1 x))
                    (+ it it)
                    (- it 1)))
-    (check-equal? 21 a)))
+    (check-equal? 21 a))
 
-(define-syntax (<-< stx)
-  (syntax-case stx ()
-    [(_ f ...)
-     (let* ([fs (syntax->list #'(f ...))]
-            [gs (for/list ([f fs])
-                  (expand-it f))])
-       (with-syntax ([(fs ...) gs])
-         #'(compose fs ...)))]))
-
-(module+ test
   (test-case "<-< compose"
     (define f (<-< number->string (+ 10 it)))
 
