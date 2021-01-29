@@ -10,23 +10,23 @@
          Semigroup/c
          Semigroup?
          <>
-         append)
+         mappend)
 
 (define-generics Semigroup
   (<> Semigroup b)
-  (append Semigroup b)
+  (mappend Semigroup b)
   #:defaults
-  ([list? (define append list-append)]
-   [vector? (define append vector-append)]
-   [string? (define append string-append)]
-   [procedure? (define/generic self/append append)
-               (define ((append f g) x)
+  ([list? (define mappend list-append)]
+   [vector? (define mappend vector-append)]
+   [string? (define mappend string-append)]
+   [procedure? (define/generic self/append mappend)
+               (define ((mappend f g) x)
                  (let ([a (f x)]
                        [b (g x)])
                    (self/append a b)))])
 
   #:fallbacks
-  [(define/generic self/append append)
+  [(define/generic self/append mappend)
    (define <> self/append)])
 
 (module+ test
