@@ -27,7 +27,7 @@
           pos
           name-replace))
 
-(define-syntax (define/values/list stx)
+(define-syntax (define/values stx)
   (syntax-case stx ()
     [(_ (a ...) xs)
      (let-values ([(len pos name) (info-for-spread #'(a ...))])
@@ -60,14 +60,3 @@
 
              (define-values name
                (apply values ys)))))]))
-
-(define-syntax (define/values stx)
-  (syntax-case stx ()
-    ;; 普通的values
-    [(_ (a ...) action)
-     #'(define-values (a ...) action)]))
-
-(define my/list (list 1 2 3 4 5))
-
-(define/values/list (a ...b c) my/list)
-(define/values/list (x y) my/list)

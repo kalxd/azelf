@@ -8,6 +8,7 @@
              racket/match
              "./base/function.rkt"
              "./base/pipeline.rkt"
+             "./base/spread.rkt"
 
              "./data/semigroup/main.rkt"
              "./data/monoid/main.rkt"
