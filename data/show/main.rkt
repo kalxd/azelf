@@ -1,7 +1,7 @@
 #lang racket/base
 
 (require racket/generic
-         (only-in "../internal/macro.rkt"
+         (only-in "../../internal/macro.rkt"
                   macro/id
                   macro/remap))
 
