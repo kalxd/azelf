@@ -7,7 +7,7 @@
 
 @defmodule[azelf]
 
-@bold{重回Haskell时光！}
+超能力工具箱，提供Haskell（Purescript）相似类型类、函数，用Racket写Haskell。
 
 @table-of-contents[]
 
