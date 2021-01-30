@@ -9,4 +9,5 @@
              "./base/function.rkt"
              "./base/pipeline.rkt"
 
-             "./data/semigroup/main.rkt")
+             "./data/semigroup/main.rkt"
+             "./data/monoid/main.rkt")
