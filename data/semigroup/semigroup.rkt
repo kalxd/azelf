@@ -9,11 +9,9 @@
 (provide gen:Semigroup
          Semigroup/c
          Semigroup?
-         <>
          mappend)
 
 (define-generics Semigroup
-  (<> Semigroup b)
   (mappend Semigroup b)
   #:defaults
   ([list? (define mappend list-append)]
@@ -23,18 +21,14 @@
                (define ((mappend f g) x)
                  (let ([a (f x)]
                        [b (g x)])
-                   (self/append a b)))])
-
-  #:fallbacks
-  [(define/generic self/append mappend)
-   (define <> self/append)])
+                   (self/append a b)))]))
 
 (module+ test
   (require rackunit)
   (test-case "<Semigroup>:append"
     (check-equal? (list 1 2)
-                  (<> (list 1) (list 2)))
+                  (mappend (list 1) (list 2)))
     (check-equal? "helloworld"
-                  (<> "hello" "world"))
+                  (mappend "hello" "world"))
     (check-pred string?
-                ((<> number->string number->string) 1))))
+                ((mappend number->string number->string) 1))))

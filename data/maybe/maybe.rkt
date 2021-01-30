@@ -3,6 +3,7 @@
 (require racket/contract
          racket/match
          "functor.rkt"
+         "foldable.rkt"
          (for-syntax racket/base))
 
 (provide Maybe/c

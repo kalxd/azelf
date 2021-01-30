@@ -1,7 +1,6 @@
 #lang racket/base
 
 (require racket/generic
-         "./monoid.rkt"
          (rename-in racket/base
                     (foldl list-foldl)))
 
