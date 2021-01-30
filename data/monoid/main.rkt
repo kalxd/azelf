@@ -1,35 +1,20 @@
 #lang racket/base
 
-(require racket/generic
+(require (only-in "../../internal/macro.rkt"
+                  export-from)
          racket/contract)
 
-(provide gen:Monoid
-         Monoid?
-         Monoid/c
-         mempty
+(export-from "./monoid.rkt")
 
-         guard)
-
-(define-generics Monoid
-  (mempty Monoid)
-
-  #:defaults
-  ([string? (define (mempty _) "")]
-   [list? (define (mempty _) (list))]
-   [vector? (define (mempty _) (vector))]
-   [procedure? (define ((mempty _) x) x)]))
-
-(module+ test
-  (require rackunit)
-  (test-case "<Monoid>:mempty"
-    (check-equal? "" (mempty "sb"))
-    (check-equal? (list) (mempty (list 1 2 3)))))
+(provide guard)
 
 (define/contract (guard b m)
   (-> boolean? Monoid? Monoid?)
   (if b m (mempty m)))
 
 (module+ test
+  (require rackunit)
   (test-case "<Monoid>:guard"
     (check-equal? "hello" (guard #t "hello"))
     (check-equal? "" (guard #f "hello"))))
+
