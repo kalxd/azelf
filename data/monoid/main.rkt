@@ -17,4 +17,3 @@
   (test-case "<Monoid>:guard"
     (check-equal? "hello" (guard #t "hello"))
     (check-equal? "" (guard #f "hello"))))
-
