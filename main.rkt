@@ -6,5 +6,7 @@
 (export-from racket/base
              racket/contract
              racket/match
+             "./base/function.rkt"
+             "./base/pipeline.rkt"
 
-             "data/semigroup/main.rkt")
+             "./data/semigroup/main.rkt")
