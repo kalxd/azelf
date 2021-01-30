@@ -4,9 +4,9 @@
 
 @title{简介}
 
-Racket自身功能簿弱，不同数据结构功能经常重复，例如@racket[foldl]和@racket[for/fold]，前者仅适用于@racket[list]，后者可应对任意@racket[sequence?]。Racket本身也有混乱的地方，@racket[#f]代替Nil，部分地方导致混乱，例如转化为@racket[jsexpr?]的时候。
+Racket自身功能簿弱，不同数据结构功能经常重复，例如@racket[foldl]和@racket[for/fold]，前者仅适用于@racket[list]，后者可应对任意@racket[sequence?]。Racket本身也有混乱的地方，@racket[#f]代替Nil，部分地方导致混乱，例如转化为@racketmodname[json]的时候。
 
-所以该库提供类型于Haskell一类的解决方案，利用@racket[define-generics]提供接口，实现统一行为，减少不必要的函数定义，增加记忆负担。同时增强原有Racket标准库，增加更多好用的函数与语法。
+所以该库提供类型于Haskell一类的解决方案，利用@racketmodname[racket/generic]提供接口，实现统一行为，减少不必要的函数定义，增加记忆负担。同时增强原有Racket标准库，增加更多好用的函数与语法。
 
 @section{安装与使用}
 

@@ -12,6 +12,7 @@
 @table-of-contents[]
 
 @include-section["intro.scrbl"]
-@include-section["function.scrbl"]
-@include-section["maybe.scrbl"]
-@include-section["either.scrbl"]
+@include-section["syntax.scrbl"]
+
+@include-section["data/intro.scrbl"]
+@include-section["type/intro.scrbl"]

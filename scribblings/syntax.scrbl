@@ -2,7 +2,7 @@
 
 @require[@for-label[azelf racket]]
 
-@title{更加好用的函数}
+@title{友好的语法}
 
 @section{匿名函数与it}
 
@@ -10,7 +10,6 @@
 
 @codeblock|{
 (+ 1 it)
-
 (lambda (it) (+ 1 it))
 }|
 
@@ -21,9 +20,9 @@
 ; it: 只能在特定几个宏中使用！
 }
 
-以下章节介绍@code{it}适用的语法。
-
-@defthing[it syntax]
+@defidform[it]{
+仅能在几种语法中使用的关键字。
+}
 
 @defform[(->> value pipe ...)
 		 #:grammar
@@ -33,16 +32,16 @@
 
 @codeblock{
 (->> 1
-	 (+ it 1) ;; 1 + 1 = 2
-	 (+ it it)) ;; 2 + 2 = 4
+     (+ it 1) ;; 1 + 1 = 2
+     (+ it it)) ;; 2 + 2 = 4
 }
 
 @racket[->>]还可以接受普通的单参数函数。
 
 @codeblock{
 (->> 1
-	 add1 ;; 2
-	 (+ it 10)) ;; 2 + 10 = 12
+     add1 ;; 2
+     (+ it 10)) ;; 2 + 10 = 12
 }
 }
 
@@ -56,5 +55,34 @@
 
 (f 1) ;; 3
 (f 2) ;; 5
+}
+}
+
+@section{展开列表}
+
+javascript中有@code{const [a, ...as] = xs}写法，用于快速展开列表。
+
+@defform[(define/values (attr ...+) expr)
+		 #:contracts ([expr (listof any/c)])]{
+有点类似于@racket[define-values]，该函数用于展开一个列表（目前仅对@racket[list]有效）。
+同样使用@bold{...}可表示“剩余”部分，不同于javascript，该语法可以使用任何位置，没有任何限制。
+
+@codeblock{
+(define/values (a b) (list 1 2 3))
+; a 1
+; b 2
+
+(define/values (a ...b) (list 1 2 3))
+; a 1
+; b '(2 3)
+
+(define/values (...a b) (list 1 2 3 4))
+; a '(1 2 3)
+; b 4
+
+(define/values (a ...b c) (list 1 2 3 4))
+; a 1
+; b '(2 3)
+; c 4
 }
 }
