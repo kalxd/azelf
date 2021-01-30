@@ -1,16 +1,13 @@
 #lang racket/base
 
 (require racket/contract
-
-         "./functor.rkt")
+         "../functor/functor.rkt")
 
 (provide Left
          Left?
          Right
          Right?
-         Either/c
-
-         either/catch)
+         Either/c)
 
 (struct Left [value]
   #:transparent
@@ -39,20 +36,3 @@
     (define right (Right 1))
     (check-equal? left (fmap add1 left))
     (check-equal? (Right 2) (fmap add1 right))))
-
-(define/contract (either/catch action)
-  (-> (-> any/c) (Either/c exn:fail? any/c))
-  (with-handlers ([exn:fail? (λ (e) (Left e))])
-    (let ([x (action)])
-      (Right x))))
-
-(module+ test
-  (test-case "<Either>:either/catch-do"
-    (check-pred Left?
-                (either/catch
-                 (λ ()
-                   (/ 1 0))))
-    (check-pred Right?
-                (either/catch
-                 (λ ()
-                   (/ 1 1))))))

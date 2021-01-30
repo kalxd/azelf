@@ -13,4 +13,5 @@
              "./data/monoid/main.rkt"
              "./data/functor/main.rkt"
 
-             "./data/maybe/main.rkt")
+             "./data/maybe/main.rkt"
+             "./data/either/main.rkt")
