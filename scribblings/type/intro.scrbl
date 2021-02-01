@@ -1,9 +1,10 @@
 #lang scribble/manual
 
-@title{类型类}
+@title[#:style '(toc)]{类型类}
 
-@table-of-contents[]
+@local-table-of-contents[]
 
 @include-section["eq.scrbl"]
+@include-section["ord.scrbl"]
 @include-section["semigroup.scrbl"]
 @include-section["monoid.scrbl"]

@@ -11,6 +11,7 @@
              "./base/spread.rkt"
 
              "./data/eq/main.rkt"
+             "./data/ord/main.rkt"
              "./data/semigroup/main.rkt"
              "./data/monoid/main.rkt"
              "./data/functor/main.rkt"
