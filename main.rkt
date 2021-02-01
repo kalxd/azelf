@@ -10,6 +10,7 @@
              "./base/pipeline.rkt"
              "./base/spread.rkt"
 
+             "./data/eq/main.rkt"
              "./data/semigroup/main.rkt"
              "./data/monoid/main.rkt"
              "./data/functor/main.rkt"
