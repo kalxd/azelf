@@ -26,3 +26,12 @@
 @defproc[(/= [a Eq?] [b Eq?]) boolean?]{
 @racket[=]的反值。
 }
+
+@defproc[(=* [a Eq?] [b Eq?] ...) boolean?]{
+比较多个值是否相等。
+
+@codeblock{
+(=* 2 2 2 2) ; #t
+(=* #\A #\A #\A) ; #t
+}
+}
