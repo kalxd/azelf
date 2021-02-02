@@ -6,8 +6,8 @@ azelf
 
 # racket package #
 
-见[azelf](https://pkgs.racket-lang.org/package/zubat)。
+见[azelf](https://pkgs.racket-lang.org/package/azelf)。
 
 # 在线文档 #
 
-见[azelf文档](https://pkg-build.racket-lang.org/doc/zubat@zubat/index.html)。
+见[azelf文档](https://docs.racket-lang.org/azelf/index.html)。
