@@ -2,7 +2,8 @@
 #lang racket/base
 
 (require racket/contract
-         (for-syntax racket/base))
+         (for-syntax racket/base
+                     racket/match))
 
 (provide (all-defined-out))
 
@@ -17,6 +18,17 @@
 (define-syntax (export-from stx)
   (syntax-case stx ()
     [(_ name ...)
-     #'(begin
-         (require name ...)
-         (provide (all-from-out name ...)))]))
+     (let* ([names (syntax->datum #'(name ...))]
+            [require-names (for/list ([name names])
+                             (if (list? name)
+                                 `(except-in ,@name)
+                                 name))]
+            [provide-names (for/list ([name names])
+                             (if (list? name)
+                                 (car name)
+                                 name))])
+       (with-syntax ([(require-name ...) (datum->syntax stx require-names)]
+                     [(provide-name ...) (datum->syntax stx provide-names)])
+         #'(begin
+             (require require-name ...)
+             (provide (all-from-out provide-name ...)))))]))

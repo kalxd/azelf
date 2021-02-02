@@ -3,7 +3,10 @@
 (require (only-in "./internal/macro.rkt"
                   export-from))
 
-(export-from racket/contract
+(export-from (racket/base =
+                          max
+                          min)
+             racket/contract
              racket/match
              "./base/function.rkt"
              "./base/pipeline.rkt"
@@ -17,8 +20,3 @@
 
              "./data/maybe/main.rkt"
              "./data/either/main.rkt")
-
-
-(require (except-in racket/base
-                    =))
-(provide (all-from-out racket/base))
