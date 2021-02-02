@@ -1,6 +1,4 @@
 #lang scribble/manual
-@require[@for-label[azelf
-                    racket]]
 
 @title{azelf}
 @author{XGLey}

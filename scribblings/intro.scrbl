@@ -1,6 +1,6 @@
 #lang scribble/manual
 
-@require[@for-label[azelf racket/base racket/generic json]]
+@require[@for-label[azelf racket/generic json]]
 
 @title{简介}
 

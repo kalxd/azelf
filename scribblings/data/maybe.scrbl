@@ -1,6 +1,5 @@
 #lang scribble/manual
-@require[@for-label[azelf
-                    racket]]
+@require[@for-label[azelf]]
 
 @title{Maybe}
 

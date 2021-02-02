@@ -1,6 +1,6 @@
 #lang scribble/manual
 
-@require[@for-label[azelf racket]]
+@require[@for-label[azelf]]
 
 @title{友好的语法}
 

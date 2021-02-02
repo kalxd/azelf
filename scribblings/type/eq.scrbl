@@ -7,22 +7,22 @@
 相等比较类型类。
 
 @defidform[gen:Eq]{
-最小实现@racket[:=]。
+最小实现@racket[=]。
 }
 
 @defproc[(Eq? [a any/c]) boolean?]
 
 @defthing[Eq/c contract?]
 
-@defproc[(:= [a Eq?] [b Eq?]) boolean?]{
-比较两数是否相等。之所以取名@racket[:=]，在于@racket[=]、@racket[==]皆被占用，@racket[:=]与@racket[/=]字数上还能统一。
+@defproc[(= [a Eq?] [b Eq?]) boolean?]{
+比较两数是否相等。之所以取名@racket[=]，在于@racket[=]、@racket[==]皆被占用，@racket[=]与@racket[/=]字数上还能统一。
 
 @codeblock{
-(:= 1 1) ;; #t
-(:= "hello" "hello") #t
+(= 1 1) ;; #t
+(= "hello" "hello") #t
 }
 }
 
 @defproc[(/= [a Eq?] [b Eq?]) boolean?]{
-@racket[:=]的反值。
+@racket[=]的反值。
 }

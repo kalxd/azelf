@@ -10,7 +10,7 @@
 
 (define/contract (/= a b)
   (-> Eq? Eq? boolean?)
-  (not (:= a b)))
+  (not (= a b)))
 
 (module+ test
   (require rackunit)
