@@ -13,13 +13,13 @@
   #:transparent
 
   #:methods gen:Functor
-  [(define (fmap f self) self)])
+  [(define (map f self) self)])
 
 (struct Right [value]
   #:transparent
 
   #:methods gen:Functor
-  [(define (fmap f self)
+  [(define (map f self)
      (let* ([a (Right-value self)]
             [x (f a)])
        (Right x)))])
@@ -34,5 +34,5 @@
   (test-case "<Either>:Functor"
     (define left (Left "hello"))
     (define right (Right 1))
-    (check-equal? left (fmap add1 left))
-    (check-equal? (Right 2) (fmap add1 right))))
+    (check-equal? left (map add1 left))
+    (check-equal? (Right 2) (map add1 right))))

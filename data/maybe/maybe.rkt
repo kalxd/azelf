@@ -23,7 +23,7 @@
      (display "#<Nothing>" port))]
 
   #:methods gen:Functor
-  [(define (fmap f self) self)])
+  [(define (map f self) self)])
 
 (define nothing (Nothing))
 
@@ -36,7 +36,7 @@
        (display output port)))]
 
   #:methods gen:Functor
-  [(define (fmap f self)
+  [(define (map f self)
      (let* ([x (Just-a self)]
             [y (f x)])
        (Just y)))])
@@ -51,18 +51,18 @@
     (define value (Just 1))
 
     (test-equal? "Identity Just"
-                 (fmap identity value)
+                 (map identity value)
                  value)
 
     (test-equal? "Identity Nothing"
-                 (fmap identity nothing)
+                 (map identity nothing)
                  nothing)
 
     (let ([compose-f (compose number->string add1)]
-          [fcompose-f (λ (x) (fmap number->string x))]
-          [fcompose-g (λ (x) (fmap add1 x))])
+          [fcompose-f (λ (x) (map number->string x))]
+          [fcompose-g (λ (x) (map add1 x))])
       (test-equal? "Composition Just"
-                   (fmap compose-f value)
+                   (map compose-f value)
                    ((compose fcompose-f fcompose-g) value)))))
 
 

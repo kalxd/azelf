@@ -9,7 +9,8 @@
                           <=
                           >=
                           max
-                          min)
+                          min
+                          map)
              racket/contract
              racket/match
              "./base/function.rkt"
