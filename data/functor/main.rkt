@@ -12,15 +12,15 @@
          <$
          $>)
 
-(define <$> fmap)
+(define <$> map)
 
 (define/contract (<$ a fa)
   (-> any/c Functor? Functor?)
-  (fmap (const a) fa))
+  (map (const a) fa))
 
 (define/contract ($> fa a)
   (-> Functor? any/c Functor?)
-  (fmap (const a) fa))
+  (map (const a) fa))
 
 (module+ test
   (require rackunit)

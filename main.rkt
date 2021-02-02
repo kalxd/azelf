@@ -4,6 +4,10 @@
                   export-from))
 
 (export-from (racket/base =
+                          <
+                          >
+                          <=
+                          >=
                           max
                           min)
              racket/contract

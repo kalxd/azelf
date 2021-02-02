@@ -4,8 +4,6 @@
 
 @title{Ord}
 
-需要特别说明，Racket本身已经定义了@racket[<]、@racket[max]等，为了与之区分，以下实现的重名函数名都以“@bold{:}”修饰。
-
 @defidform[gen:Ord]{
 最小实现@racket[compare]。
 }
@@ -49,25 +47,25 @@
 }
 }
 
-@defproc*[([(:< [a Ord?] [b Ord?]) boolean?]
-		   [(:> [a Ord?] [b Ord?]) boolean?]
-		   [(:<= [a Ord?] [b Ord?]) boolean?]
-		   [(:>= [a Ord?] [b Ord?]) boolean?])]{
+@defproc*[([(< [a Ord?] [b Ord?]) boolean?]
+		   [(> [a Ord?] [b Ord?]) boolean?]
+		   [(<= [a Ord?] [b Ord?]) boolean?]
+		   [(>= [a Ord?] [b Ord?]) boolean?])]{
 两数比较。
 
 @codeblock{
-(:< 1 2) ;; #t
-(:>= #\A #\A) ;; #t
+(< 1 2) ;; #t
+(>= #\A #\A) ;; #t
 }
 }
 
-@defproc*[([(:max [a Ord?] [b Ord?]) (or/c a b)]
-		   [(:min [a Ord?] [b Ord?]) (or/c a b)])]{
+@defproc*[([(max [a Ord?] [b Ord?]) (or/c a b)]
+		   [(min [a Ord?] [b Ord?]) (or/c a b)])]{
 比较两者大小，返回要求的那个值。
 
 @codeblock{
-(:max 1 10) ;; 10
-(:min #\B #\H) ;; #\B
+(max 1 10) ;; 10
+(min #\B #\H) ;; #\B
 }
 }
 

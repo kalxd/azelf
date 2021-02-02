@@ -7,7 +7,7 @@
 (provide gen:Functor
          Functor?
          Functor/c
-         fmap)
+         map)
 
 (define/contract (pair->values x)
   (-> pair? any)
@@ -15,20 +15,21 @@
     [(cons a b) (values a b)]))
 
 (define-generics Functor
-  (fmap f Functor)
+  (map f Functor)
   #:defaults
-  ([sequence? (define (fmap f Functor)
-                (for/list ([x Functor])
-                  (f x)))]
-   [procedure? (define fmap compose)]
-   [pair? (define (fmap f x)
+  ([list? (define (map f Functor)
+            (for/list ([x Functor])
+              (f x)))]
+   [procedure? (define (map f g)
+                 (compose f g))]
+   [pair? (define (map f x)
             (define-values (a b) (pair->values x))
             (cons a (f b)))]))
 
 (module+ test
   (require rackunit)
-  (test-case "<Functor>:fmap"
+  (test-case "<Functor>:map"
     (check-equal? (list 2 3)
-                  (fmap add1 (list 1 2)))
-    (check-equal? (fmap number? (list 1 "2" 3 "4"))
-                  (fmap number? (list 1 "2" 3 "4")))))
+                  (map add1 (list 1 2)))
+    (check-equal? (map number? (list 1 "2" 3 "4"))
+                  (map number? (list 1 "2" 3 "4")))))
