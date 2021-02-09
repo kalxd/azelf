@@ -35,12 +35,7 @@
 
   ; Semigroup
   #:methods gen:Semigroup
-  [(define/generic Semigroup/mappend mappend)
-   (define (mappend a b)
-     (match (cons a b)
-       [(cons (Left a) (Left b))
-        (Left (Semigroup/mappend a b))]
-       [else b]))]
+  [(define (mappend a b) a)]
 
   ; Functor
   #:methods gen:Functor
@@ -72,7 +67,7 @@
      (match (cons a b)
        [(cons (Right a) (Right b))
         (Right (Semigroup/mappend a b))]
-       [else a]))]
+       [else b]))]
 
   ; Functor
   #:methods gen:Functor
@@ -103,11 +98,11 @@
   (test-case "<Either:Semigroup"
     (check-equal? (Right "12")
                   (mappend (Right "1") (Right "2")))
-    (check-equal? (Right "1")
+    (check-equal? (Left "2")
                   (mappend (Right "1") (Left "2")))
-    (check-equal? (Right "2")
+    (check-equal? (Left "1")
                   (mappend (Left "1") (Right "2")))
-    (check-equal? (Left "12")
+    (check-equal? (Left "1")
                   (mappend (Left "1") (Left "2"))))
 
   (test-case "<Either>:Functor"

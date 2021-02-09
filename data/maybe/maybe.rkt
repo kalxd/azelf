@@ -3,6 +3,7 @@
 (require "../eq/eq.rkt"
          "../ord/ord.rkt"
          "../semigroup/semigroup.rkt"
+         "../monoid/monoid.rkt"
          "../functor/functor.rkt"
          racket/contract
          racket/generic
@@ -37,6 +38,10 @@
   ; Semigroup
   #:methods gen:Semigroup
   [(define (mappend a b) b)]
+
+  ; Monoid
+  #:methods gen:Monoid
+  [(define (mempty a) nothing)]
 
   ; Functor
   #:methods gen:Functor
@@ -76,6 +81,10 @@
        [(cons (Just a) (Just b))
         (Just (Semigroup/mappend a b))]
        [else a]))]
+
+  ; Monoid
+  #:methods gen:Monoid
+  [(define (mempty x) nothing)]
 
   ; Functor
   #:methods gen:Functor
