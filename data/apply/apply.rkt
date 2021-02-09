@@ -4,6 +4,11 @@
          (only-in racket/list
                   append-map))
 
+(provide gen:Apply
+         Apply?
+         Apply/c
+         ap)
+
 (define-generics Apply
   (ap f Apply)
   #:defaults

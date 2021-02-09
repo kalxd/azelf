@@ -1,9 +1,10 @@
 #lang racket/base
 
-(require "../functor/functor.rkt"
-         "../eq/eq.rkt"
+(require "../eq/eq.rkt"
          "../ord/ord.rkt"
          "../semigroup/semigroup.rkt"
+         "../functor/functor.rkt"
+         "../apply/apply.rkt"
          racket/contract
          racket/match
          racket/generic)
@@ -39,7 +40,11 @@
 
   ; Functor
   #:methods gen:Functor
-  [(define (map f self) self)])
+  [(define (map f self) self)]
+
+  ; Apply
+  #:methods gen:Apply
+  [(define (ap f self) self)])
 
 (struct Right [value]
   #:transparent
@@ -74,7 +79,14 @@
   [(define (map f self)
      (let* ([a (Right-value self)]
             [x (f a)])
-       (Right x)))])
+       (Right x)))]
+
+  ; Apply
+  #:methods gen:Apply
+  [(define (ap f self)
+     (match (cons f self)
+       [(cons (Right f) (Right a)) (Right (f a))]
+       [else f]))])
 
 (define (Either/c b a)
   (or/c (struct/c Left b)
@@ -109,4 +121,14 @@
     (define left (Left "hello"))
     (define right (Right 1))
     (check-equal? left (map add1 left))
-    (check-equal? (Right 2) (map add1 right))))
+    (check-equal? (Right 2) (map add1 right)))
+
+  (test-case "<Either>:Apply"
+    (check-equal? (Right 2)
+                  (ap (Right add1) (Right 1)))
+    (check-equal? (Left 1)
+                  (ap (Right add1) (Left 1)))
+    (check-equal? (Left add1)
+                  (ap (Left add1) (Right 1)))
+    (check-equal? (Left add1)
+                  (ap (Left add1) (Right 1)))))

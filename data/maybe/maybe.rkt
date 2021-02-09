@@ -5,6 +5,7 @@
          "../semigroup/semigroup.rkt"
          "../monoid/monoid.rkt"
          "../functor/functor.rkt"
+         "../apply/apply.rkt"
          racket/contract
          racket/generic
          racket/match)
@@ -45,7 +46,11 @@
 
   ; Functor
   #:methods gen:Functor
-  [(define (map f self) self)])
+  [(define (map f self) self)]
+
+  ; Apply
+  #:methods gen:Apply
+  [(define (ap f self) self)])
 
 (define nothing (Nothing))
 
@@ -91,7 +96,14 @@
   [(define (map f self)
      (let* ([x (Just-a self)]
             [y (f x)])
-       (Just y)))])
+       (Just y)))]
+
+  ; Apply
+  #:methods gen:Apply
+  [(define (ap f self)
+     (match (cons f self)
+       [(cons (Just f) (Just a)) (Just (f a))]
+       [else f]))])
 
 (define (Maybe/c x)
   (or/c Nothing? (struct/c Just x)))
@@ -137,7 +149,14 @@
           [fcompose-g (λ (x) (map add1 x))])
       (test-equal? "Composition Just"
                    (map compose-f value)
-                   ((compose fcompose-f fcompose-g) value)))))
+                   ((compose fcompose-f fcompose-g) value))))
 
-
-
+  (test-case "<Maybe>:Apply"
+    (check-equal? (Just 1)
+                  (ap (Just add1) (Just 0)))
+    (check-equal? nothing
+                  (ap (Just add1) nothing))
+    (check-equal? nothing
+                  (ap nothing (Just 1)))
+    (check-equal? nothing
+                  (ap nothing nothing))))
