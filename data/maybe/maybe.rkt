@@ -1,6 +1,7 @@
 #lang racket/base
 
 (require "../eq/eq.rkt"
+         "../ord/ord.rkt"
          "../functor/functor.rkt"
          racket/contract
          racket/generic
@@ -13,11 +14,6 @@
          Just
          Just?)
 
-(module+ test
-  (require rackunit
-           (only-in racket/function
-                    identity)))
-
 (struct Nothing []
   #:transparent
 
@@ -29,6 +25,13 @@
   #:methods gen:Eq
   [(define (= a b)
      (Nothing? b))]
+
+  ; Ord
+  #:methods gen:Ord
+  [(define (compare a b)
+     (if (and (Nothing? a) (Nothing? b))
+         eq
+         lt))]
 
   ; Functor
   #:methods gen:Functor
@@ -52,6 +55,15 @@
        [(cons (Just x) (Just y)) (Eq/= x y)]
        [else #f]))]
 
+  ; Ord
+  #:methods gen:Ord
+  [(define/generic Ord/compare compare)
+   (define (compare a b)
+     (match (cons a b)
+       [(cons (Just x) (Just y)) (Ord/compare x y)]
+       [else gt]))]
+
+  ; Functor
   #:methods gen:Functor
   [(define (map f self)
      (let* ([x (Just-a self)]
@@ -62,6 +74,11 @@
   (or/c Nothing? (struct/c Just x)))
 
 (module+ test
+  (require rackunit
+           (only-in racket/function
+                    identity)
+           "../ord/main.rkt")
+
   (define just (Just 1))
 
   (test-case "<Maybe>:Eq"
@@ -70,6 +87,10 @@
     (check-true (= (Just 1) (Just 1)))
     (check-true (= (Just "hello") (Just "hello")))
     (check-false (= (Just #\A) (Just #\B))))
+
+  (test-case "<Maybe>:Ord"
+    (check-true (< (Just 1) (Just 10)))
+    (check-true (< nothing (Just -10))))
 
   (test-case "<Maybe>:Functor"
     (define value (Just 1))
