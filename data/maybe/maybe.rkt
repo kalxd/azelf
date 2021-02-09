@@ -1,7 +1,10 @@
 #lang racket/base
 
-(require "../functor/functor.rkt"
-         racket/contract)
+(require "../eq/eq.rkt"
+         "../functor/functor.rkt"
+         racket/contract
+         racket/generic
+         racket/match)
 
 (provide Maybe/c
          Nothing
@@ -22,6 +25,12 @@
   [(define (write-proc self port mode)
      (display "#<Nothing>" port))]
 
+  ; Eq
+  #:methods gen:Eq
+  [(define (= a b)
+     (Nothing? b))]
+
+  ; Functor
   #:methods gen:Functor
   [(define (map f self) self)])
 
@@ -35,6 +44,14 @@
             [output (format "#<Just ~s>" a)])
        (display output port)))]
 
+  ; Eq
+  #:methods gen:Eq
+  [(define/generic Eq/= =)
+   (define (= a b)
+     (match (cons a b)
+       [(cons (Just x) (Just y)) (Eq/= x y)]
+       [else #f]))]
+
   #:methods gen:Functor
   [(define (map f self)
      (let* ([x (Just-a self)]
@@ -46,6 +63,13 @@
 
 (module+ test
   (define just (Just 1))
+
+  (test-case "<Maybe>:Eq"
+    (check-true (= nothing nothing))
+    (check-false (= nothing (Just 2)))
+    (check-true (= (Just 1) (Just 1)))
+    (check-true (= (Just "hello") (Just "hello")))
+    (check-false (= (Just #\A) (Just #\B))))
 
   (test-case "<Maybe>:Functor"
     (define value (Just 1))
