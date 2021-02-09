@@ -3,6 +3,7 @@
 (require "../functor/functor.rkt"
          "../eq/eq.rkt"
          "../ord/ord.rkt"
+         "../semigroup/semigroup.rkt"
          racket/contract
          racket/match
          racket/generic)
@@ -32,6 +33,15 @@
        [(cons (Left x) (Left y)) (Ord/compare x y)]
        [else lt]))]
 
+  ; Semigroup
+  #:methods gen:Semigroup
+  [(define/generic Semigroup/mappend mappend)
+   (define (mappend a b)
+     (match (cons a b)
+       [(cons (Left a) (Left b))
+        (Left (Semigroup/mappend a b))]
+       [else b]))]
+
   ; Functor
   #:methods gen:Functor
   [(define (map f self) self)])
@@ -54,6 +64,15 @@
      (match (cons a b)
        [(cons (Right x) (Right y)) (Ord/compare x y)]
        [else gt]))]
+
+  ; Semigroup
+  #:methods gen:Semigroup
+  [(define/generic Semigroup/mappend mappend)
+   (define (mappend a b)
+     (match (cons a b)
+       [(cons (Right a) (Right b))
+        (Right (Semigroup/mappend a b))]
+       [else a]))]
 
   ; Functor
   #:methods gen:Functor
@@ -80,6 +99,16 @@
     (check-true (<= (Left 1) (Left 2)))
     (check-true (>= (Right #\Z) (Right #\A)))
     (check-true (< (Left 10) (Right 1))))
+
+  (test-case "<Either:Semigroup"
+    (check-equal? (Right "12")
+                  (mappend (Right "1") (Right "2")))
+    (check-equal? (Right "1")
+                  (mappend (Right "1") (Left "2")))
+    (check-equal? (Right "2")
+                  (mappend (Left "1") (Right "2")))
+    (check-equal? (Left "12")
+                  (mappend (Left "1") (Left "2"))))
 
   (test-case "<Either>:Functor"
     (define left (Left "hello"))

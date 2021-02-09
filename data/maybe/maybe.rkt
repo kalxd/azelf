@@ -2,6 +2,7 @@
 
 (require "../eq/eq.rkt"
          "../ord/ord.rkt"
+         "../semigroup/semigroup.rkt"
          "../functor/functor.rkt"
          racket/contract
          racket/generic
@@ -33,6 +34,10 @@
          eq
          lt))]
 
+  ; Semigroup
+  #:methods gen:Semigroup
+  [(define (mappend a b) b)]
+
   ; Functor
   #:methods gen:Functor
   [(define (map f self) self)])
@@ -63,6 +68,15 @@
        [(cons (Just x) (Just y)) (Ord/compare x y)]
        [else gt]))]
 
+  ; Semigroup
+  #:methods gen:Semigroup
+  [(define/generic Semigroup/mappend mappend)
+   (define (mappend a b)
+     (match (cons a b)
+       [(cons (Just a) (Just b))
+        (Just (Semigroup/mappend a b))]
+       [else a]))]
+
   ; Functor
   #:methods gen:Functor
   [(define (map f self)
@@ -91,6 +105,12 @@
   (test-case "<Maybe>:Ord"
     (check-true (< (Just 1) (Just 10)))
     (check-true (< nothing (Just -10))))
+
+  (test-case "<Maybe>:Semigroup"
+    (check-equal? (Just "helloworld")
+                  (mappend (Just "hello") (Just "world")))
+    (check-pred Just? (mappend nothing (Just 1)))
+    (check-pred Just? (mappend (Just 2) nothing)))
 
   (test-case "<Maybe>:Functor"
     (define value (Just 1))
