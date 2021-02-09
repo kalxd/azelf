@@ -2,8 +2,7 @@
 #lang racket/base
 
 (require racket/contract
-         (for-syntax racket/base
-                     racket/match))
+         (for-syntax racket/base))
 
 (provide (all-defined-out))
 

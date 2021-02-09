@@ -1,5 +1,12 @@
 #lang scribble/manual
 
+@(require scribble/eval
+		  (for-label azelf))
+
+@(define azelf-eval (make-base-eval))
+@interaction-eval[#:eval azelf-eval
+				  (require azelf)]
+
 @title{azelf}
 @author{XGLey}
 
