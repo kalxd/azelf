@@ -1,13 +1,7 @@
 #lang scribble/manual
 
-@(require scribble/eval
-		  azelf
+@(require "../run.rkt"
 		  (for-label azelf))
-
-@(define sb (make-base-eval))
-
-@interaction-eval[#:eval sb
-				  (require azelf)]
 
 @title{Apply}
 
