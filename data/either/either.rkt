@@ -5,6 +5,7 @@
          "../semigroup/semigroup.rkt"
          "../functor/functor.rkt"
          "../applicative/applicative.rkt"
+         "../monad/monad.rkt"
          racket/contract
          racket/match
          racket/generic)
@@ -45,7 +46,10 @@
   ; Applicative
   #:methods gen:Applicative
   [(define (pure _ x) (Right x))
-   (define (ap f self) self)])
+   (define (ap f self) self)]
+
+  #:methods gen:Monad
+  [(define (bind self _) self)])
 
 (struct Right [value]
   #:transparent
@@ -88,7 +92,12 @@
    (define (ap f self)
      (match (cons f self)
        [(cons (Right f) (Right a)) (Right (f a))]
-       [else f]))])
+       [else f]))]
+
+  #:methods gen:Monad
+  [(define (bind self f)
+     (define v (Right-value self))
+     (f v))])
 
 (define (Either/c b a)
   (or/c (struct/c Left b)
@@ -135,4 +144,11 @@
     (check-equal? (Left add1)
                   (ap (Left add1) (Right 1)))
     (check-equal? (Left add1)
-                  (ap (Left add1) (Right 1)))))
+                  (ap (Left add1) (Right 1))))
+
+  (test-case "<Either>:Monad"
+    (define f (compose Right add1))
+    (check-equal? (Right 2)
+                  (bind (Right 1) f))
+    (check-equal? (Left 2)
+                  (bind (Left 2) f))))

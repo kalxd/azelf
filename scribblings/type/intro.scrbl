@@ -10,3 +10,4 @@
 @include-section["monoid.scrbl"]
 @include-section["functor.scrbl"]
 @include-section["applicative.scrbl"]
+@include-section["monad.scrbl"]

@@ -6,6 +6,7 @@
          "../monoid/monoid.rkt"
          "../functor/functor.rkt"
          "../applicative/applicative.rkt"
+         "../monad/monad.rkt"
          racket/contract
          racket/generic
          racket/match)
@@ -51,7 +52,10 @@
   ; Applicative
   #:methods gen:Applicative
   [(define (pure _ x) (Just x))
-   (define (ap f self) self)])
+   (define (ap f self) self)]
+
+  #:methods gen:Monad
+  [(define (bind self _) self)])
 
 (define nothing (Nothing))
 
@@ -105,7 +109,13 @@
    (define (ap f self)
      (match (cons f self)
        [(cons (Just f) (Just a)) (Just (f a))]
-       [else f]))])
+       [else f]))]
+
+  ; Monad
+  #:methods gen:Monad
+  [(define (bind self f)
+     (define v (Just-a self))
+     (f v))])
 
 (define (Maybe/c x)
   (or/c Nothing? (struct/c Just x)))
@@ -164,4 +174,13 @@
       (check-equal? nothing
                     (ap nothing (Just 1)))
       (check-equal? nothing
-                    (ap nothing nothing))))
+                    (ap nothing nothing)))
+
+    (test-case "<Maybe>:Monad"
+      (define (f x)
+        (Just (add1 x)))
+      (check-equal? (Just 2)
+                    (bind (Just 1) f))
+
+      (check-equal? nothing
+                    (bind nothing f))))
