@@ -2,72 +2,52 @@
 
 (require (only-in "../../internal/macro.rkt"
                   export-from)
+         racket/match
+         syntax/parse
+         (for-syntax racket/base
+                     syntax/parse))
 
-         racket/contract
-         (only-in racket/function
-                  identity))
+(export-from "./monad.rkt"
+             "./ext.rkt")
 
-(export-from "./monad.rkt")
+(provide <-
+         monad-do)
 
-(provide >>=
-         =<<
-         <=<
-         >=>
-         join)
+(define-syntax (<- stx)
+  (raise-syntax-error '<- "只能在monad-do块中使用！" stx))
 
-(define >>= bind)
-
-(define/contract (=<< f ma)
-  (-> (-> any/c Monad?)
-      Monad?
-      Monad?)
-  (bind ma f))
+(define-syntax monad-do
+  (syntax-parser
+    #:literals [<- let]
+    ; 单条语句
+    [(_ e:expr) #'e]
+    ; let赋值语句
+    [(_ (let ([x:id e:expr] ...)) . rest)
+     #'(let ([x e] ...)
+         (monad-do . rest))]
+    ; bind语法
+    [(_ [pat:id (~and arrow <-) e:expr] . rest)
+     #'(bind e
+             (case-lambda [(pat) (monad-do . rest)]))]
+    ; 一串语句
+    [(_ e:expr . rest)
+     #'(begin
+         e
+         (monad-do . rest))]))
 
 (module+ test
   (require rackunit
            "../maybe/maybe.rkt")
 
-  (define my/inc
-    (compose Just add1))
-
-  (test-case "<Monad>:=<<"
-    (check-equal? (Just 2)
-                  (=<< my/inc (Just 1)))
+  (test-case "<Monad>:do notation"
     (check-equal? nothing
-                  (=<< my/inc nothing))))
+                  (monad-do (x <- (Just 1))
+                            (y <- nothing)
+                            (Just (+ x y))))
 
-(define/contract ((<=< f g) x)
-  (-> (-> any/c Monad?)
-      (-> any/c Monad?)
-      (-> any/c Monad?))
-  (bind (g x) f))
-
-(module+ test
-  (define ->just-string
-    (compose Just number->string))
-
-  (test-case "<Monad>:<=<"
-    (check-equal? (Just "2")
-                  ((<=< ->just-string my/inc) 1))))
-
-(define/contract ((>=> f g) x)
-  (-> (-> any/c Monad?)
-      (-> any/c Monad?)
-      (-> any/c Monad?))
-  (bind (f x) g))
-
-(module+ test
-  (test-case "<Monad>:>=>"
-    (check-equal? (Just "2")
-                  ((>=> my/inc ->just-string) 1))))
-
-(define/contract (join ma)
-  (-> Monad? Monad?)
-  (bind ma identity))
-
-(module+ test
-  (test-case "<Monad>:join"
-    (check-equal? (Just 1)
-                  (join (Just (Just 1))))
-    (check-equal? (list 1 2 3)
-                  (join (list (list 1) (list 2 3))))))
+    (check-equal? (Just 10)
+                  (monad-do (x <- (Just 1))
+                            (let ([x 4]
+                                  [y 6]))
+                            (let ([x (+ x y)]))
+                            (Just x)))))
