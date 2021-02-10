@@ -5,7 +5,7 @@
          "../semigroup/semigroup.rkt"
          "../monoid/monoid.rkt"
          "../functor/functor.rkt"
-         "../apply/apply.rkt"
+         "../applicative/applicative.rkt"
          racket/contract
          racket/generic
          racket/match)
@@ -48,9 +48,10 @@
   #:methods gen:Functor
   [(define (map f self) self)]
 
-  ; Apply
-  #:methods gen:Apply
-  [(define (ap f self) self)])
+  ; Applicative
+  #:methods gen:Applicative
+  [(define (pure _ x) (Just x))
+   (define (ap f self) self)])
 
 (define nothing (Nothing))
 
@@ -98,9 +99,10 @@
             [y (f x)])
        (Just y)))]
 
-  ; Apply
-  #:methods gen:Apply
-  [(define (ap f self)
+  ; Applicative
+  #:methods gen:Applicative
+  [(define (pure _ x) (Just x))
+   (define (ap f self)
      (match (cons f self)
        [(cons (Just f) (Just a)) (Just (f a))]
        [else f]))])
@@ -151,12 +153,15 @@
                    (map compose-f value)
                    ((compose fcompose-f fcompose-g) value))))
 
-  (test-case "<Maybe>:Apply"
-    (check-equal? (Just 1)
-                  (ap (Just add1) (Just 0)))
-    (check-equal? nothing
-                  (ap (Just add1) nothing))
-    (check-equal? nothing
-                  (ap nothing (Just 1)))
-    (check-equal? nothing
-                  (ap nothing nothing))))
+    (test-case "<Maybe>:Applicative"
+      (check-equal? (Just 1) (pure nothing 1))
+      (check-equal? (Just 1) (pure (Just 10) 1))
+
+      (check-equal? (Just 1)
+                    (ap (Just add1) (Just 0)))
+      (check-equal? nothing
+                    (ap (Just add1) nothing))
+      (check-equal? nothing
+                    (ap nothing (Just 1)))
+      (check-equal? nothing
+                    (ap nothing nothing))))

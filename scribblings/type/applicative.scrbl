@@ -3,20 +3,20 @@
 @(require "../run.rkt"
 		  (for-label azelf))
 
-@title{Apply}
+@title{Applicative}
 
 @defidform[#:kind "接口"
-		   gen:Apply]{
+		   gen:Applicative]{
 最小实现@racket[ap]。
 
 不取名@code{apply}，在于@racket[apply]已定义，并且与@racket[ap]含义并不相同。
 }
 
-@defproc[(Apply? [a any/c]) boolean?]
+@defproc[(Applicative? [a any/c]) boolean?]
 
-@defthing[Apply/c contract?]
+@defthing[Applicative/c contract?]
 
-@defproc[(ap [fa Apply?] [a any/c]) Apply?]{
+@defproc[(ap [fa Applicative?] [a any/c]) Applicative?]{
 
 @examples[
 #:eval sb
@@ -24,8 +24,8 @@
 ]
 }
 
-@defproc*[([(<* [fa Apply?] [fb Apply?]) Apply?]
-		   [(*> [fa Apply?] [fb Apply?]) Apply?])]{
+@defproc*[([(<* [fa Applicative?] [fb Applicative?]) Applicative?]
+		   [(*> [fa Applicative?] [fb Applicative?]) Applicative?])]{
 返回对应的状态值。
 
 @examples[
@@ -39,27 +39,27 @@
 }
 
 @defproc*[([(lift2 [f (-> any/c any/c any/c)]
-				   [a Apply?]
-				   [b Apply?])
-				   Apply?]
+				   [a Applicative?]
+				   [b Applicative?])
+				   Applicative?]
 		   [(lift3 [f (-> any/c any/c any/c any/c)]
-		  		   [a Apply?]
-				   [b Apply?]
-				   [c Apply?])
-				   Apply?]
+		  		   [a Applicative?]
+				   [b Applicative?]
+				   [c Applicative?])
+				   Applicative?]
 		   [(lift4 [f (-> any/c any/c any/c any/c any/c)]
-		   	   [a Apply?]
-				   [b Apply?]
-				   [c Apply?]
-				   [d Apply?])
-				   Apply?]
+		   	   [a Applicative?]
+				   [b Applicative?]
+				   [c Applicative?]
+				   [d Applicative?])
+				   Applicative?]
 		   [(lift5 [f (-> any/c any/c any/c any/c any/c any/c)]
-		   	   [a Apply?]
-				   [b Apply?]
-				   [c Apply?]
-				   [d Apply?]
-				   [e Apply?])
-				   Apply?])]{
+		   	   [a Applicative?]
+				   [b Applicative?]
+				   [c Applicative?]
+				   [d Applicative?]
+				   [e Applicative?])
+				   Applicative?])]{
 提升普通方法@code{f}。
 
 @examples[

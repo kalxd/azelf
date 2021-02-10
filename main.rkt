@@ -14,7 +14,7 @@
              "./data/semigroup/main.rkt"
              "./data/monoid/main.rkt"
              "./data/functor/main.rkt"
-             "./data/apply/main.rkt"
+             "./data/applicative/main.rkt"
 
              "./data/maybe/main.rkt"
              "./data/either/main.rkt")

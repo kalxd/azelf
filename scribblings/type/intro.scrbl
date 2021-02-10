@@ -9,4 +9,4 @@
 @include-section["semigroup.scrbl"]
 @include-section["monoid.scrbl"]
 @include-section["functor.scrbl"]
-@include-section["apply.scrbl"]
+@include-section["applicative.scrbl"]

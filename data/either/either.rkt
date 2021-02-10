@@ -4,7 +4,7 @@
          "../ord/ord.rkt"
          "../semigroup/semigroup.rkt"
          "../functor/functor.rkt"
-         "../apply/apply.rkt"
+         "../applicative/applicative.rkt"
          racket/contract
          racket/match
          racket/generic)
@@ -42,9 +42,10 @@
   #:methods gen:Functor
   [(define (map f self) self)]
 
-  ; Apply
-  #:methods gen:Apply
-  [(define (ap f self) self)])
+  ; Applicative
+  #:methods gen:Applicative
+  [(define (pure _ x) (Right x))
+   (define (ap f self) self)])
 
 (struct Right [value]
   #:transparent
@@ -81,9 +82,10 @@
             [x (f a)])
        (Right x)))]
 
-  ; Apply
-  #:methods gen:Apply
-  [(define (ap f self)
+  ; Applicative
+  #:methods gen:Applicative
+  [(define (pure _ x) (Right x))
+   (define (ap f self)
      (match (cons f self)
        [(cons (Right f) (Right a)) (Right (f a))]
        [else f]))])
@@ -123,7 +125,9 @@
     (check-equal? left (map add1 left))
     (check-equal? (Right 2) (map add1 right)))
 
-  (test-case "<Either>:Apply"
+  (test-case "<Either>:Applictive"
+    (check-equal? (Right 1) (pure (Left 2) 1))
+    (check-equal? (Right 1) (pure (Right 10) 1))
     (check-equal? (Right 2)
                   (ap (Right add1) (Right 1)))
     (check-equal? (Left 1)
