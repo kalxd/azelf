@@ -28,9 +28,22 @@
   (-> Applicative? Applicative? Applicative?)
   (<*> (map const fb) fa))
 
+(module+ test
+  (require rackunit
+           "../maybe/maybe.rkt")
+
+  (test-case "<Applicative>:*>"
+    (check-equal? (Just 1) (*> (Just 2) (Just 1)))
+    (check-equal? nothing (*> nothing (Just 1)))))
+
 (define/contract (<* fa fb)
   (-> Applicative? Applicative? Applicative?)
   (<*> (map const fa) fb))
+
+(module+ test
+  (test-case "<Applicative>:<*"
+    (check-equal? (Just 2) (<* (Just 2) (Just 1)))
+    (check-equal? nothing (<* nothing (Just 1)))))
 
 (define/contract (lift2 f a b)
   (-> (-> any/c any/c any/c)
