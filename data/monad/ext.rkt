@@ -1,17 +1,42 @@
 #lang racket/base
 
 (require racket/contract
+         racket/match
          (only-in racket/function
                   identity)
          "./monad.rkt")
 
 (provide >>=
+         >>=*
          =<<
          <=<
          >=>
          join)
 
 (define >>= bind)
+
+(define/contract (>>=* ma . fs)
+  (->* (Monad?)
+       #:rest
+       (listof (-> any/c Monad?))
+       Monad?)
+  (match fs
+    [(list g f ...) (apply >>=* (cons (>>= ma g) f))]
+    [(list f) (>>= ma f)]
+    [else ma]))
+
+(module+ test
+  (require rackunit
+           racket/function
+           "../maybe/maybe.rkt")
+  (define my/inc
+    (compose Just add1))
+
+  (test-case "<Monad>:>>=*"
+    (check-equal? (Just 3)
+                  (>>=* (Just 0) my/inc my/inc my/inc))
+    (check-equal? nothing
+                  (>>=* nothing my/inc (const nothing) my/inc my/inc))))
 
 (define/contract (=<< f ma)
   (-> (-> any/c Monad?)
@@ -20,12 +45,6 @@
   (bind ma f))
 
 (module+ test
-  (require rackunit
-           "../maybe/maybe.rkt")
-
-  (define my/inc
-    (compose Just add1))
-
   (test-case "<Monad>:=<<"
     (check-equal? (Just 2)
                   (=<< my/inc (Just 1)))

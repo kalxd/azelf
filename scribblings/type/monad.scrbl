@@ -39,6 +39,21 @@
 ]
 }
 
+@defproc[(>>=* [ma Monad?] [f (-> any/c Monad?)] ...) Monad?]{
+@racket[bind]不定长参数版本。
+
+@examples[
+#:eval sb
+(require racket/function)
+
+(define inc
+  (compose Just add1))
+
+(>>=* (Just 0) inc inc inc)
+(>>=* nothing inc (const inc) inc)
+]
+}
+
 @defproc*[([(<=< [g (-> any/c Monad?)] [f (-> any/c Monad?)]) (-> any/c Monad?)]
 		   [(>=> [f (-> any/c Monad?)] [g (-> any/c Monad?)]) (-> any/c Monad?)])]{
 Monad版的函数组合。先应用@code{f}，最后应用@code{g}。
