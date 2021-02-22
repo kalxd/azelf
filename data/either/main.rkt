@@ -2,9 +2,15 @@
 
 (require (only-in "../../internal/macro.rkt"
                   export-from)
-         racket/contract)
+         racket/contract
+         racket/match
+
+         "../maybe/maybe.rkt")
 
 (export-from "./either.rkt")
+
+(provide either/catch
+         either->maybe)
 
 (define/contract (either/catch action)
   (-> (-> any/c) (Either/c exn:fail? any/c))
@@ -23,3 +29,14 @@
                 (either/catch
                  (λ ()
                    (/ 1 1))))))
+
+(define/contract (either->maybe x)
+  (-> (Either/c any/c any/c) (Maybe/c any/c))
+  (match x
+    [(Right x) (Just x)]
+    [else nothing]))
+
+(module+ test
+  (test-case "<Either>:either->maybe"
+    (check-equal? (Just 1) (either->maybe (Right 1)))
+    (check-equal? nothing (either->maybe (Left 1)))))

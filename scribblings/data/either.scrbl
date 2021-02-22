@@ -1,6 +1,7 @@
 #lang scribble/manual
 
-@require[@for-label[azelf]]
+@(require "../run.rkt"
+		  (for-label azelf))
 
 @title{Either}
 
@@ -18,17 +19,16 @@
 		   [(Right (a any/c)) (Either/c any/c a)])]{
 Either值构造器，同样适用于@racket[match]。
 
-@codeblock{
-(define/match (right-add1 x)
-  [(Right x) (add1 x)]
-  [(Left _) 0])
+@examples[
+#:eval sb
+(define (right-add1 x)
+  (match x
+    [(Right x) (add1 x)]
+    [(Left _) 0]))
 
 (right-add1 (Right 1))
-;; 2
 (right-add1 (Left 1))
-;; 0
-}
-
+]
 }
 
 @section{Either操作函数}
@@ -37,11 +37,19 @@ Either值构造器，同样适用于@racket[match]。
 		 (Either/c exn:fail? any/c)]{
 自动捕获@code{action}异常，出现异常时，返回@racket[(Left exn:fail)]，反之，得到@code{action}执行结果，以@racket[Right]包装后返回。
 
-@codeblock{
+@examples[
+#:eval sb
 (either/catch (lambda () (/ 1 0)))
-;; Left exn:fail:contract:divide-by-zero
-
 (either/catch (lambda () (/ 1 1)))
-;; Right 1
+]
 }
+
+@defproc[(either->maybe [either (Either/c any/c any/c)]) (Maybe/c any/c)]{
+Either转换为Maybe：@racket[Right]转成@racket[Just]；@racket[Left]转成@racket[nothing]。
+
+@examples[
+#:eval sb
+(either->maybe (Right 1))
+(either->maybe (Left 1))
+]
 }
