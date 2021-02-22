@@ -10,7 +10,8 @@
 (export-from "./either.rkt")
 
 (provide either/catch
-         either->maybe)
+         either->maybe
+         maybe->either)
 
 (define/contract (either/catch action)
   (-> (-> any/c) (Either/c exn:fail? any/c))
@@ -40,3 +41,14 @@
   (test-case "<Either>:either->maybe"
     (check-equal? (Just 1) (either->maybe (Right 1)))
     (check-equal? nothing (either->maybe (Left 1)))))
+
+(define/contract (maybe->either e ma)
+  (-> any/c (Maybe/c any/c) (Either/c any/c any/c))
+  (match ma
+    [(Just x) (Right x)]
+    [_ (Left e)]))
+
+(module+ test
+  (test-case "<Either>:maybe->either"
+    (check-equal? (Right 1) (maybe->either 2 (Just 1)))
+    (check-equal? (Left 2) (maybe->either 2 nothing))))

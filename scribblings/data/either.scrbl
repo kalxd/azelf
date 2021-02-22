@@ -53,3 +53,13 @@ Either转换为Maybe：@racket[Right]转成@racket[Just]；@racket[Left]转成@r
 (either->maybe (Left 1))
 ]
 }
+
+@defproc[(maybe->either [e any/c] [ma (Maybe/c any/c)]) (Either/c e any/c)]{
+Maybe转化成Either。
+
+@examples[
+#:eval sb
+(maybe->either 2 (Just 1))
+(maybe->either 2 nothing)
+]
+}
