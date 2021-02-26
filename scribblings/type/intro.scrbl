@@ -11,3 +11,5 @@
 @include-section["functor.scrbl"]
 @include-section["applicative.scrbl"]
 @include-section["monad.scrbl"]
+
+@include-section["json.scrbl"]

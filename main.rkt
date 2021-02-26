@@ -16,6 +16,7 @@
              "./data/functor/main.rkt"
              "./data/applicative/main.rkt"
              "./data/monad/main.rkt"
+             "./data/json/main.rkt"
 
              "./data/maybe/main.rkt"
              "./data/either/main.rkt")
