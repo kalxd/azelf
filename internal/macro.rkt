@@ -6,6 +6,10 @@
 
 (provide (all-defined-out))
 
+(define-syntax-rule (macro/id f)
+  (define (f x)
+    x))
+
 (define-syntax (export-from stx)
   (syntax-case stx ()
     [(_ name ...)

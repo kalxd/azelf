@@ -7,6 +7,7 @@
          "../functor/functor.rkt"
          "../applicative/applicative.rkt"
          "../monad/monad.rkt"
+         "../json/json.rkt"
          racket/contract
          racket/generic
          racket/match)
@@ -54,8 +55,13 @@
   [(define (pure _ x) (Just x))
    (define (ap f self) self)]
 
+  ; Monad
   #:methods gen:Monad
-  [(define (bind self _) self)])
+  [(define (bind self _) self)]
+
+  ; JSON
+  #:methods gen:ToJSON
+  [(define (->json _) 'null)])
 
 (define nothing (Nothing))
 
@@ -115,7 +121,14 @@
   #:methods gen:Monad
   [(define (bind self f)
      (define v (Just-a self))
-     (f v))])
+     (f v))]
+
+  ; JSON
+  #:methods gen:ToJSON
+  [(define/generic JSON/->json ->json)
+   (define (->json self)
+     (let ([x (Just-a self)])
+       (JSON/->json x)))])
 
 (define (Maybe/c x)
   (or/c Nothing? (struct/c Just x)))
@@ -183,4 +196,11 @@
                     (bind (Just 1) f))
 
       (check-equal? nothing
-                    (bind nothing f))))
+                    (bind nothing f)))
+
+    (test-case "<Maybe>:ToJSON"
+      (check-equal? 'null
+                    (->json nothing))
+      (check-equal? 1 (->json (Just 1)))
+      (check-equal? (list 1 2 3)
+                    (->json (Just (list 1 2 3))))))
