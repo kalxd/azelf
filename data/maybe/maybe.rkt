@@ -20,8 +20,6 @@
          Just?)
 
 (struct Nothing []
-  #:transparent
-
   #:methods gen:custom-write
   [(define (write-proc self port mode)
      (display "#<Nothing>" port))]
@@ -66,7 +64,6 @@
 (define nothing (Nothing))
 
 (struct Just [a]
-  #:transparent
   #:methods gen:custom-write
   [(define (write-proc self port mode)
      (let* ([a (Just-a self)]

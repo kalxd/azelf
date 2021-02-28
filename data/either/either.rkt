@@ -17,7 +17,11 @@
          Either/c)
 
 (struct Left [value]
-  #:transparent
+  #:methods gen:custom-write
+  [(define (write-proc self port mode)
+     (let* ([a (Left-value self)]
+            [msg (format "#<Left ~s>" a)])
+       (display msg port)))]
 
   ; Eq
   #:methods gen:Eq
@@ -52,7 +56,11 @@
   [(define (bind self _) self)])
 
 (struct Right [value]
-  #:transparent
+  #:methods gen:custom-write
+  [(define (write-proc self port mode)
+     (let* ([a (Right-value self)]
+            [msg (format "#<Right ~s>" a)])
+       (display msg port)))]
 
   ; Eq
   #:methods gen:Eq
