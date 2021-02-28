@@ -1,11 +1,10 @@
 #lang racket/base
 
-(require racket/generic
-         (rename-in racket/base
-                    (foldl list-foldl)))
+(require racket/generic)
 
 (provide gen:Foldable
          Foldable?
+         Foldable/c
          foldl)
 
 (define (normal-foldl f acc xs)

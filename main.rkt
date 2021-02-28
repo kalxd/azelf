@@ -16,6 +16,7 @@
              "./data/functor/main.rkt"
              "./data/applicative/main.rkt"
              "./data/monad/main.rkt"
+             "./data/foldable/main.rkt"
              "./data/json/main.rkt"
 
              "./data/maybe/main.rkt"
@@ -29,6 +30,7 @@
                     >=
                     max
                     min
-                    map))
+                    map
+                    foldl))
 
 (provide (all-from-out racket/base))
