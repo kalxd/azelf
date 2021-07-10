@@ -54,3 +54,12 @@
                (λ ()
                  (my/sub 1 2))
                )))
+
+;;; 囹助函数集合 ;;;
+(define/contract (fmap-n f . xs)
+  (->* (procedure?)
+       #:rest (listof any/c)
+       any/c)
+  (if (memv #f xs)
+      #f
+      (apply f xs)))
