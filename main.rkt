@@ -1,14 +1,17 @@
 #lang racket/base
 
-(require (only-in "./internal/macro.rkt"
+(require (only-in "./syntax/mod.rkt"
                   export-from))
 
+(export-from racket/base
+             racket/contract
+             racket/match
+             "./syntax/pipeline.rkt"
+             "./syntax/spread.rkt"
+             "./syntax/function.rkt")
+#|
 (export-from racket/contract
              racket/match
-             "./base/function.rkt"
-             "./base/pipeline.rkt"
-             "./base/spread.rkt"
-
              "./data/eq/main.rkt"
              "./data/ord/main.rkt"
              "./data/semigroup/main.rkt"
@@ -34,3 +37,4 @@
                     foldl))
 
 (provide (all-from-out racket/base))
+|#

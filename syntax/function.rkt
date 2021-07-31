@@ -3,11 +3,14 @@
 
 (require racket/contract
          racket/function
-         (for-syntax racket/base))
+         (for-syntax racket/base
+                     racket/syntax))
 
 (provide define/curry
-         curry/contract)
+         curry/contract
+         curry/n)
 
+; 直接定义成柯里化函数，不用再套用curry。
 (define-syntax (define/curry stx)
   (syntax-case stx ()
     [(_ (name arg ...) body ...)
@@ -55,11 +58,22 @@
                  (my/sub 1 2))
                )))
 
-;;; 囹助函数集合 ;;;
-(define/contract (fmap-n f . xs)
-  (->* (procedure?)
-       #:rest (listof any/c)
-       any/c)
-  (if (memv #f xs)
-      #f
-      (apply f xs)))
+(define-for-syntax (gen-n-vars stx)
+  (define n (syntax->datum stx))
+  (for/list ([i (in-range 0 n)])
+    (string->symbol (format "a~A" i))))
+
+; 柯化里不定长参数的函数，需要指定参数个数。
+(define-syntax (curry/n stx)
+  (syntax-case stx ()
+    [(_ f n)
+     (let ([as (gen-n-vars #'n)])
+       (with-syntax ([(args ...) as])
+         #'(let ([f (λ (args ...) (f args ...))])
+             (curry f))))]))
+
+(module+ test
+  (test-case "<function>: curry/n"
+    (define test/add2 (curry/n + 2))
+    (check-equal? 4 (test/add2 1 3))
+    (check-equal? 4 ((test/add2 1) 3))))
