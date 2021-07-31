@@ -2,7 +2,7 @@
 
 name: azelf testing
 
-# Controls when the action will run. 
+# Controls when the action will run.
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
   push:
@@ -30,8 +30,8 @@ jobs:
         with:
           architecture: 'x64'
           distribution: 'full'
-          version: '7.2'
-          
+          version: '8.1'
+
       - name: Install Dependencies
         run: raco pkg install --batch --auto
 
