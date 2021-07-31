@@ -9,7 +9,7 @@
              "./syntax/mod.rkt"
              "./syntax/pipeline.rkt"
              "./syntax/spread.rkt"
-             "./syntax/function.rkt")
+             "./syntax/curry.rkt")
 #|
 (export-from racket/contract
              racket/match
