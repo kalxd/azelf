@@ -1,15 +1,10 @@
 #lang scribble/manual
 
-@require[@for-label[azelf racket/generic json]]
+@require[@for-label[azelf]]
 
 @title{简介}
 
-Racket自身功能簿弱，不同类型功能上重复，部分设计不明确：@racket[foldl]和@racket[for/fold]，前者仅适用于@racket[list]，后者可应对任意@racket[sequence?]；Racket用@racket[#f]代替Nil，导致在数据转换时语义不明，例如转化成@racketmodname[json]的时候。
-为此，azelf致力打造规范、使用简便的“标准库”，类似于Purescript、Haskell的@bold{Prelude}模块设计。与此同时提供更多方便使用的语法与数据结构。
-
-目的只有一个：赏心悦目！
-
-总体设计上向Purescript的Prelude看齐，部分函数不可避免与@racketmodname[racket/base]重名，重名的函数不仅涵盖原有功能，还增强了不少新特性，例如@racket[=]，在racket中仅仅比较@racket[number?]，在@racketmodname[azelf]中可以比较任意@racket[Eq?]，自然也包括@racket[number?]！
+Racket是一门动态语言，Racket是一门创建语言的语言。自当是用其能、尽其才，以她为基础，构建个人偏好极强的运行时，，更是个人语言。
 
 @section{安装与使用}
 

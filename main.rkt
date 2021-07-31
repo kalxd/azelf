@@ -6,6 +6,7 @@
 (export-from racket/base
              racket/contract
              racket/match
+             "./syntax/mod.rkt"
              "./syntax/pipeline.rkt"
              "./syntax/spread.rkt"
              "./syntax/function.rkt")
