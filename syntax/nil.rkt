@@ -3,13 +3,15 @@
 (require (for-syntax racket/base
                      syntax/parse))
 
+(provide nil/do)
+
 (define-syntax nil/do
   (syntax-parser
     ; 绑定语法。
-    [(_ (var:id (~and (~literal <-)) e:expr) . rest)
+    [(_ (var:id (~and (~literal <-)) e:expr) body ...+)
      #'(let ([var e])
          (and var
-              (nil/do . rest)))]
+              (nil/do body ...)))]
 
     ; 定义语法。
     [(_ ((~literal let) ([x:id e:expr] ...+)) body ...+)

@@ -8,3 +8,4 @@
 @include-section["pipeline.scrbl"]
 @include-section["spread.scrbl"]
 @include-section["curry.scrbl"]
+@include-section["nil.scrbl"]
