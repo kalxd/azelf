@@ -14,7 +14,10 @@
          maybe-unwrap
          ->maybe)
 
-(struct None [])
+(struct None []
+  #:methods gen:custom-write
+  [(define (write-proc x out mode)
+     (display "(Nothing)" out))])
 
 (struct Just [value]
   #:transparent)

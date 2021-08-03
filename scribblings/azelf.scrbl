@@ -20,3 +20,4 @@
 
 @include-section["intro.scrbl"]
 @include-section["syntax/intro.scrbl"]
+@include-section["data/intro.scrbl"]

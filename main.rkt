@@ -10,4 +10,6 @@
              "./syntax/pipeline.rkt"
              "./syntax/spread.rkt"
              "./syntax/curry.rkt"
-             "./syntax/nil.rkt")
+             "./syntax/nil.rkt"
+
+             "./data/json.rkt")
