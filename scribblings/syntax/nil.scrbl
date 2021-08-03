@@ -3,7 +3,7 @@
 @(require "../run.rkt"
 		  (for-label azelf))
 
-@title[#:tag "nil/do"]{空值的do记法}
+@title[#:tag "nil"]{空值的do记法}
 
 很多场合都会产生空值，racket中的空值即为@racket[#f]。虽然已经有了@racket[and]和@racket[or]，但依然感觉不便，于是借鉴Haskell的do记法，自定义了处理空值的@racket[nil/do]语法。
 

@@ -1,6 +1,6 @@
 #lang scribble/manual
 
-@title[#:style '(toc)]{新朝美语}
+@title[#:style '(toc)]{新朝雅语}
 
 @local-table-of-contents[]
 
