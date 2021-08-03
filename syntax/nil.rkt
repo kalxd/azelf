@@ -19,8 +19,16 @@
          (nil/do body ...))]
 
     ; 提前中断操作。
-    [(_ ((~literal break) e:expr) . rest)
-     #'e]
+    [(_ ((~literal break-when) condition:expr value:expr) body ...+)
+     #'(if condition
+           value
+           (nil/do body ...))]
+
+    ; 提前中断操作。
+    [(_ ((~literal break-unless) condition:expr value:expr) body ...+)
+     #'(if condition
+           (nil/do body ...)
+           value)]
 
     ; 无论如何都不会中断的代码块。
     [(_ ((~literal !) e:expr) body ...+)
@@ -45,7 +53,12 @@
     (check-true (nil/do (let ([a #f] [b #t])) (or a b))))
 
   (test-case "<nil>: nil/do提前中断"
-    (check-true (nil/do (a <- 1) (break #t) a)))
+    (check-equal? 3 (nil/do (a <- 1)
+                            (break-when (= a 1) 3)
+                            2))
+    (check-equal? 2 (nil/do (a <- 1)
+                            (break-unless (= a 1) 3)
+                            2)))
 
   (test-case "<nil>: nil/do自由代码块"
     (check-true (nil/do (a <- #t) (! (not a)) a))))

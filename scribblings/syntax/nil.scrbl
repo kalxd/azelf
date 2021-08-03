@@ -9,7 +9,8 @@
 
 @defform*[((nil/do (let [id expr] ...+) body ...+)
 			(nil/do (id <- expr) body ...+)
-			(nil/do (break expr) body ...+)
+			(nil/do (break-when expr) body ...+)
+			(nil/do (break-unless expr) body ...+)
 			(nil/do (! expr) body ...+)
 			(nil/do expr ...))]{
 如果了解过Haskell的Maybe及Monad的do-notation，那么对这些语法一定不陌生。
@@ -45,7 +46,7 @@
 
 (nil/do
   (a <- 1)
-  (break 10)
+  (break-when (= a 1) 10)
   a)
 ]
 
