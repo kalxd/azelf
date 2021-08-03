@@ -2,7 +2,9 @@
 @(require "../run.rkt"
 		  (for-label azelf azelf/data/maybe))
 
-@defmodule[azelf/data/maybe]
+@defmodule[azelf/data/maybe]{
+@racketerror{实验性模块！API不稳定，随时会被更改、删除！}
+}
 
 @title{Maybe}
 
@@ -19,7 +21,7 @@
 Maybe构造器。
 }
 
-@defthing[Nothing: (Maybe/c any/c)]{
+@defthing[Nothing (Maybe/c any/c)]{
 已确定的Maybe的值。无须再调用生成。
 }
 
@@ -41,6 +43,31 @@ Maybe构造器。
 (->maybe #t)
 ]
 
+}
+
+@defproc[(maybe-map [f (-> any/c any/c)] [a (Maybe/c any/c)]) (Maybe/c any/c)]{
+Functor映射。
+
+@examples[
+#:eval sb
+
+(maybe-map add1 (Just 1))
+(maybe-map add1 Nothing)
+]
+}
+
+@defproc[(maybe-then [f (-> any/c (Maybe/c any/c))] [a (Maybe/c any/c)]) (Maybe/c any/c)]{
+Monad的binding。
+
+@examples[
+#:eval sb
+
+(define (f x)
+  (Just (add1 x)))
+
+(maybe-then f (Just 1))
+(maybe-then f Nothing)
+]
 }
 
 @defproc[(maybe-unwrap [x any/c]
