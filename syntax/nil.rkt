@@ -1,6 +1,7 @@
 #lang racket/base
 
-(require (for-syntax racket/base
+(require "../internal/it.rkt"
+         (for-syntax racket/base
                      syntax/parse))
 
 (provide nil/do)
@@ -62,3 +63,25 @@
 
   (test-case "<nil>: nil/do自由代码块"
     (check-true (nil/do (a <- #t) (! (not a)) a))))
+
+(define-syntax nil/->>
+  (syntax-parser
+    ; 多条语句
+    [(_ var:expr f:expr fs:expr ...)
+     #'(let ([a var])
+         (and a
+              (let ([g (expand-it f)])
+                (nil/->> (g a) fs ...))))]
+
+    ; 最后一句。
+    [(_ e:expr) #'e]))
+
+(module+ test
+  (test-case "<nil>: nil/->>"
+    (check-equal? 3
+                  (nil/->> 1
+                           (+ it it)
+                           add1))
+    (check-false (nil/->> 1
+                          (λ (x) #f)
+                          add1))))
