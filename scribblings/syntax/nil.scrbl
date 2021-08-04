@@ -3,7 +3,9 @@
 @(require "../run.rkt"
 		  (for-label azelf))
 
-@title[#:tag "nil"]{空值的do记法}
+@title[#:tag "nil"]{优雅地处理空值}
+
+@section{do记法}
 
 很多场合都会产生空值，racket中的空值即为@racket[#f]。虽然已经有了@racket[and]和@racket[or]，但依然感觉不便，于是借鉴Haskell的do记法，自定义了处理空值的@racket[nil/do]语法。
 
@@ -62,4 +64,24 @@
   a)
 ]
 
+}
+
+@section{自动处理空值管道}
+
+@defform[(nil/->> a f ...)]{
+类似于@racket[->>]，不同在于@racket[nil/->>]自动处理nil，其中任一函数返回nil，自动结束并返回。
+同样的，它支持@racket[it]关键字。
+
+@examples[
+#:eval sb
+
+(nil/->> 1
+         (+ it it)
+         add1)
+
+(nil/->> 1
+         (+ it it)
+         (lambda (x) #f)
+         (+ it it))
+]
 }

@@ -4,7 +4,8 @@
          (for-syntax racket/base
                      syntax/parse))
 
-(provide nil/do)
+(provide nil/do
+         nil/->>)
 
 (define-syntax nil/do
   (syntax-parser
@@ -66,6 +67,7 @@
 
 (define-syntax nil/->>
   (syntax-parser
+    #:literals [it]
     ; 多条语句
     [(_ var:expr f:expr fs:expr ...)
      #'(let ([a var])
