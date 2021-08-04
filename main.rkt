@@ -1,7 +1,12 @@
 #lang racket/base
 
 (require (only-in "./syntax/mod.rkt"
-                  export-from))
+                  export-from)
+
+         (only-in "./internal/it.rkt"
+                  it))
+
+(provide it)
 
 (export-from racket/base
              racket/contract

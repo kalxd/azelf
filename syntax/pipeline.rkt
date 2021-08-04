@@ -1,37 +1,10 @@
 #lang racket/base
 
-(require racket/stxparam
-         (for-syntax racket/base
-                     racket/list))
+(require "../internal/it.rkt"
+         (for-syntax racket/base))
 
-(provide it
-         ->>
+(provide ->>
          <-<)
-
-(define-syntax-parameter it
-  (λ (stx)
-    (raise-syntax-error (syntax-e stx)
-                        "只能在特定几个宏中使用！")))
-
-(define-for-syntax (has-it? xs)
-  (and (list? xs)
-       (for/or ([x xs])
-         (cond
-           [(list? x) (has-it? x)]
-           [else (eq? 'it x)]))))
-
-(define-syntax (expand-it stx)
-  (define stx-list (syntax->datum stx))
-
-  (if (has-it? stx-list)
-      (syntax-case stx ()
-        [(_ (op ...))
-         #'(λ (arg)
-             (syntax-parameterize ([it (make-rename-transformer #'arg)])
-               (op ...)))])
-
-      (syntax-case stx ()
-        [(_ fn) #'fn])))
 
 (define-syntax (->> stx)
   (syntax-case stx ()
