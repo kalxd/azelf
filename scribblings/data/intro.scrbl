@@ -4,3 +4,4 @@
 
 @include-section["json.scrbl"]
 @include-section["maybe.scrbl"]
+@include-section["list.scrbl"]
