@@ -18,4 +18,5 @@
              "./syntax/nil.rkt"
 
              "./data/json.rkt"
-             "./data/function.rkt")
+             "./data/function.rkt"
+             "./data/list.rkt")
