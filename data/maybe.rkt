@@ -7,6 +7,7 @@
 
 (provide Nothing
          Just
+         nothing
          Maybe/c
 
          maybe-map
@@ -14,7 +15,7 @@
          maybe-unwrap
          ->maybe)
 
-(struct None []
+(struct Nothing []
   #:methods gen:custom-write
   [(define (write-proc x out mode)
      (display "(Nothing)" out))])
@@ -24,15 +25,11 @@
 
 (define/contract (Maybe/c a)
   (-> any/c contract?)
-  (or/c None? (struct/c Just a)))
+  (or/c Nothing? (struct/c Just a)))
 
-(define/contract Nothing
+(define/contract nothing
   (Maybe/c any/c)
-  (None))
-
-(define/contract just
-  (-> any/c (Maybe/c any/c))
-  Just)
+  (Nothing))
 
 (curry/contract (maybe-map f a)
   (-> (-> any/c any/c)
@@ -48,7 +45,7 @@
 
   (test-case "<maybe>: maybe-map"
     (check-equal? (Just 2) (maybe-map add1 (Just 1)))
-    (check-equal? Nothing ((maybe-map add1) Nothing))))
+    (check-equal? nothing ((maybe-map add1) nothing))))
 
 (define/curry (maybe-unwrap b a)
   (match a
@@ -58,7 +55,7 @@
 (module+ test
   (test-case "<maybe>: maybe-unwrap"
     (check-equal? 1 (maybe-unwrap 2 (Just 1)))
-    (check-equal? 2 (maybe-unwrap 2 Nothing))))
+    (check-equal? 2 (maybe-unwrap 2 nothing))))
 
 (curry/contract (maybe-then f a)
   (-> (-> any/c (Maybe/c any/c))
@@ -73,13 +70,13 @@
     (define (f x)
       (Just (add1 x)))
     (check-equal? (Just 2) (maybe-then f (Just 1)))
-    (check-equal? Nothing (maybe-then f Nothing))))
+    (check-equal? nothing (maybe-then f nothing))))
 
 (define/contract (->maybe a)
   (-> any/c (Maybe/c any/c))
-  (if a (Just a) Nothing))
+  (if a (Just a) nothing))
 
 (module+ test
   (test-case "<maybe>: ->maybe"
     (check-equal? (Just 1) (->maybe 1))
-    (check-equal? Nothing (->maybe #f))))
+    (check-equal? nothing (->maybe #f))))
