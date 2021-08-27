@@ -1,6 +1,6 @@
 #lang scribble/manual
 @(require "../run.rkt"
-		  (for-label azelf azelf/data/maybe))
+		  (for-label azelf))
 
 @defmodule[azelf/data/maybe]{
 @racketerror{实验性模块！API不稳定，随时会被更改、删除！}
