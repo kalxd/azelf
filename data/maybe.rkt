@@ -3,7 +3,8 @@
 (require racket/contract
          racket/match
 
-         "../syntax/curry.rkt")
+         "../syntax/curry.rkt"
+         "./error.rkt")
 
 (provide Nothing
          Just
@@ -55,6 +56,19 @@
   (test-case "<maybe>: maybe-unwrap"
     (check-equal? 1 (maybe-> 2 (Just 1)))
     (check-equal? 2 (maybe-> 2 nothing))))
+
+(define (maybe-unwrap a)
+  (match a
+    [(Just a) a]
+    [_ (raise-unwrap-error "maybe-unwrap: 试图解包nothing！")]))
+
+(module+ test
+  (test-case "<maybe>: maybe-unwrap"
+    (check-equal? 1 (maybe-unwrap (Just 1)))
+    (check-equal? "ab" (maybe-unwrap (Just "ab")))
+    (check-exn exn:fail?
+               (λ ()
+                 (maybe-unwrap nothing)))))
 
 (curry/contract (maybe-then f a)
   (-> (-> any/c (Maybe/c any/c))
