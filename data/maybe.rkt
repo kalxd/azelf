@@ -16,7 +16,8 @@
          maybe-map
          maybe-then
          maybe->
-         ->maybe)
+         ->maybe
+         maybe-unwrap)
 
 (struct Nothing []
   #:transparent)

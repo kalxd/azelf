@@ -80,3 +80,16 @@ Monad的binding。
 ]
 
 }
+
+@defproc[(maybe-unwrap [x (Maybe/c y)]) y]{
+解包@racket[Maybe]，遇到@racket[nothing]直接抛异常。
+
+@examples[
+#:eval sb
+
+(maybe-unwrap (Just 1))
+(maybe-unwrap (Just #f))
+
+(maybe-unwrap nothing)
+]
+}
