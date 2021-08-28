@@ -14,7 +14,7 @@
 
          maybe-map
          maybe-then
-         maybe-unwrap
+         maybe->
          ->maybe)
 
 (struct Nothing []
@@ -46,15 +46,15 @@
     (check-equal? (Just 2) (maybe-map add1 (Just 1)))
     (check-equal? nothing ((maybe-map add1) nothing))))
 
-(define/curry (maybe-unwrap b a)
+(define/curry (maybe-> b a)
   (match a
     [(Just a) a]
     [else b]))
 
 (module+ test
   (test-case "<maybe>: maybe-unwrap"
-    (check-equal? 1 (maybe-unwrap 2 (Just 1)))
-    (check-equal? 2 (maybe-unwrap 2 nothing))))
+    (check-equal? 1 (maybe-> 2 (Just 1)))
+    (check-equal? 2 (maybe-> 2 nothing))))
 
 (curry/contract (maybe-then f a)
   (-> (-> any/c (Maybe/c any/c))

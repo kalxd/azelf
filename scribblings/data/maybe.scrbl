@@ -64,19 +64,19 @@ Monad的binding。
   (Just (add1 x)))
 
 (maybe-then f (Just 1))
-(maybe-then f Nothing)
+(maybe-then f nothing)
 ]
 }
 
-@defproc[(maybe-unwrap [x any/c]
-					   [f (Maybe/c any/c)])
-					   (or/c x any/c)]{
+@defproc[(maybe-> [x any/c]
+				  [f (Maybe/c any/c)])
+				  (or/c x any/c)]{
 同@racket[maybe]，接受一个默认值@code{x}，如果@code{f}为@racket[Just]，则直接获取@racket[Just]内容，反之以@code{x}代之。
 
 @examples[
 #:eval sb
-(maybe-unwrap 1 nothing) ;; 1
-(maybe-unwrap 1 (Just 2)) ;; 2
+(maybe-> 1 nothing) ;; 1
+(maybe-> 1 (Just 2)) ;; 2
 ]
 
 }
