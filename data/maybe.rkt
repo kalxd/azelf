@@ -6,7 +6,13 @@
          "../syntax/curry.rkt"
          "./error.rkt"
 
-         (for-syntax racket/base))
+         (only-in racket/list
+                  empty?)
+
+         (for-syntax racket/base
+                     racket/syntax
+
+                     "../internal/macro-util.rkt"))
 
 (provide Nothing
          Just
@@ -20,7 +26,8 @@
          maybe->
          ->maybe
          maybe-unwrap
-         maybe/catch)
+         maybe/catch
+         maybe-wrap)
 
 (struct Nothing []
   #:transparent)
@@ -108,3 +115,23 @@
     (check-equal? (Just 1) (maybe/catch 1))
     (check-equal? (Just 10) (maybe/catch (* 1 10)))
     (check-equal? nothing (maybe/catch (/ 1 0)))))
+
+(define-syntax (maybe-wrap stx)
+  (syntax-case stx ()
+    [(_ f n)
+     (let ([ns (gen-n-args #'n)])
+       (with-syntax ([name (format-id #f "maybe-wrap:~a" #'f)]
+                     [(args ...) ns])
+         #'(let ([name (λ (args ...)
+                         (->maybe (f args ...)))])
+             name)))]))
+
+(module+ test
+  (test-case "<maybe>: maybe-wrap"
+
+    (define (testing a b)
+      (and (> a b) (- a b)))
+
+    (define f (maybe-wrap testing 2))
+    (check-equal? (Just 1) (f 4 3))
+    (check-equal? nothing (f 3 4))))
