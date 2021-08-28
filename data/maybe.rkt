@@ -18,9 +18,7 @@
          ->maybe)
 
 (struct Nothing []
-  #:methods gen:custom-write
-  [(define (write-proc x out mode)
-     (display "(Nothing)" out))])
+  #:transparent)
 
 (struct Just [value]
   #:transparent)
