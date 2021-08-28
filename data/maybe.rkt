@@ -7,6 +7,8 @@
 
 (provide Nothing
          Just
+         Nothing?
+         Just?
          nothing
          Maybe/c
 
@@ -36,8 +38,7 @@
       (Maybe/c any/c)
       (Maybe/c any/c))
   (match a
-    [(Just a)
-     (Just (f a))]
+    [(Just a) (Just (f a))]
     [else a]))
 
 (module+ test

@@ -2,10 +2,6 @@
 @(require "../run.rkt"
 		  (for-label azelf))
 
-@defmodule[azelf/data/maybe]{
-@racketerror{实验性模块！API不稳定，随时会被更改、删除！}
-}
-
 @title{Maybe}
 
 @bold{Nil}的安全类型，在类型上避免空指针错误。
@@ -17,18 +13,20 @@
 “泛型”maybe容器，检测@racket[Just]是否为a。
 }
 
-@defproc[(Just [a any/c]) (Maybe/c any/c)]{
+@defproc*[([(Just [a any/c]) (Maybe/c any/c)]
+		   [(Nothing) (Maybe/c any/c)])]{
 Maybe构造器。
+同时可用于@racket[match]。
 }
 
-@defthing[Nothing (Maybe/c any/c)]{
+@defthing[nothing (Maybe/c any/c)]{
 已确定的Maybe的值。无须再调用生成。
 }
 
 @section{操作}
 
 @defproc[(->maybe [x any/c])
-		 (Maybe/c)]{
+		 (Maybe/c x)]{
 将任意一个值转化成Maybe。Racket不像其他语言有个特殊的@code{Nil}，它用@racket[#f]表示“空”，
 因此该函数仅会将@racket[#f]转化为@racket[nothing]，其他一切都为@racket[Just]。
 
@@ -52,7 +50,7 @@ Functor映射。
 #:eval sb
 
 (maybe-map add1 (Just 1))
-(maybe-map add1 Nothing)
+(maybe-map add1 nothing)
 ]
 }
 
@@ -77,7 +75,7 @@ Monad的binding。
 
 @examples[
 #:eval sb
-(maybe-unwrap 1 Nothing) ;; 1
+(maybe-unwrap 1 nothing) ;; 1
 (maybe-unwrap 1 (Just 2)) ;; 2
 ]
 

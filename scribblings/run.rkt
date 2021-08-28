@@ -10,5 +10,4 @@
 (define sb (make-base-eval))
 
 (interaction-eval #:eval sb
-                  (require azelf
-                           azelf/data/maybe))
+                  (require azelf))
