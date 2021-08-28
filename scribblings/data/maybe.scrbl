@@ -94,7 +94,7 @@ Monad的binding。
 ]
 }
 
-@defform[#:kind "语法" (maybe/catch expr)
+@defform[#:kind "语法" (maybe-catch expr)
 		#:grammar
 		[(expr 任何表达式)]]{
 自动捕获@racket[expr]错误，如果@racket[expr]无任何错误，返回@racket{(Just expr)}，反之返回@racket[nothing]。
@@ -102,9 +102,9 @@ Monad的binding。
 @examples[
 #:eval sb
 
-(maybe/catch (* 1 0))
+(maybe-catch (* 1 0))
 
-(maybe/catch (/ 1 0))
+(maybe-catch (/ 1 0))
 ]
 }
 

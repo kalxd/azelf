@@ -26,7 +26,7 @@
          maybe->
          ->maybe
          maybe-unwrap
-         maybe/catch
+         maybe-catch
          maybe-wrap)
 
 (struct Nothing []
@@ -105,16 +105,16 @@
                (λ ()
                  (maybe-unwrap nothing)))))
 
-(define-syntax-rule (maybe/catch action)
+(define-syntax-rule (maybe-catch action)
   (with-handlers
     ([exn:fail? (λ (_) nothing)])
     (Just action)))
 
 (module+ test
-  (test-case "<maybe>: maybe/catch"
-    (check-equal? (Just 1) (maybe/catch 1))
-    (check-equal? (Just 10) (maybe/catch (* 1 10)))
-    (check-equal? nothing (maybe/catch (/ 1 0)))))
+  (test-case "<maybe>: maybe-catch"
+    (check-equal? (Just 1) (maybe-catch 1))
+    (check-equal? (Just 10) (maybe-catch (* 1 10)))
+    (check-equal? nothing (maybe-catch (/ 1 0)))))
 
 (define-syntax (maybe-wrap stx)
   (syntax-case stx ()
