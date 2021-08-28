@@ -4,7 +4,9 @@
          racket/match
 
          "../syntax/curry.rkt"
-         "./error.rkt")
+         "./error.rkt"
+
+         (for-syntax racket/base))
 
 (provide Nothing
          Just
@@ -17,7 +19,8 @@
          maybe-then
          maybe->
          ->maybe
-         maybe-unwrap)
+         maybe-unwrap
+         maybe/catch)
 
 (struct Nothing []
   #:transparent)
@@ -58,19 +61,6 @@
     (check-equal? 1 (maybe-> 2 (Just 1)))
     (check-equal? 2 (maybe-> 2 nothing))))
 
-(define (maybe-unwrap a)
-  (match a
-    [(Just a) a]
-    [_ (raise-unwrap-error "maybe-unwrap: 试图解包nothing！")]))
-
-(module+ test
-  (test-case "<maybe>: maybe-unwrap"
-    (check-equal? 1 (maybe-unwrap (Just 1)))
-    (check-equal? "ab" (maybe-unwrap (Just "ab")))
-    (check-exn exn:fail?
-               (λ ()
-                 (maybe-unwrap nothing)))))
-
 (curry/contract (maybe-then f a)
   (-> (-> any/c (Maybe/c any/c))
       (Maybe/c any/c)
@@ -94,3 +84,27 @@
   (test-case "<maybe>: ->maybe"
     (check-equal? (Just 1) (->maybe 1))
     (check-equal? nothing (->maybe #f))))
+
+(define (maybe-unwrap a)
+  (match a
+    [(Just a) a]
+    [_ (raise-unwrap-error "maybe-unwrap: 试图解包nothing！")]))
+
+(module+ test
+  (test-case "<maybe>: maybe-unwrap"
+    (check-equal? 1 (maybe-unwrap (Just 1)))
+    (check-equal? "ab" (maybe-unwrap (Just "ab")))
+    (check-exn exn:fail?
+               (λ ()
+                 (maybe-unwrap nothing)))))
+
+(define-syntax-rule (maybe/catch action)
+  (with-handlers
+    ([exn:fail? (λ (_) nothing)])
+    (Just action)))
+
+(module+ test
+  (test-case "<maybe>: maybe/catch"
+    (check-equal? (Just 1) (maybe/catch 1))
+    (check-equal? (Just 10) (maybe/catch (* 1 10)))
+    (check-equal? nothing (maybe/catch (/ 1 0)))))
