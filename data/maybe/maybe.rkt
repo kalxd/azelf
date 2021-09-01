@@ -5,7 +5,7 @@
          "./type.rkt"
 
          "../../syntax/curry.rkt"
-         "../error.rkt"
+         "../../internal/error.rkt"
          "../json.rkt"
 
          (only-in racket/list
