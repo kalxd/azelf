@@ -107,21 +107,3 @@ Monad的binding。
 (maybe-catch (/ 1 0))
 ]
 }
-
-@defform[#:kind "语法" (maybe-wrap f n)
-		 #:grammar
-		 [(f 任意函数)
-		  (n 打算接受多少个参数)]]{
-包装@racket[f]函数，对它的返回值作@racket[->maybe]处理。
-
-@examples[
-#:eval sb
-
-(define (testing a b)
-  (and (> a b) (- a b)))
-
-(define f (maybe-wrap testing 2))
-(f 4 3)
-(f 3 4)
-]
-}
