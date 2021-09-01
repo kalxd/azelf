@@ -12,7 +12,8 @@
                   empty?)
 
          (for-syntax racket/base
-                     racket/syntax))
+                     racket/syntax
+                     syntax/parse))
 
 (provide maybe-map
          maybe-then
@@ -96,3 +97,58 @@
     (check-equal? (Just 10) (maybe-catch (* 1 10)))
     (check-equal? nothing (maybe-catch (/ 1 0)))))
 
+(define-syntax maybe/do
+  (syntax-parser
+    ; 绑定语法。
+    [(_ (var:id (~and (~literal <-)) e:expr) es:expr ...+)
+     #'(maybe-then (λ (var)
+                     (maybe/do es ...))
+                   e)]
+    ; 赋值语法。
+    [(_ (let [var:id e:expr] ...+) es:expr ...+)
+     #'(let ([var e] ...)
+         (maybe/do es ...))]
+
+    ; 副作用。
+    [(_ ((~literal !) es:expr ...+) rs:expr ...+)
+     #'(begin es ...
+              (maybe/do rs ...))]
+
+    ; 多条语句。
+    [(_ e1:expr e2:expr ...+)
+     #'(let ([a e])
+         (match a
+           [(Nothing) a]
+           [_ (maybe/do e2 ...)]))]
+
+    ; 最后一条语句
+    [(_ e:expr) #'e]))
+
+(module+ test
+  (require rackunit)
+
+  (test-case "<maybe>: maybe/do"
+
+    (check-equal? nothing
+                  (maybe/do
+                   (a <- nothing)
+                   (b <- (Just 20))
+                   (Just (+ a b))))
+    (check-equal? (Just 10)
+                  (maybe/do
+                   (a <- (Just 1))
+                   (b <- (Just 9))
+                   (Just (+ b a))))
+
+    (check-equal? (Just 20)
+                  (maybe/do
+                   (a <- (Just 5))
+                   (let [b a] [c (Just 10)])
+                   (c <- c)
+                   (Just (+ a b c))))
+
+    (check-equal? (Just 10)
+                  (maybe/do
+                   (a <- (Just 5))
+                   (! nothing)
+                   (Just (+ a a))))))
