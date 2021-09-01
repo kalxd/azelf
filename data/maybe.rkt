@@ -2,9 +2,11 @@
 
 (require racket/contract
          racket/match
+         racket/generic
 
          "../syntax/curry.rkt"
          "./error.rkt"
+         "./json.rkt"
 
          (only-in racket/list
                   empty?)
@@ -29,10 +31,20 @@
          maybe-catch)
 
 (struct Nothing []
-  #:transparent)
+  #:transparent
+
+  #:methods gen:ToJSON
+  [(define (->json self)
+     'nil)])
 
 (struct Just [value]
-  #:transparent)
+  #:transparent
+
+  #:methods gen:ToJSON
+  [(define/generic self/->json ->json)
+   (define (->json self)
+     (match self
+       [(Just a) (self/->json a)]))])
 
 (define/contract (Maybe/c a)
   (-> any/c contract?)
