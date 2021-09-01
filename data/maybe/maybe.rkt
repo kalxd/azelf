@@ -2,57 +2,26 @@
 
 (require racket/contract
          racket/match
-         racket/generic
+         "./type.rkt"
 
-         "../syntax/curry.rkt"
-         "./error.rkt"
-         "./json.rkt"
+         "../../syntax/curry.rkt"
+         "../error.rkt"
+         "../json.rkt"
 
          (only-in racket/list
                   empty?)
 
          (for-syntax racket/base
-                     racket/syntax
+                     racket/syntax))
 
-                     "../internal/macro-util.rkt"))
-
-(provide Nothing
-         Just
-         Nothing?
-         Just?
-         nothing
-         Maybe/c
-
-         maybe-map
+(provide maybe-map
          maybe-then
          maybe->
          ->maybe
          maybe-unwrap
-         maybe-catch)
+         maybe-catch
 
-(struct Nothing []
-  #:transparent
-
-  #:methods gen:ToJSON
-  [(define (->json self)
-     'nil)])
-
-(struct Just [value]
-  #:transparent
-
-  #:methods gen:ToJSON
-  [(define/generic self/->json ->json)
-   (define (->json self)
-     (match self
-       [(Just a) (self/->json a)]))])
-
-(define/contract (Maybe/c a)
-  (-> any/c contract?)
-  (or/c Nothing? (struct/c Just a)))
-
-(define/contract nothing
-  (Maybe/c any/c)
-  (Nothing))
+         (all-from-out "./type.rkt"))
 
 (curry/contract (maybe-map f a)
   (-> (-> any/c any/c)
@@ -126,3 +95,4 @@
     (check-equal? (Just 1) (maybe-catch 1))
     (check-equal? (Just 10) (maybe-catch (* 1 10)))
     (check-equal? nothing (maybe-catch (/ 1 0)))))
+
