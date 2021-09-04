@@ -138,7 +138,6 @@
   (require rackunit)
 
   (test-case "<maybe>: maybe/do"
-
     (check-equal? nothing
                   (maybe/do
                    (a <- nothing)

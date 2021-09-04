@@ -9,6 +9,7 @@
          Just
          Nothing?
          Just?
+         maybe?
          nothing
          Maybe/c)
 
@@ -35,3 +36,8 @@
 (define/contract nothing
   (Maybe/c any/c)
   (Nothing))
+
+(define/contract (maybe? a)
+  (-> any/c boolean?)
+  (or (Just? a)
+      (Nothing? a)))
