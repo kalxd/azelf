@@ -1,6 +1,8 @@
 #lang racket/base
 
-(require "../internal/it.rkt"
+(require (only-in "../internal/keyword.rkt"
+                  it
+                  expand-it)
          (for-syntax racket/base))
 
 (provide ->>

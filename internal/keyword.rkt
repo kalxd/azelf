@@ -1,5 +1,5 @@
 #|
-提供it关键字。
+提供关键字。
 |#
 
 #lang racket/base
@@ -9,7 +9,10 @@
                      racket/list))
 
 (provide it
-         expand-it)
+         expand-it
+
+         break
+         break-wrap)
 
 (define-syntax-parameter it
   (λ (stx)
@@ -35,3 +38,17 @@
                (op ...)))])
       (syntax-case stx ()
         [(_ fn) #'fn])))
+
+(define-syntax-parameter break
+  (λ (stx)
+    (raise-syntax-error (syntax-e stx)
+                        "只能在特定语法中使用！")))
+
+(define-syntax (break-wrap stx)
+  (syntax-case stx ()
+    ([_ body ...]
+     #'(call/cc
+        (λ (k)
+          (syntax-parameterize
+              ([break (make-rename-transformer #'k)])
+            (begin body ...)))))))

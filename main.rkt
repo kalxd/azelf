@@ -3,7 +3,7 @@
 (require (only-in "./syntax/mod.rkt"
                   export-from)
 
-         (only-in "./internal/it.rkt"
+         (only-in "./internal/keyword.rkt"
                   it))
 
 (provide it)

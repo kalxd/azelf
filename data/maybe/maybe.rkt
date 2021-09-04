@@ -8,6 +8,10 @@
          "../../internal/error.rkt"
          "../json.rkt"
 
+         (only-in "../../internal/keyword.rkt"
+                  break-wrap
+                  break)
+
          (only-in racket/list
                   empty?)
 
@@ -97,7 +101,7 @@
     (check-equal? (Just 10) (maybe-catch (* 1 10)))
     (check-equal? nothing (maybe-catch (/ 1 0)))))
 
-(define-syntax maybe/do
+(define-syntax maybe-do-notation
   (syntax-parser
     ; 绑定语法。
     [(_ (var:id (~and (~literal <-)) e:expr) es:expr ...+)
@@ -116,13 +120,19 @@
 
     ; 多条语句。
     [(_ e1:expr e2:expr ...+)
-     #'(let ([a e])
+     #'(let ([a e1])
          (match a
            [(Nothing) a]
            [_ (maybe/do e2 ...)]))]
 
     ; 最后一条语句
     [(_ e:expr) #'e]))
+
+(define-syntax (maybe/do stx)
+  (syntax-case stx (break)
+    [(_ body ...)
+     #'(break-wrap
+        (maybe-do-notation body ...))]))
 
 (module+ test
   (require rackunit)
@@ -151,4 +161,11 @@
                   (maybe/do
                    (a <- (Just 5))
                    (! nothing)
-                   (Just (+ a a))))))
+                   (Just (+ a a))))
+
+    (check-equal? (Just 20)
+                  (maybe/do
+                   (a <- (Just 10))
+                   (when (= a 10)
+                     (break (Just 20)))
+                   a))))
