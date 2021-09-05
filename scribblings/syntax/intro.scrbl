@@ -7,3 +7,4 @@
 @include-section["mod.scrbl"]
 @include-section["pipeline.scrbl"]
 @include-section["curry.scrbl"]
+@include-section["do.scrbl"]

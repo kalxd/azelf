@@ -4,9 +4,11 @@
                   export-from)
 
          (only-in "./internal/keyword.rkt"
-                  it))
+                  it
+                  break))
 
-(provide it)
+(provide it
+         break)
 
 (export-from racket/base
              racket/contract

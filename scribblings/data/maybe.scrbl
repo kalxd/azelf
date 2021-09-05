@@ -25,6 +25,10 @@ Maybe构造器。
 
 @section{操作}
 
+@defproc[(maybe? [x any/c]) boolean?]{
+检测是否Maybe。
+}
+
 @defproc[(->maybe [x any/c])
 		 (Maybe/c x)]{
 将任意一个值转化成Maybe。Racket不像其他语言有个特殊的@code{Nil}，它用@racket[#f]表示“空”，

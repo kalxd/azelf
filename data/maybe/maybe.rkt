@@ -10,7 +10,6 @@
          "../json.rkt"
 
          (only-in "../../internal/keyword.rkt"
-                  break-wrap
                   break)
 
          (only-in racket/list
@@ -116,7 +115,7 @@
                      (maybe/do es ...))
                    (private/->maybe e))]
     ; 赋值语法。
-    [(_ (let [var:id e:expr] ...+) es:expr ...+)
+    [(_ ((~literal let) [var:id e:expr] ...+) es:expr ...+)
      #'(let ([var e] ...)
          (maybe/do es ...))]
 
@@ -136,7 +135,7 @@
     [(_ e:expr) #'(private/->maybe e)]))
 
 (define-syntax (maybe/do stx)
-  (syntax-case stx (break)
+  (syntax-case stx ()
     [(_ body ...)
      #'(call/cc
         (λ (k)
