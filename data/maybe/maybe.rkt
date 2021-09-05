@@ -26,6 +26,7 @@
          ->maybe
          maybe-unwrap
          maybe-catch
+         maybe/do
 
          (all-from-out "./type.rkt"))
 
