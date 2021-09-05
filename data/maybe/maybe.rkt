@@ -2,6 +2,7 @@
 
 (require racket/contract
          racket/match
+         racket/stxparam
          "./type.rkt"
 
          "../../syntax/curry.rkt"
@@ -101,13 +102,18 @@
     (check-equal? (Just 10) (maybe-catch (* 1 10)))
     (check-equal? nothing (maybe-catch (/ 1 0)))))
 
+(define (private/->maybe a)
+  (cond
+    [(maybe? a) a]
+    [else (->maybe a)]))
+
 (define-syntax maybe-do-notation
   (syntax-parser
     ; 绑定语法。
     [(_ (var:id (~and (~literal <-)) e:expr) es:expr ...+)
      #'(maybe-then (λ (var)
                      (maybe/do es ...))
-                   e)]
+                   (private/->maybe e))]
     ; 赋值语法。
     [(_ (let [var:id e:expr] ...+) es:expr ...+)
      #'(let ([var e] ...)
@@ -120,19 +126,30 @@
 
     ; 多条语句。
     [(_ e1:expr e2:expr ...+)
-     #'(let ([a e1])
+     #'(let ([a (private/->maybe e1)])
          (match a
            [(Nothing) a]
            [_ (maybe/do e2 ...)]))]
 
     ; 最后一条语句
-    [(_ e:expr) #'e]))
+    [(_ e:expr) #'(private/->maybe e)]))
 
 (define-syntax (maybe/do stx)
   (syntax-case stx (break)
     [(_ body ...)
-     #'(break-wrap
-        (maybe-do-notation body ...))]))
+     #'(call/cc
+        (λ (k)
+          (define (f . xs)
+            (define value
+              (match xs
+                [(list) nothing]
+                [(list a) (if (maybe? a) a (Just a))]
+                [_ (raise-syntax-error #f "break最多接受一个值！")]))
+            (k value))
+
+          (syntax-parameterize
+              ([break (make-rename-transformer #'f)])
+            (maybe-do-notation body ...))))]))
 
 (module+ test
   (require rackunit)
@@ -148,6 +165,16 @@
                    (a <- (Just 1))
                    (b <- (Just 9))
                    (Just (+ b a))))
+    (check-equal? (Just 3)
+                  (maybe/do
+                   (a <- 1)
+                   (b <- 2)
+                   (+ a b)))
+    (check-equal? nothing
+                  (maybe/do
+                   (a <- 1)
+                   (b <- #f)
+                   (+ a b)))
 
     (check-equal? (Just 20)
                   (maybe/do
