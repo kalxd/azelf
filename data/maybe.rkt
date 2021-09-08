@@ -1,15 +1,15 @@
 #lang racket/base
 
-(require racket/contract
+(require racket/generic
+         racket/contract
          racket/match
          racket/stxparam
-         "./type.rkt"
 
-         "../../syntax/curry.rkt"
-         "../../internal/error.rkt"
-         "../json.rkt"
+         "../syntax/curry.rkt"
+         "../internal/error.rkt"
+         "./json.rkt"
 
-         (only-in "../../internal/keyword.rkt"
+         (only-in "../internal/keyword.rkt"
                   break)
 
          (only-in racket/list
@@ -19,15 +19,50 @@
                      racket/syntax
                      syntax/parse))
 
-(provide maybe-map
+(provide provide Nothing
+         Just
+         Nothing?
+         Just?
+         maybe?
+         nothing
+         Maybe/c
+
+         maybe-map
          maybe-then
          maybe->
          ->maybe
          maybe-unwrap
          maybe-catch
-         maybe/do
+         maybe/do)
 
-         (all-from-out "./type.rkt"))
+(struct Nothing []
+  #:transparent
+
+  #:methods gen:ToJSON
+  [(define (->json self)
+     'nil)])
+
+(struct Just [value]
+  #:transparent
+
+  #:methods gen:ToJSON
+  [(define/generic self/->json ->json)
+   (define (->json self)
+     (match self
+       [(Just a) (self/->json a)]))])
+
+(define/contract (Maybe/c a)
+  (-> any/c contract?)
+  (or/c Nothing? (struct/c Just a)))
+
+(define/contract nothing
+  (Maybe/c any/c)
+  (Nothing))
+
+(define/contract (maybe? a)
+  (-> any/c boolean?)
+  (or (Just? a)
+      (Nothing? a)))
 
 (curry/contract (maybe-map f a)
   (-> (-> any/c any/c)
