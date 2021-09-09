@@ -31,7 +31,7 @@
        (with-syntax ([(fs ...) gs])
          #'(compose fs ...)))]))
 
-(module* test #f
+(module+ test
   (require rackunit)
 
   (test-case "->> pipeline"
