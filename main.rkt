@@ -16,6 +16,7 @@
              "./syntax/mod.rkt"
              "./syntax/pipeline.rkt"
              "./syntax/curry.rkt"
+             "./syntax/match.rkt"
 
              "./data/json.rkt"
              "./data/function.rkt"
