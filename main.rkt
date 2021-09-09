@@ -20,4 +20,5 @@
              "./data/json.rkt"
              "./data/function.rkt"
              "./data/list.rkt"
-             "./data/maybe.rkt")
+             "./data/maybe.rkt"
+             "./data/maybe-syntax.rkt")
