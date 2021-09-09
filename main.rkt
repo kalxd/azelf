@@ -15,7 +15,6 @@
              racket/match
              "./syntax/mod.rkt"
              "./syntax/pipeline.rkt"
-             "./syntax/spread.rkt"
              "./syntax/curry.rkt"
 
              "./data/json.rkt"
