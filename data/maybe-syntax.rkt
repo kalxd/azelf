@@ -21,9 +21,10 @@
   (syntax-parser
     ; 绑定语法。
     [(_ (var:id (~and (~literal <-)) e:expr) es:expr ...+)
-     #'(maybe-then (λ (var)
-                     (maybe/do es ...))
-                   (private/->maybe e))]
+     #'(match (private/->maybe e)
+         [(Just var) (maybe/do es ...)]
+         [(Nothing) nothing])]
+
     ; 赋值语法。
     [(_ ((~literal let) [var:id e:expr] ...+) es:expr ...+)
      #'(let ([var e] ...)
