@@ -20,20 +20,21 @@
 (define-syntax maybe-do-notation
   (syntax-parser
     ; 绑定语法。
-    [(_ (var:id (~and (~literal <-)) e:expr) es:expr ...+)
+    [(_ (var:id (~literal <-) e:expr) es:expr ...+)
      #'(match (private/->maybe e)
          [(Just var) (maybe/do es ...)]
          [(Nothing) nothing])]
 
-    ; 赋值语法。
-    [(_ ((~literal let) [var:id e:expr] ...+) es:expr ...+)
-     #'(let ([var e] ...)
+        ; 赋值语法。
+    [(_ ((~literal let) var:id (~literal =) e:expr) es:expr ...+)
+     #'(let ([var e])
          (maybe/do es ...))]
 
     ; 副作用。
     [(_ ((~literal !) es:expr ...+) rs:expr ...+)
-     #'(begin es ...
-              (maybe/do rs ...))]
+     #'(begin
+         es ...
+         (maybe/do rs ...))]
 
     ; 多条语句。
     [(_ e1:expr e2:expr ...+)
@@ -90,7 +91,8 @@
     (check-equal? (Just 20)
                   (maybe/do
                    (a <- (Just 5))
-                   (let [b a] [c (Just 10)])
+                   (let b = a)
+                   (let c = (Just 10))
                    (c <- c)
                    (Just (+ a b c))))
 

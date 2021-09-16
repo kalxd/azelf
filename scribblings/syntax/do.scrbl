@@ -12,7 +12,7 @@
 				中断表达式
 				副作用表过式)
 		  (赋值表达式 (code:line)
-		  			(let [id expr] ...)
+		  			(let id = expr)
 					(id <- expr))
 		  (中断表达式 (code:line)
 		  			(break)
@@ -40,7 +40,8 @@
   (+ a b))
 
 (maybe/do
-  (let [a (f 1)] [b (f 10)])
+  (let a = (f 1))
+  (let b = (f 10))
   (+ a b))
 ]
 
