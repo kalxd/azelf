@@ -1,7 +1,7 @@
 #lang racket/base
 
 (require "../syntax/curry.rkt"
-         "./maybe.rkt"
+         "../data/maybe.rkt"
 
          racket/contract
          racket/match
