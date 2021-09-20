@@ -6,7 +6,7 @@
 
          "../syntax/curry.rkt"
          "../internal/error.rkt"
-         "./json.rkt")
+         "../type/json.rkt")
 
 (provide provide Nothing
          Just

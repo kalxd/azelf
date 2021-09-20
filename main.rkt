@@ -18,7 +18,8 @@
              "./syntax/curry.rkt"
              "./syntax/match.rkt"
 
-             "./data/json.rkt"
+             "./type/json.rkt"
+
              "./data/function.rkt"
              "./data/list.rkt"
              "./data/maybe.rkt"
