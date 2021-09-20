@@ -16,8 +16,8 @@
 
 (define-syntax-parameter it
   (λ (stx)
-    (raise-syntax-error (syntax-e stx)
-                        "只能在特定语法中使用！")))
+    (raise-syntax-error 'it
+                        "指代不明，请在特定语法中使用！")))
 
 ; 检测代码中是否包装it关钕字。
 (define-for-syntax (has-it? xs)
@@ -41,8 +41,8 @@
 
 (define-syntax-parameter break
   (λ (stx)
-    (raise-syntax-error (syntax-e stx)
-                        "只能在特定语法中使用！")))
+    (raise-syntax-error #f
+                        "你要跳转到哪里去呀？请在特定语法中使用！")))
 
 (define-syntax (break-wrap stx)
   (syntax-case stx ()
