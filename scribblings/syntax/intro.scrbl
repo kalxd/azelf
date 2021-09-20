@@ -4,7 +4,8 @@
 
 @local-table-of-contents[]
 
+@include-section["keyword.scrbl"]
 @include-section["mod.scrbl"]
 @include-section["pipeline.scrbl"]
 @include-section["curry.scrbl"]
-@include-section["do.scrbl"]
+@include-section["maybe-do.scrbl"]
