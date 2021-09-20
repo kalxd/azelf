@@ -28,7 +28,10 @@
 
   #:methods gen:ToJSON
   [(define (->json self)
-     'nil)])
+     'nil)]
+
+  #:property prop:sequence
+  (λ (self) (in-list '())))
 
 (struct Just [value]
   #:transparent
@@ -37,7 +40,11 @@
   [(define/generic self/->json ->json)
    (define (->json self)
      (match self
-       [(Just a) (self/->json a)]))])
+       [(Just a) (self/->json a)]))]
+
+  #:property prop:sequence
+  (match-lambda
+    [(Just a) a]))
 
 (define/contract (Maybe/c a)
   (-> any/c contract?)
