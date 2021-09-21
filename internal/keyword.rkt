@@ -44,11 +44,9 @@
     (raise-syntax-error #f
                         "你要跳转到哪里去呀？请在特定语法中使用！")))
 
-(define-syntax (break-wrap stx)
-  (syntax-case stx ()
-    ([_ body ...]
-     #'(call/cc
-        (λ (k)
-          (syntax-parameterize
-              ([break (make-rename-transformer #'k)])
-            (begin body ...)))))))
+(define-syntax-rule (break-wrap body ...)
+  (call/cc
+   (λ (k)
+     (syntax-parameterize
+         ([break (make-rename-transformer #'k)])
+       (begin body ...)))))
