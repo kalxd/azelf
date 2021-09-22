@@ -59,7 +59,7 @@
   (or (Just? a)
       (Nothing? a)))
 
-(curry/contract (maybe-map f a)
+(define/curry/contract (maybe-map f a)
   (-> (-> any/c any/c)
       (Maybe/c any/c)
       (Maybe/c any/c))
@@ -84,7 +84,7 @@
     (check-equal? 1 (maybe-> 2 (Just 1)))
     (check-equal? 2 (maybe-> 2 nothing))))
 
-(curry/contract (maybe-then f a)
+(define/curry/contract (maybe-then f a)
   (-> (-> any/c (Maybe/c any/c))
       (Maybe/c any/c)
       (Maybe/c any/c))

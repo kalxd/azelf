@@ -7,7 +7,7 @@
                      racket/syntax))
 
 (provide define/curry
-         curry/contract
+         define/curry/contract
          curry/n)
 
 ; 直接定义成柯里化函数，不用再套用curry。
@@ -31,7 +31,7 @@
     (check-equal? 3 ((my/add 1 1) 1))))
 
 ;;; 一次性结合了define/contract和curry，意义非比寻常。
-(define-syntax (curry/contract stx)
+(define-syntax (define/curry/contract stx)
   (syntax-case stx ()
     [(_ (name arg ...) body ...)
      #'(begin
@@ -45,7 +45,7 @@
   (require rackunit)
 
   (test-case "<function>: define/curry"
-    (curry/contract (my/sub x y)
+    (define/curry/contract (my/sub x y)
       (->i ([x positive?]
             [y (x) (<=/c x)])
            [result positive?])

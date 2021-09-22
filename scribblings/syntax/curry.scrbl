@@ -2,8 +2,7 @@
 
 @(require "../run.rkt"
 		  (for-label azelf
-		  			 racket/function
-					 racket/contract))
+		  			 racket/function))
 
 @title[#:tag "curry"]{柯里化}
 
@@ -27,13 +26,13 @@
 
 @section{定义柯里化、约束型函数}
 
-@defform[(curry/contract (id args ...+) body ...+)]{
+@defform[(define/curry/contract (id args ...+) body ...+)]{
 与@racket[define/curry]类似，同样定义出柯里化函数，唯一不同在于它内部用了@racket[define/contract]，能对函数做出约束。
 
 @examples[
 #:eval sb
 
-(curry/contract (my/add a b)
+(define/curry/contract (my/add a b)
   (-> number? number? number?)
   (+ a b))
 

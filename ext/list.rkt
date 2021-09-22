@@ -11,7 +11,7 @@
 (provide zip
          traverse)
 
-(curry/contract (zip xs ys)
+(define/curry/contract (zip xs ys)
   (-> (listof any/c) (listof any/c)
       (listof pair?))
   (for/list ([x xs]
@@ -30,7 +30,7 @@
           (private/traverse acc- f xs))]
        [_ nothing])]))
 
-(curry/contract (traverse f xs)
+(define/curry/contract (traverse f xs)
   (-> (-> any/c (Maybe/c any/c))
       (listof any/c)
       (Maybe/c (listof any/c)))
