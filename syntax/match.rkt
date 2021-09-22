@@ -2,10 +2,9 @@
 
 (require racket/match
          racket/contract
-
-         (only-in "../internal/keyword.rkt"
-                  it)
          (for-syntax racket/base))
+
+(provide define/contract/match)
 
 (define-syntax (define/contract/match stx)
   (syntax-case stx ()
