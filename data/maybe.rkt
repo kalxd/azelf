@@ -8,7 +8,7 @@
          "../internal/error.rkt"
          "../type/json.rkt")
 
-(provide provide Nothing
+(provide Nothing
          Just
          Nothing?
          Just?
