@@ -11,22 +11,22 @@
          curry/n)
 
 ; 直接定义成柯里化函数，不用再套用curry。
-(define-syntax (define/curry stx)
-  (syntax-case stx ()
-    [(_ (name arg ...) body ...)
-     #'(begin
-         (define f (let ()
-                     (define (name arg ...)
-                       body ...)
-                     name))
-         (define name (curry f)))]))
+(define-syntax-rule (define/curry (name args ...) body ...)
+  (begin
+    (define f
+      (let ()
+        (define (name args ...)
+          body ...)
+        name))
+    (define name (curry f))))
 
 (module+ test
   (require rackunit)
-  (define/curry (my/add x y z)
-    (+ x y z))
 
-  (test-case "<Function>:define/curry"
+  (test-case "<Function>: define/curry"
+    (define/curry (my/add x y z)
+      (+ x y z))
+
     (check-equal? 3 (my/add 1 1 1))
     (check-equal? 3 ((my/add 1 1) 1))))
 
