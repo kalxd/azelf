@@ -31,15 +31,13 @@
     (check-equal? 3 ((my/add 1 1) 1))))
 
 ;;; 一次性结合了define/contract和curry，意义非比寻常。
-(define-syntax (define/curry/contract stx)
-  (syntax-case stx ()
-    [(_ (name arg ...) body ...)
-     #'(begin
-         (define f (let ()
-                     (define/contract (name arg ...)
-                       body ...)
-                     name))
-         (define name (curry f)))]))
+(define-syntax-rule (define/curry/contract (name args ...) body ...)
+  (begin
+    (define f (let ()
+                (define/contract (name args ...)
+                  body ...)
+                name))
+    (define name (curry f))))
 
 (module+ test
   (require rackunit)
