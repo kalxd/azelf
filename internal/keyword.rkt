@@ -41,7 +41,7 @@
 
 (define-syntax-parameter break
   (λ (stx)
-    (raise-syntax-error #f
+    (raise-syntax-error 'break
                         "你要跳转到哪里去呀？请在特定语法中使用！")))
 
 (define-syntax-rule (break-wrap body ...)
