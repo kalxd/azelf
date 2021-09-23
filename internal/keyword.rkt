@@ -14,10 +14,16 @@
          break
          break-wrap)
 
-(define-syntax-parameter it
-  (λ (stx)
-    (raise-syntax-error 'it
-                        "指代不明，请在特定语法中使用！")))
+; 快速定义关键字。
+(define-syntax-rule (define-keyword name msg)
+  (define-syntax-parameter name
+    (λ (stx)
+      (raise-syntax-error 'name
+                          msg))))
+
+(define-keyword
+  it
+  "指代不明，请在特定语法中使用！")
 
 ; 检测代码中是否包装it关钕字。
 (define-for-syntax (has-it? xs)
@@ -39,10 +45,9 @@
       (syntax-case stx ()
         [(_ fn) #'fn])))
 
-(define-syntax-parameter break
-  (λ (stx)
-    (raise-syntax-error 'break
-                        "你要跳转到哪里去呀？请在特定语法中使用！")))
+(define-keyword
+  break
+  "你要跳转到哪里去呀？请在特定语法中使用！")
 
 (define-syntax-rule (break-wrap body ...)
   (call/cc
