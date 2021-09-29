@@ -40,11 +40,11 @@
           (private/traverse acc- f xs))]
        [_ nothing])]))
 
-(define/curry/contract (traverse f xs)
+(define/contract traverse
   (-> (-> any/c (Maybe/c any/c))
       (listof any/c)
       (Maybe/c (listof any/c)))
-  (private/traverse (Just empty) f xs))
+  (private/traverse (Just empty)))
 
 (module+ test
   (require rackunit)
