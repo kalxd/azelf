@@ -31,16 +31,16 @@
      'nil)]
 
   #:property prop:sequence
-  (λ (self) (in-list '())))
+  (λ (self)
+    (in-list '())))
 
 (struct Just [value]
   #:transparent
 
   #:methods gen:ToJSON
   [(define/generic self/->json ->json)
-   (define (->json self)
-     (match self
-       [(Just a) (self/->json a)]))]
+   (define/match (->json self)
+     [((Just a)) (self/->json a)])]
 
   #:property prop:sequence
   (match-lambda
@@ -108,10 +108,9 @@
     (check-equal? (Just 1) (->maybe 1))
     (check-equal? nothing (->maybe #f))))
 
-(define (maybe-unwrap a)
-  (match a
-    [(Just a) a]
-    [_ (raise-unwrap-error "maybe-unwrap: 试图解包nothing！")]))
+(define/match (maybe-unwrap a)
+  [((Just a)) a]
+  [(_) (raise-unwrap-error "maybe-unwrap: 试图解包nothing！")])
 
 (module+ test
   (test-case "<maybe>: maybe-unwrap"
