@@ -2,14 +2,16 @@
 
 (require racket/match
          racket/contract
+         "./curry.rkt"
+
          (for-syntax racket/base))
 
-(provide define/contract/match)
+(provide define/match/contract)
 
-(define-syntax (define/contract/match stx)
+(define-syntax (define/match/contract stx)
   (syntax-case stx ()
     [(_ (name args ...) contract-body body ...)
-     #'(define/contract (name args ...)
+     #'(define/curry/contract (name args ...)
          contract-body
          (match* (args ...)
            body ...))]))
@@ -18,7 +20,7 @@
   (require rackunit)
 
   (test-case "<match>: define/contract/match"
-    (define/contract/match (list/sum xs)
+    (define/match/contract (list/sum xs)
       (-> (listof positive?) (or/c zero? positive?))
       [((list)) 0]
       [((list a as ...)) (+ a (list/sum as))])
