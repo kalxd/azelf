@@ -65,7 +65,7 @@
       (Maybe/c any/c))
   (match a
     [(Just a) (Just (f a))]
-    [else a]))
+    [_ a]))
 
 (module+ test
   (require rackunit)
@@ -90,7 +90,7 @@
       (Maybe/c any/c))
   (match a
     [(Just a) (f a)]
-    [else a]))
+    [_ a]))
 
 (module+ test
   (test-case "<maybe>: maybe-then"

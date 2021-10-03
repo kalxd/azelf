@@ -8,4 +8,5 @@
   #:transparent)
 
 (define (raise-unwrap-error msg)
-  (raise (exn:fail:unwrap msg (current-continuation-marks))))
+  (raise (exn:fail:unwrap msg
+                          (current-continuation-marks))))
