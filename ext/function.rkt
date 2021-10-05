@@ -1,9 +1,7 @@
 #lang racket/base
 
 (require racket/contract
-
-         (only-in "../syntax/curry.rkt"
-                  curry/n))
+         "../syntax/curry.rkt")
 
 (provide (except-out (all-defined-out)
                      fmap/n))
