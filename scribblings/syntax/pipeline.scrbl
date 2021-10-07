@@ -3,7 +3,7 @@
 @(require "../run.rkt"
 		  (for-label azelf))
 
-@title{管道与匿名函数}
+@title[#:tag "pipeline"]{管道与匿名函数}
 
 @section{匿名函数与it}
 

@@ -2,7 +2,7 @@
 @(require "../run.rkt"
 		  (for-label azelf))
 
-@title{Maybe}
+@title[#:tag "maybe"]{Maybe}
 
 @bold{Nil}的安全类型，在类型上避免空指针错误。
 

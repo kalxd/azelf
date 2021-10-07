@@ -77,7 +77,7 @@
 (define/curry (maybe-> b a)
   (match a
     [(Just a) a]
-    [else b]))
+    [_ b]))
 
 (module+ test
   (test-case "<maybe>: maybe-unwrap"

@@ -25,3 +25,11 @@ azelf同racket一样，也有两种使用方式：使用@italic{#lang}与@code|{
 
 (->> 1 add1) ;; 2
 }
+
+@section{全景图}
+
+@racketmodname[azelf]可以认为是JS函数式的延续：
+
+@itemlist[@item{喜欢柯里化？@secref["curry"]了解一下。}
+		  @item{不喜欢空指针？@secref["maybe"]了解一下。}
+		  @item{想要js的pipeline？@secref["pipeline"]了解一下。}]
