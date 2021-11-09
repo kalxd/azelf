@@ -19,6 +19,7 @@
          maybe-map
          maybe-then
          maybe->
+         maybe->boolean
          ->maybe
          maybe-unwrap
          maybe-catch)
@@ -83,6 +84,16 @@
   (test-case "<maybe>: maybe-unwrap"
     (check-equal? 1 (maybe-> 2 (Just 1)))
     (check-equal? 2 (maybe-> 2 nothing))))
+
+(define/match (maybe->boolean x)
+  [((Just _)) #t]
+  [(_) #f])
+
+(module+ test
+  (test-case "<maybe>: maybe->boolean"
+    (check-true (maybe->boolean (Just 1)))
+    (check-true (maybe->boolean (Just #f)))
+    (check-false (maybe->boolean nothing))))
 
 (define/curry/contract (maybe-then f a)
   (-> (-> any/c (Maybe/c any/c))
