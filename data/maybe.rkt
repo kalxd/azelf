@@ -8,21 +8,8 @@
          "../internal/error.rkt"
          "../type/json.rkt")
 
-(provide Nothing
-         Just
-         Nothing?
-         Just?
-         maybe?
-         nothing
-         Maybe/c
-
-         maybe-map
-         maybe-then
-         maybe->
-         maybe->boolean
-         ->maybe
-         maybe-unwrap
-         maybe-catch)
+(provide (except-out (all-defined-out)
+                     Just-value))
 
 (struct Nothing []
   #:transparent
@@ -109,6 +96,18 @@
       (Just (add1 x)))
     (check-equal? (Just 2) (maybe-then f (Just 1)))
     (check-equal? nothing (maybe-then f nothing))))
+
+(define/curry/contract (maybe-replace a ma)
+  (-> any/c (Maybe/c any/c) (Maybe/c any/c))
+  (match ma
+    [(Just _) (Just a)]
+    [_ ma]))
+
+(module+ test
+  (test-case "<maybe>: maybe-replace"
+    (check-equal? (Just 1) (maybe-replace 1 (Just "1")))
+    (check-equal? (Just 1) (maybe-replace 1 (Just #f)))
+    (check-equal? nothing (maybe-replace 1 nothing))))
 
 (define/contract (->maybe a)
   (-> any/c (Maybe/c any/c))

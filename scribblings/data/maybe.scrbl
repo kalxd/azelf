@@ -72,6 +72,17 @@ Monad的binding。
 ]
 }
 
+@defproc[(maybe-replace [x any/c] [ma (Maybe/c any/c)]) (Maybe/c)]{
+替换@racket[Just]的值，遇到@racket[nothing]则不变。
+
+@examples[
+#:eval sb
+(maybe-replace 1 (Just 2))
+(maybe-replace "hello" (Just 1))
+(maybe-replace "hello" nothing)
+]
+}
+
 @defproc[(maybe-> [x any/c]
 				  [f (Maybe/c any/c)])
 				  (or/c x any/c)]{
