@@ -109,6 +109,46 @@
     (check-equal? (Just 1) (maybe-replace 1 (Just #f)))
     (check-equal? nothing (maybe-replace 1 nothing))))
 
+(define/curry/contract (maybe-and ma mb)
+  (-> (Maybe/c any/c) (Maybe/c any/c) (Maybe/c any/c))
+  (match* (ma mb)
+    [((Nothing) _) nothing]
+    [(_ (Nothing)) nothing]
+    [(_ _) mb]))
+
+(module+ test
+  (test-case "<maybe>: maybe-and"
+    (check-pred Nothing? (maybe-and (Just 1) nothing))
+    (check-pred Nothing? (maybe-and nothing (Just "hello")))
+    (check-equal? (Just 1) (maybe-and (Just 2) (Just 1)))))
+
+(define/curry/contract (maybe-or ma mb)
+  (-> (Maybe/c any/c) (Maybe/c any/c) (Maybe/c any/c))
+  (match* (ma mb)
+    [((Nothing) _) nothing]
+    [(_ (Nothing)) nothing]
+    [(_ _) ma]))
+
+(module+ test
+  (test-case "<maybe>: maybe-or"
+    (check-equal? nothing (maybe-or (Just 1) nothing))
+    (check-equal? nothing (maybe-or nothing (Just 2)))
+    (check-equal? (Just 2) (maybe-or (Just 2) (Just 1)))))
+
+(define/curry/contract (maybe-alt ma mb)
+  (-> (Maybe/c any/c) (Maybe/c any/c) (Maybe/c any/c))
+  (match* (ma mb)
+    [((Nothing) (Just _)) mb]
+    [((Just _) _) ma]
+    [(_ _) nothing]))
+
+(module+ test
+  (test-case "<maybe>: maybe-alt"
+    (check-equal? (Just 1) (maybe-alt nothing (Just 1)))
+    (check-equal? (Just 2) (maybe-alt (Just 2) nothing))
+    (check-equal? nothing (maybe-alt nothing nothing))
+    (check-equal? (Just 1) (maybe-alt (Just 1) (Just 2)))))
+
 (define/contract (->maybe a)
   (-> any/c (Maybe/c any/c))
   (if a (Just a) nothing))

@@ -83,6 +83,42 @@ Monad的binding。
 ]
 }
 
+@defproc[(maybe-and [ma (Maybe/c any/c)] [mb (Maybe/c)]) (Maybe/c)]{
+类似于@racket[and]。@racket[ma]、@racket[mb]其中之一是@racket[nothing]，结果就是@racket[nothing]，反之返回@racket[mb]。
+
+@examples[
+#:eval sb
+
+(maybe-and (Just 1) nothing)
+(maybe-and (Nothing) (Just 2))
+(maybe-and (Just 1) (Just 2))
+]
+}
+
+@defproc[(maybe-or [ma (Maybe/c any/c)] [mb (Maybe/c any/c)]) (Maybe/c any/c)]{
+类似于@racket[or]。见@racket[maybe-and]。
+
+@examples[
+#:eval sb
+
+(maybe-or (Just 1) nothing)
+(maybe-or (Nothing) (Just 2))
+(maybe-or (Just 1) (Just 2))
+]
+}
+
+@defproc[(maybe-alt [ma (Maybe/c any/c)] [mb (Maybe/c any/c)]) (Maybe/c any/c)]{
+只有当@racket[ma]、@racket[mb]都为@racket[nothing]，结果才为@racket[nothing]。
+
+@examples[
+#:eval sb
+
+(maybe-alt (Just 1) (Just 2))
+(maybe-alt (Just 1) (Nothing))
+(maybe-alt nothing (Just 2))
+]
+}
+
 @defproc[(maybe-> [x any/c]
 				  [f (Maybe/c any/c)])
 				  (or/c x any/c)]{
