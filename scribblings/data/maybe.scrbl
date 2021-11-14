@@ -132,19 +132,6 @@ Monad的binding。
 
 }
 
-@defproc[(maybe->boolean [x (Maybe/c any/c)]) boolean?]{
-如果@racket[x]是@racket[Just]，则为@racket[#t]，反之为@racket[#f]。
-
-@examples[
-#:eval sb
-
-(maybe->boolean (Just 1))
-(maybe->boolean (Just #f))
-
-(maybe->boolean nothing)
-]
-}
-
 @defproc[(maybe-unwrap [x (Maybe/c y)]) y]{
 解包@racket[Maybe]，遇到@racket[nothing]直接抛异常。
 
