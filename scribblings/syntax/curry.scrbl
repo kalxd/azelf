@@ -1,8 +1,7 @@
 #lang scribble/manual
 
 @(require "../run.rkt"
-		  (for-label azelf
-		  			 racket/function))
+		  (for-label azelf))
 
 @title[#:tag "curry"]{柯里化}
 

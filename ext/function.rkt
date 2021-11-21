@@ -1,10 +1,13 @@
 #lang racket/base
 
 (require racket/contract
+         (only-in racket/function
+                  identity)
          "../syntax/curry.rkt")
 
 (provide (except-out (all-defined-out)
-                     fmap/n))
+                     fmap/n)
+         identity)
 
 (define/contract (fmap/n f . xs)
   (->* (procedure?)
@@ -19,3 +22,13 @@
 (define fmap3 (curry/n fmap/n 4))
 (define fmap4 (curry/n fmap/n 5))
 (define fmap5 (curry/n fmap/n 6))
+
+(define/curry (const a b)
+  a)
+
+(module+ test
+  (require rackunit)
+
+  (test-case "<function>: const"
+    (check-equal? 1 (const 1 2))
+    (check-equal? 1 ((const 1) 2))))
