@@ -119,6 +119,17 @@ Monad的binding。
 ]
 }
 
+@defproc[(maybe-else [a any/c] [f (-> any/c any/c)] [ma (Maybe/c any/c)]) any/c]{
+根据条件选择对应的回调函数：@racket[Just]调用@racket[f]；@racket[nothing]则返回@racket[a]。
+
+@examples[
+#:eval sb
+
+(maybe-else 10 add1 (Just 1))
+(maybe-else 10 add1 nothing)
+]
+}
+
 @defproc[(maybe-> [x any/c]
 				  [f (Maybe/c any/c)])
 				  (or/c x any/c)]{

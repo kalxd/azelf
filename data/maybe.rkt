@@ -139,6 +139,21 @@
     (check-equal? nothing (maybe-alt nothing nothing))
     (check-equal? (Just 1) (maybe-alt (Just 1) (Just 2)))))
 
+(define/curry/contract (maybe-else a f ma)
+  (-> any/c
+      (-> any/c any/c)
+      (Maybe/c any/c)
+      any/c)
+  (match ma
+    [(Just a) (f a)]
+    [_ a]))
+
+(module+ test
+  (test-case "<maybe>: maybe-else"
+    (check-equal? 2 (maybe-else (void) add1 (Just 1)))
+    (check-equal? 11 (maybe-else (void) string->number (Just "11")))
+    (check-pred void? (maybe-else (void) add1 nothing))))
+
 (define/contract (->maybe a)
   (-> any/c (Maybe/c any/c))
   (if a (Just a) nothing))
