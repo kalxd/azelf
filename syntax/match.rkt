@@ -26,13 +26,11 @@
     (check-equal? 0 (inc 1))
     (check-equal? 3 (inc 2))))
 
-(define-syntax (define/match/contract stx)
-  (syntax-case stx ()
-    [(_ (name args ...) contract-body body ...)
-     #'(define/curry/contract (name args ...)
-         contract-body
-         (match* (args ...)
-           body ...))]))
+(define-syntax-rule (define/match/contract (name args ...) contract-body body ...)
+  (define/curry/contract (name args ...)
+    contract-body
+    (match* (args ...)
+      body ...)))
 
 (module+ test
   (require rackunit)
