@@ -1,12 +1,30 @@
 #lang racket/base
 
-(require racket/match
+(require racket/stxparam
+         racket/match
          racket/contract
          "./curry.rkt"
+         (only-in "../internal/keyword.rkt"
+                  it)
 
          (for-syntax racket/base))
 
 (provide define/match/contract)
+
+(define-syntax-rule (define/match1 name body ...)
+  (define (name arg)
+    (syntax-parameterize ([it (make-rename-transformer #'arg)])
+      (match arg
+        body ...))))
+
+(module+ test
+  (require rackunit)
+  (test-case "<match>: define/match1"
+    (define/match1 inc
+      [1 0]
+      [_ (add1 it)])
+    (check-equal? 0 (inc 1))
+    (check-equal? 3 (inc 2))))
 
 (define-syntax (define/match/contract stx)
   (syntax-case stx ()
