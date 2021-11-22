@@ -26,6 +26,27 @@
     (check-equal? 0 (inc 1))
     (check-equal? 3 (inc 2))))
 
+(define-syntax-rule (define/match1/contract name contract-body body ...)
+  (define/contract (name arg)
+    contract-body
+    (syntax-parameterize
+        ([it (make-rename-transformer #'arg)])
+      (match arg
+        body ...))))
+
+(module+ test
+  (test-case "<match>: define/match1/contract"
+    (define/match1/contract inc
+      (-> positive? positive?)
+      [1 10]
+      [10 1]
+      [2 "2"]
+      [_ (add1 it)])
+    (check-equal? 10 (inc 1))
+    (check-equal? 1 (inc 10))
+    (check-exn exn:fail:contract?
+               (λ () (inc 2)))))
+
 (define-syntax-rule (define/match/contract (name args ...) contract-body body ...)
   (define/curry/contract (name args ...)
     contract-body
