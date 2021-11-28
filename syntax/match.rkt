@@ -9,7 +9,9 @@
 
          (for-syntax racket/base))
 
-(provide define/match/contract)
+(provide define/match1
+         define/match1/contract
+         define/match/contract)
 
 (define-syntax-rule (define/match1 name body ...)
   (define (name arg)

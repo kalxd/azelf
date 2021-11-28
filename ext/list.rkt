@@ -1,15 +1,28 @@
 #lang racket/base
 
 (require "../syntax/curry.rkt"
+         "../syntax/match.rkt"
          "../data/maybe.rkt"
 
          racket/contract
          racket/match
-         (only-in racket/list
-                  empty))
+         (prefix-in list. racket/list))
 
-(provide zip
-         traverse)
+(provide (all-defined-out))
+
+(define/match1/contract head
+  (-> (listof any/c) (Maybe/c any/c))
+  [(list) nothing]
+  [(list a) (Just a)]
+  [(list a _) (Just a)])
+
+(module+ test
+  (require rackunit)
+
+  (test-case "<list>: head"
+    (check-equal? nothing (head (list)))
+    (check-equal? (Just 1) (head (list 1)))
+    (check-equal? (Just 1) (head (list 1 2)))))
 
 (define/curry/contract (zip xs ys)
   (-> (listof any/c) (listof any/c)
@@ -44,7 +57,7 @@
   (-> (-> any/c (Maybe/c any/c))
       (listof any/c)
       (Maybe/c (listof any/c)))
-  (private/traverse (Just empty)))
+  (private/traverse (Just list.empty)))
 
 (module+ test
   (require rackunit)

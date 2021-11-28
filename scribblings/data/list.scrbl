@@ -1,8 +1,20 @@
 #lang scribble/manual
 @(require "../run.rkt"
-		  (for-label azelf json))
+		  (for-label azelf))
 
 @title[#:tag "list"]{列表}
+
+@defproc[(head [xs (listof any/c)]) (Maybe/c any/c)]{
+取出列表的头部。
+
+@examples[
+#:eval sb
+
+(head (list))
+(head (list 1))
+(head (list "hello" "world"))
+]
+}
 
 @defproc[(zip [xs (listof any/c)] [ys (listof any/c)]) (listof pair?)]{
 以@racket[cons]合并。
