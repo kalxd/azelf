@@ -6,9 +6,13 @@
 
          racket/contract
          racket/match
-         (prefix-in list. racket/list))
+         (prefix-in list. racket/list)
 
-(provide (all-defined-out))
+         (rename-in racket/base
+                    [foldl base:foldl]))
+
+(provide (except-out (all-defined-out)
+                     private/traverse))
 
 (define/match1/contract head
   (-> (listof any/c) (Maybe/c any/c))
@@ -18,11 +22,30 @@
 
 (module+ test
   (require rackunit)
-
   (test-case "<list>: head"
     (check-equal? nothing (head (list)))
     (check-equal? (Just 1) (head (list 1)))
     (check-equal? (Just 1) (head (list 1 2)))))
+
+(define/curry/contract (foldl f acc xs)
+  (-> (-> any/c any/c any/c)
+      any/c
+      sequence?
+      any/c)
+  (define ys
+    (cond
+      [(hash? xs) (in-hash-values xs)]
+      [else xs]))
+
+  (for/fold ([acc acc])
+            ([y ys])
+    (f acc y)))
+
+(module+ test
+  (test-case "<list>: foldl"
+    (check-equal? 0 (foldl + 0 (list)))
+    (check-equal? 10 (foldl + 0 (list 1 2 3 4)))
+    (check-equal? 6 (foldl + 0 (hash 1 2 3 4)))))
 
 (define/curry/contract (zip xs ys)
   (-> (listof any/c) (listof any/c)
