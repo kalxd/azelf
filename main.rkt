@@ -7,10 +7,11 @@
                   break))
 
 (provide it
-         break)
+         break
 
-(export-from racket/base
-             racket/contract
+         (all-from-out racket/base))
+
+(export-from racket/contract
              racket/match
              "./syntax/mod.rkt"
              "./syntax/pipeline.rkt"
