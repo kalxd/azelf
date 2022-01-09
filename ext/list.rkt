@@ -6,13 +6,14 @@
 
          racket/contract
          racket/match
-         (prefix-in list. racket/list)
+
+         (prefix-in list:: racket/list)
+         (prefix-in inter-list:: "../internal/list.rkt")
 
          (rename-in racket/base
                     [foldl base:foldl]))
 
-(provide (except-out (all-defined-out)
-                     private/traverse))
+(provide (all-defined-out))
 
 (define/match1/contract head
   (-> (listof any/c) (Maybe/c any/c))
@@ -64,23 +65,11 @@
                   (zip (list 1 2 3)
                        (list 1 2 3)))))
 
-(define/curry (private/traverse acc f xs)
-  (match xs
-    [(list) acc]
-    [(list x xs ...)
-     (match (f x)
-       [(Just a)
-        (let ([acc- (maybe-map (λ (acc)
-                                 (append acc (list a)))
-                               acc)])
-          (private/traverse acc- f xs))]
-       [_ nothing])]))
-
 (define/contract traverse
   (-> (-> any/c (Maybe/c any/c))
       (listof any/c)
       (Maybe/c (listof any/c)))
-  (private/traverse (Just list.empty)))
+  (inter-list::traverse (Just list::empty)))
 
 (module+ test
   (require rackunit)
