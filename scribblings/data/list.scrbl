@@ -16,6 +16,16 @@
 ]
 }
 
+@defproc[(foldl [f (-> any/c any/c any/c)] [acc any/c] [xs sequence?]) any/c]{
+同@racket[foldl]，只不过它接受一个@racket[sequence?]。
+
+@examples[
+#:eval sb
+(foldl + 0 (list 1 2 3 4))
+(foldl + 0 (hash 1 2 3 4))
+]
+}
+
 @defproc[(zip [xs (listof any/c)] [ys (listof any/c)]) (listof pair?)]{
 以@racket[cons]合并。
 
