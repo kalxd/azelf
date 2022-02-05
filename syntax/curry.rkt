@@ -64,7 +64,7 @@
 ; 柯化里不定长参数的函数，需要指定参数个数。
 (define-syntax (curry/n stx)
   (syntax-case stx ()
-    [(_ f n)
+    [(_ n f)
      (let ([as (gen-n-vars #'n)])
        (with-syntax ([(args ...) as])
          #'(let ([f (λ (args ...) (f args ...))])
@@ -72,6 +72,6 @@
 
 (module+ test
   (test-case "<function>: curry/n"
-    (define test/add2 (curry/n + 2))
+    (define test/add2 (curry/n 2 +))
     (check-equal? 4 (test/add2 1 3))
     (check-equal? 4 ((test/add2 1) 3))))

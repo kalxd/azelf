@@ -46,22 +46,17 @@
 
 @section{柯里化不定参函数}
 
-@defform[(curry/n f number)
+@defform[(curry/n n f)
 		#:grammar
-		[(f 已定义的函数名)
-		 (number 确定参数个数)]]{
-将不定参函数@racket[f]，转化成全新、参数个数确定（@racket[number]个）的柯里化函数。
+		[(n 参数个数)
+		 (f 已定义的函数名)]]{
+将不定参函数@racket[f]，转化成全新、参数个数确定（@racket[n]个）的柯里化函数。
 
 @examples[
 #:eval sb
-
-(define my/add (curry/n + 2))
-
+(define my/add (curry/n 2 +))
 (my/add)
-
 (my/add 3 4)
-
 (my/add 3 4 5)
 ]
-
 }

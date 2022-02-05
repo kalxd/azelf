@@ -17,11 +17,11 @@
       #f
       (apply f xs)))
 
-(define fmap (curry/n fmap/n 2))
-(define fmap2 (curry/n fmap/n 3))
-(define fmap3 (curry/n fmap/n 4))
-(define fmap4 (curry/n fmap/n 5))
-(define fmap5 (curry/n fmap/n 6))
+(define fmap (curry/n 2 fmap/n))
+(define fmap2 (curry/n 3 fmap/n))
+(define fmap3 (curry/n 4 fmap/n))
+(define fmap4 (curry/n 5 fmap/n))
+(define fmap5 (curry/n 6 fmap/n))
 
 (define/curry (const a b)
   a)

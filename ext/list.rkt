@@ -29,14 +29,14 @@
     (check-equal? (Just 1) (head (list 1)))
     (check-equal? (Just 1) (head (list 1 2)))))
 
-(define foldl (curry/n base::foldl 3))
+(define foldl (curry/n 3 base::foldl))
 
 (module+ test
   (test-case "<list>: foldl"
     (check-equal? 0 (foldl + 0 (list)))
     (check-equal? 10 (foldl + 0 (list 1 2 3 4)))))
 
-(define foldr (curry/n base::foldr 3))
+(define foldr (curry/n 3 base::foldr))
 
 (module+ test
   (test-case "<list>: foldr"
