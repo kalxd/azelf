@@ -12,7 +12,8 @@
 
          (rename-in racket/base
                     [foldl base::foldl]
-                    [foldr base::foldr]))
+                    [foldr base::foldr]
+                    [map base::map]))
 
 (provide (all-defined-out))
 
@@ -43,6 +44,13 @@
     (check-equal? 0 (foldr + 0 (list)))
     (check-equal? 10 (foldr + 0 (list 1 2 3 4)))
     (check-equal? (list 1 2 3 4) (foldr cons (list) (list 1 2 3 4)))))
+
+(define map (curry/n 2 base::map))
+
+(module+ test
+  (test-case "<list>: map"
+    (check-equal? (list) (map add1 (list)))
+    (check-equal? (list 2 3) (map add1 (list 1 2)))))
 
 (define/curry/contract (zip xs ys)
   (-> (listof any/c) (listof any/c)

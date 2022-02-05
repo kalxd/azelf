@@ -4,6 +4,8 @@
 
 @title[#:tag "list"]{列表}
 
+@section{查找}
+
 @defproc[(head [xs (listof any/c)]) (Maybe/c any/c)]{
 取出列表的头部。
 
@@ -15,6 +17,8 @@
 (head (list "hello" "world"))
 ]
 }
+
+@section{遍历}
 
 @defproc[(foldl [f (-> any/c any/c any/c)] [acc any/c] [xs list?]) any/c]{
 柯里化的@racket[foldl]，固定参数长度。
@@ -36,6 +40,18 @@
 ]
 }
 
+@section{变换}
+
+@defproc[(map [f (-> any/c any/c)] [xs list?]) list?]{
+柯里化@racket[map]，固定参数个数。
+
+@examples[
+#:eval sb
+(map add1 (list))
+(map add1 (list 1 2))
+]
+}
+
 @defproc[(zip [xs (listof any/c)] [ys (listof any/c)]) (listof pair?)]{
 以@racket[cons]合并。
 
@@ -45,6 +61,8 @@
 (zip '(1 2 3 4 5) '(a b c))
 ]
 }
+
+@section{过滤}
 
 @defproc[(traverse [f (-> a (Maybe/c b))] [xs (listof a)]) (Maybe/c (listof b))]{
 @examples[
