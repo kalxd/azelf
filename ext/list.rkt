@@ -11,7 +11,8 @@
          (prefix-in inter-list:: "../internal/list.rkt")
 
          (rename-in racket/base
-                    [foldl base:foldl]))
+                    [foldl base::foldl]
+                    [foldr base::foldr]))
 
 (provide (all-defined-out))
 
@@ -28,25 +29,20 @@
     (check-equal? (Just 1) (head (list 1)))
     (check-equal? (Just 1) (head (list 1 2)))))
 
-(define/curry/contract (foldl f acc xs)
-  (-> (-> any/c any/c any/c)
-      any/c
-      sequence?
-      any/c)
-  (define ys
-    (cond
-      [(hash? xs) (in-hash-values xs)]
-      [else xs]))
-
-  (for/fold ([acc acc])
-            ([y ys])
-    (f acc y)))
+(define foldl (curry/n base::foldl 3))
 
 (module+ test
   (test-case "<list>: foldl"
     (check-equal? 0 (foldl + 0 (list)))
-    (check-equal? 10 (foldl + 0 (list 1 2 3 4)))
-    (check-equal? 6 (foldl + 0 (hash 1 2 3 4)))))
+    (check-equal? 10 (foldl + 0 (list 1 2 3 4)))))
+
+(define foldr (curry/n base::foldr 3))
+
+(module+ test
+  (test-case "<list>: foldr"
+    (check-equal? 0 (foldr + 0 (list)))
+    (check-equal? 10 (foldr + 0 (list 1 2 3 4)))
+    (check-equal? (list 1 2 3 4) (foldr cons (list) (list 1 2 3 4)))))
 
 (define/curry/contract (zip xs ys)
   (-> (listof any/c) (listof any/c)

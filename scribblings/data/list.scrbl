@@ -16,13 +16,23 @@
 ]
 }
 
-@defproc[(foldl [f (-> any/c any/c any/c)] [acc any/c] [xs sequence?]) any/c]{
-同@racket[foldl]，只不过它接受一个@racket[sequence?]。
+@defproc[(foldl [f (-> any/c any/c any/c)] [acc any/c] [xs list?]) any/c]{
+柯里化的@racket[foldl]，固定参数长度。
 
 @examples[
 #:eval sb
 (foldl + 0 (list 1 2 3 4))
-(foldl + 0 (hash 1 2 3 4))
+(foldl cons (list) (list 1 2 3 4))
+]
+}
+
+@defproc[(foldr [f (-> any/c any/c any/c)] [acc any/c] [xs list?]) any/c]{
+柯里化的@racket[foldr],固定参数长度。
+
+@examples[
+#:eval sb
+(foldr + 0 (list 1 2 3 4))
+(foldr cons (list) (list 1 2 3 4))
 ]
 }
 
