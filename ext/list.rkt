@@ -6,6 +6,8 @@
 
          racket/contract
          racket/match
+         (only-in racket/function
+                  curry)
 
          (prefix-in list:: racket/list)
          (prefix-in inter-list:: "../internal/list.rkt")
@@ -13,7 +15,8 @@
          (rename-in racket/base
                     [foldl base::foldl]
                     [foldr base::foldr]
-                    [map base::map]))
+                    [map base::map]
+                    [filter base::filter]))
 
 (provide (all-defined-out))
 
@@ -68,6 +71,21 @@
                         (cons 3 3))
                   (zip (list 1 2 3)
                        (list 1 2 3)))))
+
+(define filter (curry base::filter))
+
+(define/curry (reject f xs)
+  (define g
+    (compose not
+             f))
+  (filter g xs))
+
+(module+ test
+  (test-case "<list>: filter reject"
+    (check-equal? (list 2 4)
+                  (filter even? (list 1 2 3 4)))
+    (check-equal? (list 1 3)
+                  (reject even? (list 1 2 3 4)))))
 
 (define/contract traverse
   (-> (-> any/c (Maybe/c any/c))

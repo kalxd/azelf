@@ -64,6 +64,18 @@
 
 @section{过滤}
 
+@defproc*[([(filter [f (-> a boolean?)] [xs (listof a)]) (listof a)]
+		   [(reject [f (-> a boolean?)] [xs (listof a)]) (listof a)])]{
+柯里化@racket[filter]，@racket[reject]是@racket[filter]的反面。
+
+@examples[
+#:eval sb
+
+(filter even? (list 1 2 3 4 5 6))
+(reject even? (list 1 2 3 4 5 6))
+]
+}
+
 @defproc[(traverse [f (-> a (Maybe/c b))] [xs (listof a)]) (Maybe/c (listof b))]{
 @examples[
 #:eval sb
