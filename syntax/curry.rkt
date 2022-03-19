@@ -10,24 +10,20 @@
          define/curry/contract
          curry/n)
 
+
 ; 直接定义成柯里化函数，不用再套用curry。
 (define-syntax-rule (define/curry (name args ...) body ...)
-  (begin
-    (define f
-      (let ()
-        (define (name args ...)
-          body ...)
-        name))
-    (define name (curry f))))
+  (define name
+    (curry (let ([name (λ (args ...) body ...)])
+             name))))
 
 ;;; 一次性结合了define/contract和curry，意义非比寻常。
 (define-syntax-rule (define/curry/contract (name args ...) body ...)
-  (begin
-    (define f (let ()
-                (define/contract (name args ...)
-                  body ...)
-                name))
-    (define name (curry f))))
+  (define name
+    (curry (let ()
+             (define/contract (name args ...)
+               body ...)
+             name))))
 
 (define-for-syntax (gen-n-vars stx)
   (define n (syntax->datum stx))
