@@ -32,30 +32,6 @@
 (define-syntax-rule (->> body ...)
   (break-wrap (pipeline->> body ...)))
 
-(module+ test
-  (require rackunit)
-
-  (test-case "<pipeline>: ->>"
-    ; 常规操作，最低要求。
-    (define a (->> 10
-                   (λ (x) (+ 1 x))
-                   (+ it it)
-                   (- it 1)))
-    (check-equal? 21 a)
-
-    ; 副作用测试。
-    (check-equal? 10
-                  (->> 1
-                       (! (add1 it))
-                       (+ it 9)))
-
-    ; 中断测试。
-    (check-equal? 10
-                  (->> 1
-                       (when (= it 1)
-                         (break 10))
-                       add1))))
-
 (define-syntax compose>->
   (syntax-parser
     ; 只有一条语句。
@@ -82,18 +58,3 @@
   (define fs (reverse (cdr (syntax->datum stx))))
   (datum->syntax stx
                  `(>-> ,@fs)))
-
-(module+ test
-  (test-case "<pipeline>: <-<"
-    ; 最低要求。
-    (define f (<-< number->string
-                   (+ 10 it)))
-
-    (check-equal? "20" (f 10))
-
-    ; 副作用测试。
-    (define g (<-< add1
-                   (! (+ 10 it)
-                      (+ it it))
-                   add1))
-    (check-equal? 3 (g 1))))
