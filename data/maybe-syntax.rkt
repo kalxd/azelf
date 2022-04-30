@@ -25,7 +25,7 @@
          [(Just var) (maybe/do es ...)]
          [(Nothing) nothing])]
 
-        ; 赋值语法。
+    ; 赋值语法。
     [(_ ((~literal let) var:id (~literal =) e:expr) es:expr ...+)
      #'(let ([var e])
          (maybe/do es ...))]
