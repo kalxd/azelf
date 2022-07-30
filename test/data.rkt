@@ -1,7 +1,7 @@
-#lang racket/base
+#lang s-exp "./internal/test.rkt"
 
-(require rackunit
-         "../main.rkt")
+(require "../main.rkt")
+
 
 (define maybe-ts
   (test-suite
@@ -110,7 +110,6 @@
                      (break (Just 20)))
                    a)))))
 
-(module+ test
-  (require "./internal/helper.rkt")
-  (run-all-task (list maybe-ts
-                      maybe-do-ts)))
+(define task-list
+  (list maybe-ts
+        maybe-do-ts))
