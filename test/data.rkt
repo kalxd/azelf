@@ -2,7 +2,6 @@
 
 (require "../main.rkt")
 
-
 (define maybe-ts
   (test-suite
    "data : maybe"

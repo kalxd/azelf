@@ -1,7 +1,6 @@
-#lang racket/base
+#lang s-exp "./internal/reader.rkt"
 
-(require rackunit
-         "../main.rkt")
+(require "../main.rkt")
 
 (define curry-ts
   (test-suite
@@ -104,8 +103,6 @@
                    add1))
     (check-equal? 3 (g 1)))))
 
-(module+ test
-  (require "./internal/helper.rkt")
-  (run-all-task (list curry-ts
-                      match-ts
-                      pipeline-ts)))
+
+(define task-list
+  (list curry-ts match-ts pipeline-ts))
