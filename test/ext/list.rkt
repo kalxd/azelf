@@ -1,7 +1,6 @@
-#lang racket/base
+#lang s-exp "../internal/reader.rkt"
 
-(require rackunit
-         "../../main.rkt")
+(require "../../main.rkt")
 
 (define list-ts
   (test-suite
@@ -48,6 +47,5 @@
     (check-equal? (Just (list 1 2 3))
                   (traverse f1 (list 1 2 3))))))
 
-(module+ test
-  (require "../internal/helper.rkt")
-  (run-all-task (list list-ts)))
+(define task-list
+  (list list-ts))

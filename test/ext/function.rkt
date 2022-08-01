@@ -1,7 +1,6 @@
-#lang racket/base
+#lang s-exp "../internal/reader.rkt"
 
-(require rackunit
-         "../../main.rkt")
+(require "../../main.rkt")
 
 (define function-ts
   (test-suite
@@ -11,6 +10,5 @@
     (check-equal? 1 (const 1 2))
     (check-equal? 1 ((const 1) 2)))))
 
-(module+ test
-  (require "../internal/helper.rkt")
-  (run-all-task (list function-ts)))
+(define task-list
+  (list function-ts))
