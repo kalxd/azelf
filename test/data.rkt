@@ -1,4 +1,4 @@
-#lang s-exp "./internal/test.rkt"
+#lang s-exp "./internal/reader.rkt"
 
 (require "../main.rkt")
 
