@@ -2,7 +2,7 @@
 
 (define collection "azelf")
 (define pkg-desc "超能力工具箱")
-(define version "0.3.2")
+(define version "0.3.3")
 (define pkg-authors '(XGLey))
 
 (define deps '(["base" #:version "7.9"]))
