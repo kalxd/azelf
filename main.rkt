@@ -22,6 +22,5 @@
 
              "./data/maybe.rkt"
              "./data/maybe-syntax.rkt"
-
-             "./ext/function.rkt"
-             "./ext/list.rkt")
+             "./data/function.rkt"
+             "./data/list.rkt")
