@@ -39,9 +39,7 @@
              [y ys])
     (f x y)))
 
-(define/contract zip
-  (-> (listof any/c) (listof any/c)
-      (listof pair?))
+(define zip
   (zip-with cons))
 
 (define filter (curry base::filter))
@@ -56,4 +54,4 @@
   (-> (-> any/c (Maybe/c any/c))
       (listof any/c)
       (Maybe/c (listof any/c)))
-  (inter-list::traverse (Just list::empty)))
+  (inter-list::traverse list::empty))
