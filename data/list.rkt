@@ -30,12 +30,19 @@
 (define foldr (curry/n 3 base::foldr))
 (define map (curry/n 2 base::map))
 
-(define/curry/contract (zip xs ys)
-  (-> (listof any/c) (listof any/c)
-      (listof pair?))
+(define/curry/contract (zip-with f xs ys)
+  (-> (-> any/c any/c any/c)
+      (listof any/c)
+      (listof any/c)
+      (listof any/c))
   (for/list ([x xs]
              [y ys])
-    (cons x y)))
+    (f x y)))
+
+(define/contract zip
+  (-> (listof any/c) (listof any/c)
+      (listof pair?))
+  (zip-with cons))
 
 (define filter (curry base::filter))
 
