@@ -52,7 +52,19 @@
 ]
 }
 
-@defproc[(zip [xs (listof any/c)] [ys (listof any/c)]) (listof pair?)]{
+@defproc[(zip-with [f (-> (a any/c) (b any/c) (c any/c))]
+				   [as (listof a)]
+				   [bs (listof b)])
+				   (listof c)]{
+合并两个列表。
+
+@codeblock{
+(define zip (zip-with cons))
+}
+
+}
+
+@defproc[(zip [xs (listof a)] [ys (listof b)]) (listof (cons a b))]{
 以@racket[cons]合并。
 
 @examples[
