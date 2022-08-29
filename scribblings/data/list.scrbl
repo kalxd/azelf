@@ -18,6 +18,41 @@
 ]
 }
 
+@section{合并}
+
+@defproc[(concat [xs (listof a)] [ys (listof a)]) (listof a)]{
+拼接两条数组。
+
+@examples[
+#:eval sb
+(concat (list) (list))
+(const (list 1 2 3) (list))
+(const (list 2 3) (list 3 2))
+]
+}
+
+@defproc[(zip-with [f (-> (a any/c) (b any/c) (c any/c))]
+				   [as (listof a)]
+				   [bs (listof b)])
+				   (listof c)]{
+合并两个列表。
+
+@codeblock{
+(define zip (zip-with cons))
+}
+
+}
+
+@defproc[(zip [xs (listof a)] [ys (listof b)]) (listof (cons a b))]{
+以@racket[cons]合并。
+
+@examples[
+#:eval sb
+
+(zip '(1 2 3 4 5) '(a b c))
+]
+}
+
 @section{遍历}
 
 @defproc[(foldl [f (-> any/c any/c any/c)] [acc any/c] [xs list?]) any/c]{
@@ -52,28 +87,6 @@
 ]
 }
 
-@defproc[(zip-with [f (-> (a any/c) (b any/c) (c any/c))]
-				   [as (listof a)]
-				   [bs (listof b)])
-				   (listof c)]{
-合并两个列表。
-
-@codeblock{
-(define zip (zip-with cons))
-}
-
-}
-
-@defproc[(zip [xs (listof a)] [ys (listof b)]) (listof (cons a b))]{
-以@racket[cons]合并。
-
-@examples[
-#:eval sb
-
-(zip '(1 2 3 4 5) '(a b c))
-]
-}
-
 @section{过滤}
 
 @defproc*[([(filter [f (-> a boolean?)] [xs (listof a)]) (listof a)]
@@ -102,5 +115,19 @@
 (traverse get (list 1 2 10 12))
 
 (traverse get (list))
+]
+}
+
+@defproc[(filter-map [f (-> a (Maybe/c b))] [xs (listof a)]) (listof b)]{
+同时结合@racket[map]和@racket[filter]，@racket[f]需要返回一个@racket[maybe?]，如果@racket[f]返回的是@racket[Nothing]，就会被过滤出去；最后只留下@racket[Just]。
+
+@examples[
+#:eval sb
+
+(filter-map (const nothing) (list 1 2 3))
+(filter-map Just (list 1 2 3))
+
+(define (f x) (if (even? x) (Just x) nothing))
+(filter-map f (list 1 2 3 4 5 6))
 ]
 }
