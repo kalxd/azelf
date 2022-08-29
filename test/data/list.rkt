@@ -11,6 +11,12 @@
     (check-equal? (Just 1) (head (list 1)))
     (check-equal? (Just 1) (head (list 1 2))))
 
+   (test-case "<list>: concat"
+     (check-equal? (list) (concat (list) (list)))
+     (check-equal? (list 1 2 3 4) (concat (list 1 2) (list 3 4)))
+     (check-equal? (list 1 2 3) (concat (list) (list 1 2 3)))
+     (check-equal? (list 1 2 3) (concat (list 1 2 3) (list))))
+
    (test-case "<list>: foldl"
     (check-equal? 0 (foldl + 0 (list)))
     (check-equal? 10 (foldl + 0 (list 1 2 3 4))))
@@ -36,6 +42,11 @@
                   (filter even? (list 1 2 3 4)))
     (check-equal? (list 1 3)
                   (reject even? (list 1 2 3 4))))
+
+   (test-case "<list>: filter-map"
+     (check-equal? (list) (filter-map (const nothing) (list 1 2 3)))
+     (check-equal? (list 1 2 3)
+                   (filter-map Just (list 1 2 3))))
 
    (test-case "<list>: traverse"
     (define (f1 x)

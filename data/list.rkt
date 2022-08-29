@@ -30,6 +30,10 @@
 (define foldr (curry/n 3 base::foldr))
 (define map (curry/n 2 base::map))
 
+(define/contract concat
+  (-> (listof any/c) (listof any/c) (listof any/c))
+  inter-list::concat)
+
 (define/curry/contract (zip-with f xs ys)
   (-> (-> any/c any/c any/c)
       (listof any/c)
@@ -49,6 +53,12 @@
     (compose not
              f))
   (filter g xs))
+
+(define/contract filter-map
+  (-> (-> any/c (Maybe/c any/c))
+      (listof any/c)
+      (listof any/c))
+  (inter-list::filter-map list::empty))
 
 (define/contract traverse
   (-> (-> any/c (Maybe/c any/c))
