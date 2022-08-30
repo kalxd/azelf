@@ -20,6 +20,11 @@
     (check-equal? (Just 2) (maybe-then f (Just 1)))
     (check-equal? nothing (maybe-then f nothing)))
 
+   (test-case "<maybe>: maybe-filter"
+     (check-equal? (Just 2) (maybe-filter even? (Just 2)))
+     (check-equal? nothing (maybe-filter odd? (Just 2)))
+     (check-equal? nothing (maybe-filter even? nothing)))
+
    (test-case "<maybe>: maybe-replace"
     (check-equal? (Just 1) (maybe-replace 1 (Just "1")))
     (check-equal? (Just 1) (maybe-replace 1 (Just #f)))

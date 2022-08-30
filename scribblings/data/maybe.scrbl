@@ -72,6 +72,21 @@ Monad的binding。
 ]
 }
 
+@defproc[(maybe-filter [f (-> a boolean?)] [ma (Maybe/c a)]) (Maybe/c a)]{
+类似于@racket[filter]，@racket[f]返回@racket[#f]，整个结果就成了@racket[nothing]。
+
+@examples[
+#:eval sb
+
+(maybe-filter even? (Just 2))
+
+(define (gt xs)
+	(> (length xs) 5))
+(maybe-filter gt (Just (list 1 2 3)))
+(maybe-filter gt (Just (list 1 2 3 4 5 6)))
+]
+}
+
 @defproc[(maybe-replace [x any/c] [ma (Maybe/c any/c)]) (Maybe/c)]{
 替换@racket[Just]的值，遇到@racket[nothing]则不变。
 

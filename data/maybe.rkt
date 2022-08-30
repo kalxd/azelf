@@ -68,6 +68,16 @@
     [(Just a) (f a)]
     [_ a]))
 
+(define/curry/contract (maybe-filter f ma)
+  (-> (-> any/c boolean?)
+      (Maybe/c any/c)
+      (Maybe/c any/c))
+  (define (g a)
+    (if (f a)
+        (Just a)
+        nothing))
+  (maybe-then g ma))
+
 (define/curry/contract (maybe-replace a ma)
   (-> any/c (Maybe/c any/c) (Maybe/c any/c))
   (match ma
