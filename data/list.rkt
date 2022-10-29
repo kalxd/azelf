@@ -24,7 +24,7 @@
   (-> (listof any/c) (Maybe/c any/c))
   [(list) nothing]
   [(list a) (Just a)]
-  [(list a _) (Just a)])
+  [(list a _ ...) (Just a)])
 
 (define foldl (curry/n 3 base::foldl))
 (define foldr (curry/n 3 base::foldr))

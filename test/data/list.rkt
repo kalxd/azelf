@@ -9,7 +9,9 @@
    (test-case "<list>: head"
     (check-equal? nothing (head (list)))
     (check-equal? (Just 1) (head (list 1)))
-    (check-equal? (Just 1) (head (list 1 2))))
+    (check-equal? (Just 1) (head (list 1 2)))
+    (check-equal? (Just 1) (head (list 1 2 3 4)))
+    (check-equal? (Just 1) (head (list 1 2 3 4 5))))
 
    (test-case "<list>: concat"
      (check-equal? (list) (concat (list) (list)))
