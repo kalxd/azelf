@@ -4,12 +4,17 @@
          racket/contract
          racket/match)
 
+(require "../syntax/curry.rkt")
+
+(provide %:
+         Hash/c)
+
 (struct Hash [ref]
   #:transparent
 
   #:property prop:sequence
   (match-lambda
-    [(Hash h) (in-hash h)]))
+    [(Hash h) h]))
 
 (define/contract (Hash/c key value)
   (-> any/c any/c contract?)
