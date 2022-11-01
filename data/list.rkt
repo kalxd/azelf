@@ -30,9 +30,9 @@
 (define foldr (curry/n 3 base::foldr))
 (define map (curry/n 2 base::map))
 
-(define/contract concat
+(define/curry/contract (concat xs ys)
   (-> (listof any/c) (listof any/c) (listof any/c))
-  inter-list::concat)
+  (inter-list::concat xs ys))
 
 (define/curry/contract (zip-with f xs ys)
   (-> (-> any/c any/c any/c)
