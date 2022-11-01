@@ -3,6 +3,8 @@
 (require racket/generic
          racket/contract
          racket/match
+         (only-in json
+                  json-null)
 
          "../syntax/curry.rkt"
          "../internal/error.rkt"
@@ -16,7 +18,7 @@
 
   #:methods gen:ToJSON
   [(define (->json self)
-     'nil)]
+     (json-null))]
 
   #:property prop:sequence
   (λ (self)

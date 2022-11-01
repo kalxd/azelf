@@ -17,9 +17,7 @@
            (rational? x))))
 
 (define (json-nil? x)
-  (cond
-    [(symbol? x) (eq? 'null x)]
-    [else #f]))
+  (eq? (json-null) x))
 
 (define-generics ToJSON
   (->json ToJSON)
@@ -41,10 +39,11 @@
                               [args (flatten ps)])
                          (apply hash args)))])
 
-  #:fallbacks [(define ->json identity)
+  #:fallbacks [(define/generic self/->json ->json)
+               (define ->json identity)
                (define json->string
                  (compose jsexpr->string
-                          ->json))
+                          self/->json))
                (define json->byte
                  (compose jsexpr->bytes
-                          ->json))])
+                          self/->json))])
