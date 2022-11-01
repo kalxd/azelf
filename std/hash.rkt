@@ -4,7 +4,10 @@
          racket/contract
          racket/match)
 
-(require "../syntax/curry.rkt")
+(require "../syntax/curry.rkt"
+         "../syntax/match.rkt"
+         "../type/json.rkt"
+         "../data/maybe.rkt")
 
 (provide %:
          Hash/c)
@@ -14,7 +17,11 @@
 
   #:property prop:sequence
   (match-lambda
-    [(Hash h) h]))
+    [(Hash h) h])
+
+  #:methods gen:ToJSON
+  [(define/match1 ->json
+     [(Hash h) h])])
 
 (define/contract (Hash/c key value)
   (-> any/c any/c contract?)
