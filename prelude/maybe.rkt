@@ -8,7 +8,7 @@
 
          "../internal/curry.rkt"
          "../internal/error.rkt"
-         "../type/json.rkt")
+         "./json.rkt")
 
 (provide (except-out (all-defined-out)
                      Just-value))

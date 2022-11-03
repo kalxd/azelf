@@ -7,7 +7,7 @@
 (require "../internal/curry.rkt"
          "../internal/match.rkt"
          "../internal/pipeline.rkt"
-         "../type/json.rkt"
+         "./json.rkt"
          "./maybe.rkt")
 
 (struct Hash [ref]

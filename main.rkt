@@ -18,8 +18,7 @@
              "./internal/curry.rkt"
              "./internal/match.rkt"
 
-             "./type/json.rkt"
-
+             "./prelude/json.rkt"
              "./prelude/maybe.rkt"
              "./prelude/maybe-syntax.rkt"
              "./prelude/function.rkt"
