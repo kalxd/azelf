@@ -1,6 +1,6 @@
 #lang racket/base
 
-(require "../internal/keyword.rkt"
+(require "./keyword.rkt"
          (for-syntax racket/base
                      syntax/parse))
 

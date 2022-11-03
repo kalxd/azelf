@@ -14,7 +14,7 @@
 (export-from racket/contract
              racket/match
              "./internal/mod.rkt"
-             "./syntax/pipeline.rkt"
+             "./internal/pipeline.rkt"
              "./syntax/curry.rkt"
              "./syntax/match.rkt"
 
