@@ -1,10 +1,10 @@
 #lang racket/base
 
-(require "../syntax/pipeline.rkt"
-         "../internal/keyword.rkt"
+(require "./pipeline.rkt"
+         "./curry.rkt"
+         "./keyword.rkt"
          "../data/maybe.rkt"
-         "../data/maybe-syntax.rkt"
-         "../syntax/curry.rkt")
+         "../data/maybe-syntax.rkt")
 
 (require racket/match)
 

@@ -4,9 +4,9 @@
          racket/contract
          racket/match)
 
-(require "../syntax/curry.rkt"
-         "../syntax/match.rkt"
-         "../syntax/pipeline.rkt"
+(require "../internal/curry.rkt"
+         "../internal/match.rkt"
+         "../internal/pipeline.rkt"
          "../type/json.rkt"
          "../data/maybe.rkt")
 

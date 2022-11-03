@@ -1,9 +1,9 @@
 #| 一些配置文件处理。 |#
 #lang racket/base
 
-(require "../syntax/pipeline.rkt"
+(require "../internal/pipeline.rkt"
          "../internal/keyword.rkt"
-         "../syntax/curry.rkt"
+         "../internal/curry.rkt"
          "../data/maybe.rkt")
 
 (require racket/contract

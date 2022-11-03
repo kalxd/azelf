@@ -3,7 +3,7 @@
 (require racket/contract
          (only-in racket/function
                   identity)
-         "../syntax/curry.rkt")
+         "../internal/curry.rkt")
 
 (provide const
          identity)

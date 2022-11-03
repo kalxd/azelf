@@ -4,7 +4,7 @@
          racket/match
          racket/contract
          "./curry.rkt"
-         (only-in "../internal/keyword.rkt"
+         (only-in "./keyword.rkt"
                   it)
 
          (for-syntax racket/base))

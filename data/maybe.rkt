@@ -6,7 +6,7 @@
          (only-in json
                   json-null)
 
-         "../syntax/curry.rkt"
+         "../internal/curry.rkt"
          "../internal/error.rkt"
          "../type/json.rkt")
 

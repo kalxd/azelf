@@ -15,8 +15,8 @@
              racket/match
              "./internal/mod.rkt"
              "./internal/pipeline.rkt"
-             "./syntax/curry.rkt"
-             "./syntax/match.rkt"
+             "./internal/curry.rkt"
+             "./internal/match.rkt"
 
              "./type/json.rkt"
 
