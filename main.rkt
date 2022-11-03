@@ -1,6 +1,6 @@
 #lang racket/base
 
-(require (only-in "./syntax/mod.rkt"
+(require (only-in "./internal/mod.rkt"
                   export-from)
          (only-in "./internal/keyword.rkt"
                   it
@@ -13,7 +13,7 @@
 
 (export-from racket/contract
              racket/match
-             "./syntax/mod.rkt"
+             "./internal/mod.rkt"
              "./syntax/pipeline.rkt"
              "./syntax/curry.rkt"
              "./syntax/match.rkt"
