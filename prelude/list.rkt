@@ -2,7 +2,7 @@
 
 (require "../internal/curry.rkt"
          "../internal/match.rkt"
-         "../data/maybe.rkt"
+         "./maybe.rkt"
 
          racket/contract
          racket/match

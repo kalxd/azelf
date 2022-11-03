@@ -3,8 +3,8 @@
 (require "./pipeline.rkt"
          "./curry.rkt"
          "./keyword.rkt"
-         "../data/maybe.rkt"
-         "../data/maybe-syntax.rkt")
+         "../prelude/maybe.rkt"
+         "../prelude/maybe-syntax.rkt")
 
 (require racket/match)
 

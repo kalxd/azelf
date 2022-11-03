@@ -8,7 +8,7 @@
          "../internal/match.rkt"
          "../internal/pipeline.rkt"
          "../type/json.rkt"
-         "../data/maybe.rkt")
+         "./maybe.rkt")
 
 (struct Hash [ref]
   #:transparent

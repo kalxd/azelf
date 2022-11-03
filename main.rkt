@@ -20,7 +20,7 @@
 
              "./type/json.rkt"
 
-             "./data/maybe.rkt"
-             "./data/maybe-syntax.rkt"
-             "./data/function.rkt"
-             "./data/list.rkt")
+             "./prelude/maybe.rkt"
+             "./prelude/maybe-syntax.rkt"
+             "./prelude/function.rkt"
+             "./prelude/list.rkt")
