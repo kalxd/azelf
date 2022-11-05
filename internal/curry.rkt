@@ -3,8 +3,11 @@
 
 (require racket/contract
          racket/function
+         syntax/parse/define
+
          (for-syntax racket/base
-                     racket/syntax))
+                     (only-in racket/list
+                              range)))
 
 (provide define/curry
          define/curry/contract
@@ -25,16 +28,11 @@
                body ...)
              name))))
 
-(define-for-syntax (gen-n-vars stx)
-  (define n (syntax->datum stx))
-  (for/list ([i (in-range 0 n)])
-    (string->symbol (format "a~A" i))))
-
 ; 柯化里不定长参数的函数，需要指定参数个数。
-(define-syntax (curry/n stx)
-  (syntax-case stx ()
-    [(_ n f)
-     (let ([as (gen-n-vars #'n)])
-       (with-syntax ([(args ...) as])
-         #'(let ([f (λ (args ...) (f args ...))])
-             (curry f))))]))
+(define-syntax-parser curry/n
+  [(_ n:nat f:id)
+   (with-syntax ([(args ...)
+                  (generate-temporaries (range (syntax->datum #'n)))])
+     #'(let ([f (λ (args ...)
+                  (f args ...))])
+         (curry f)))])
