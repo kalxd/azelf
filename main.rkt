@@ -18,7 +18,7 @@
              "./internal/curry.rkt"
              "./internal/match.rkt"
 
-             "./prelude/eq.rkt"
+             ; "./prelude/eq.rkt"
              "./prelude/json.rkt"
              "./prelude/maybe.rkt"
              "./prelude/maybe-syntax.rkt"
