@@ -8,6 +8,7 @@
 
          "../internal/curry.rkt"
          "../internal/error.rkt"
+         "./eq.rkt"
          "./json.rkt")
 
 (provide (except-out (all-defined-out)
@@ -15,6 +16,11 @@
 
 (struct Nothing []
   #:transparent
+
+  #:methods gen:Eq
+  [(define/match (eq:= a b)
+     [((Nothing) (Nothing)) #t]
+     [(_ _) #f])]
 
   #:methods gen:ToJSON
   [(define (->json self)
@@ -26,6 +32,12 @@
 
 (struct Just [value]
   #:transparent
+
+  #:methods gen:Eq
+  [(define/generic self/= eq:=)
+   (define/match (eq:= a b)
+     [((Just a) (Just b)) (self/= a b)]
+     [(_ _) #f])]
 
   #:methods gen:ToJSON
   [(define/generic self/->json ->json)
