@@ -9,14 +9,13 @@
          "../internal/match.rkt")
 
 (provide gen:Eq
+         Eq?
          eq:=
-         eq:/=
          =
          /=)
 
 (define-generics Eq
   (eq:= Eq rhs)
-  (eq:/= Eq rhs)
 
   #:defaults ([number? (define eq:= base::=)]
               [string? (define eq:= string=?)]
@@ -62,11 +61,7 @@
                       (for/and ([(a av) a]
                                 [(b bv) b])
                         (and (self/= a b)
-                             (self/= av bv)))))])
-
-  #:fallbacks [(define/generic self/= eq:=)
-               (define (eq:/= x y)
-                 (not (self/= x y)))])
+                             (self/= av bv)))))]))
 
 (define = (curry/n 2 eq:=))
-(define /= (curry/n 2 eq:/=))
+(define (/= a b) (not (= a b)))
