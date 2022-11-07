@@ -1,15 +1,19 @@
 #lang racket/base
 
 (require racket/generic
+         racket/contract
          (only-in racket/function
                   identity)
          (only-in racket/list
                   flatten)
+         (prefix-in base:: racket/base)
          json)
 
-(provide (except-out (all-defined-out)
-                     json-number?
-                     json-nil?))
+(provide gen:ToJSON
+         ToJSON?
+         ->json
+         json->string
+         json->byte)
 
 (define (json-number? x)
   (or (exact-integer? x)
@@ -21,29 +25,27 @@
 
 (define-generics ToJSON
   (->json ToJSON)
-  (json->string ToJSON)
-  (json->byte ToJSON)
 
   #:defaults ([string? (define ->json identity)]
               [boolean? (define ->json identity)]
               [json-number? (define ->json identity)]
               [json-nil? (define ->json identity)]
               [list? (define/generic self/to-json ->json)
-                     (define (->json xs)
+                     (define/contract (->json xs)
+                       (-> (listof ToJSON?) (listof jsexpr?))
                        (map self/to-json xs))]
               [hash? (define/generic self/to-json ->json)
-                     (define (->json o)
-                       (define (f key value)
-                         (cons key (self/to-json value)))
-                       (let* ([ps (hash-map o f)]
-                              [args (flatten ps)])
-                         (apply hash args)))])
+                     (define/contract (->json o)
+                       (-> (hash/c symbol? ToJSON?) (hash/c symbol? jsexpr?))
+                       (for/hash ([(k v) o])
+                         (values k (self/to-json v))))]))
 
-  #:fallbacks [(define/generic self/->json ->json)
-               (define ->json identity)
-               (define json->string
-                 (compose jsexpr->string
-                          self/->json))
-               (define json->byte
-                 (compose jsexpr->bytes
-                          self/->json))])
+(define/contract json->string
+  (-> ToJSON? string?)
+  (compose jsexpr->string
+           ->json))
+
+(define/contract json->byte
+  (-> ToJSON? bytes?)
+  (compose jsexpr->bytes
+           ->json))
