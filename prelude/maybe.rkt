@@ -5,14 +5,33 @@
          racket/match
          (only-in json
                   json-null)
+         syntax/parse/define
 
-         "../internal/curry.rkt"
+         (for-syntax racket/base))
+
+(require "../internal/curry.rkt"
          "../internal/error.rkt"
          "./eq.rkt"
          "./json.rkt")
 
-(provide (except-out (all-defined-out)
-                     Just-value))
+(provide Nothing
+         Nothing?
+         nothing
+         Just
+         Just?
+         Maybe/c
+         maybe?
+         maybe-map
+         maybe-then
+         maybe-filter
+         maybe-replace
+         maybe-and
+         maybe-alt
+         maybe-or
+         maybe-else
+         ->maybe
+         maybe-unwrap
+         maybe-catch)
 
 (struct Nothing []
   #:transparent
@@ -140,3 +159,43 @@
   (with-handlers
     ([exn:fail? (λ (_) nothing)])
     (Just action)))
+
+
+;;; 将a包装成Maybe，已经是了就不用再包装一层。
+(define (*->maybe* a)
+  (cond [(maybe? a) a]
+        [else (->maybe a)]))
+
+(define-syntax-parser *maybe/do*
+  ; a <- ma 绑定语法
+  [(_ (var:id (~literal <-) e:expr) es:expr ...)
+   #'(match (*->maybe* e)
+       [(Nothing) nothing]
+       [(Just var) (*maybe/do* es ...)])]
+
+  ; let a = b 普通赋值语法
+  [(_ ((~literal let) var:id (~literal =) e:expr) es:expr ...)
+   #'(let ([var e])
+       (*maybe/do* es ...))]
+
+  ; 副作用
+  [(_ ((~literal !) es:expr ...+) rs:expr ... +)
+   #'(begin
+       es ...
+       (*maybe/do* rs ...))]
+
+  ; 多条语句。
+  [(_ e1:expr e2:expr ...+)
+   #'(begin
+       e1
+       (*maybe/do* e2 ...))]
+
+  ; 最后一条语句
+  [(_ e:expr) #'(*->maybe* e)])
+
+(module+ test
+  (*maybe/do*
+   (a <- nothing)
+   (let b = a)
+   (displayln a)
+   (displayln b)))

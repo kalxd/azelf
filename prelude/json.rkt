@@ -4,8 +4,6 @@
          racket/contract
          (only-in racket/function
                   identity)
-         (only-in racket/list
-                  flatten)
          (prefix-in base:: racket/base)
          json)
 
