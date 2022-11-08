@@ -22,6 +22,7 @@
          Maybe/c
          maybe?
          maybe-map
+         maybe->
          maybe-then
          maybe-filter
          maybe-replace
