@@ -6,11 +6,13 @@
          (only-in json
                   json-null)
          syntax/parse/define
+         racket/stxparam
 
          (for-syntax racket/base))
 
 (require "../internal/curry.rkt"
          "../internal/error.rkt"
+         "../internal/keyword.rkt"
          "./eq.rkt"
          "./json.rkt")
 
@@ -32,7 +34,9 @@
          maybe-else
          ->maybe
          maybe-unwrap
-         maybe-catch)
+         maybe-catch
+
+         maybe/do)
 
 (struct Nothing []
   #:transparent
@@ -180,7 +184,7 @@
        (*maybe/do* es ...))]
 
   ; 副作用
-  [(_ ((~literal !) es:expr ...+) rs:expr ... +)
+  [(_ ((~literal !) es:expr ...) rs:expr ...+)
    #'(begin
        es ...
        (*maybe/do* rs ...))]
@@ -194,9 +198,16 @@
   ; 最后一条语句
   [(_ e:expr) #'(*->maybe* e)])
 
-(module+ test
-  (*maybe/do*
-   (a <- nothing)
-   (let b = a)
-   (displayln a)
-   (displayln b)))
+(define-syntax-rule (maybe/do body ...)
+  (call/cc
+   (λ (k)
+     (define (f . xs)
+       (define value
+         (match xs
+           [(list) nothing]
+           [(list a) (if (maybe? a) a (Just a))]
+           [_ (raise-syntax-error #f "break最多接受一个值！")]))
+       (k value))
+     (syntax-parameterize
+         ([break (make-rename-transformer #'f)])
+       (*maybe/do* body ...)))))
