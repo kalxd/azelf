@@ -16,3 +16,15 @@
 ((const 1) 2)
 ]
 }
+
+@defproc[(flip [f (-> a b c)]) (-> b a c)]{
+反转函数入参顺序，某些场景还是挺有用。
+
+@examples[
+#:eval sb
+(define f (flip string))
+
+(string #\A #\B)
+(f #\A #\B)
+]
+}

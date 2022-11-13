@@ -1,19 +1,24 @@
 #lang racket/base
 
-(require racket/contract
-         (only-in racket/function
-                  identity)
-         "../internal/curry.rkt")
+(require (only-in racket/function
+                  identity
+                  curry))
+(require "../internal/curry.rkt")
 
 (provide const
-         identity)
+         identity
+         flip)
 
 (define/curry (const a b)
   a)
 
-(module+ test
-  (require rackunit)
+(define (flip f)
+  (define (flipped b a)
+    (f a b))
+  (curry flipped))
 
-  (test-case "<function>: const"
-    (check-equal? 1 (const 1 2))
-    (check-equal? 1 ((const 1) 2))))
+
+(module+ test
+  (define/curry (f a b)
+    (- a b))
+  (define g (flip f)))
