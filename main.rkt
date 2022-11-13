@@ -18,8 +18,8 @@
              "./internal/curry.rkt"
              "./internal/match.rkt"
 
+             "./prelude/function.rkt"
              "./prelude/eq.rkt"
              "./prelude/json.rkt"
-             "./prelude/maybe.rkt"
-             "./prelude/function.rkt"
-             "./prelude/list.rkt")
+             "./prelude/functor.rkt"
+             "./prelude/maybe.rkt")
