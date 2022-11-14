@@ -33,7 +33,8 @@
                (define/contract (functor:map f ma)
                  (-> (-> any/c any/c) hash? hash?)
                  (for/hash ([(k v) ma])
-                   (values k (f v))))]))
+                   (values k (f v))))]
+              [procedure? (define functor:map compose)]))
 
 (define map (curry/n 2 functor:map))
 (define <$> map)
