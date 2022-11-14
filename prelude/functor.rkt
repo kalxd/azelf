@@ -7,7 +7,7 @@
          (only-in racket/vector
                   vector-map))
 (require "../internal/curry.rkt"
-         "./function.rkt")
+         "../internal/function.rkt")
 
 (provide gen:Functor
          Functor?

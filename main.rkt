@@ -17,8 +17,8 @@
              "./internal/pipeline.rkt"
              "./internal/curry.rkt"
              "./internal/match.rkt"
+             "./internal/function.rkt"
 
-             "./prelude/function.rkt"
              "./prelude/eq.rkt"
              "./prelude/json.rkt"
              "./prelude/functor.rkt"

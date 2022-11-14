@@ -3,7 +3,7 @@
 (require (only-in racket/function
                   identity
                   curry))
-(require "../internal/curry.rkt")
+(require "./curry.rkt")
 
 (provide const
          identity
