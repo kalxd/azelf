@@ -22,4 +22,5 @@
              "./prelude/eq.rkt"
              "./prelude/json.rkt"
              "./prelude/functor.rkt"
+             "./prelude/applicative.rkt"
              "./prelude/maybe.rkt")
