@@ -23,4 +23,5 @@
              "./prelude/json.rkt"
              "./prelude/functor.rkt"
              "./prelude/applicative.rkt"
+             "./prelude/monad.rkt"
              "./prelude/maybe.rkt")
