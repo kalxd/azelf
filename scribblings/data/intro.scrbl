@@ -4,6 +4,7 @@
 
 @include-section["function.scrbl"]
 @include-section["eq.scrbl"]
+@include-section["ord.scrbl"]
 @include-section["functor.scrbl"]
 @include-section["applicative.scrbl"]
 @include-section["monad.scrbl"]

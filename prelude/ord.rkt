@@ -110,9 +110,13 @@
   (/= 'lt (compare a b)))
 
 (define/curry/contract (min a b)
-  (-> Ord? Ord? boolean?)
+  (->i ([a Ord?]
+        [b Ord?])
+       [result (a b) (or/c a b)])
   (if (< a b) a b))
 
 (define/curry/contract (max a b)
-  (-> Ord? Ord? boolean?)
+  (->i ([a Ord?]
+        [b Ord?])
+       [result (a b) (or/c a b)])
   (if (> a b) a b))
