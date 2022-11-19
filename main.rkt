@@ -20,6 +20,7 @@
              "./internal/function.rkt"
 
              "./prelude/eq.rkt"
+             "./prelude/ord.rkt"
              "./prelude/json.rkt"
              "./prelude/functor.rkt"
              "./prelude/applicative.rkt"

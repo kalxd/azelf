@@ -22,6 +22,7 @@
               [char? (define eq:= char=?)]
               [bytes? (define eq:= bytes=?)]
               [symbol? (define eq:= base::eq?)]
+              [boolean? (define eq:= equal?)]
               [pair?
                (define/generic self/= eq:=)
                (define/match/contract (eq:= xs ys)
