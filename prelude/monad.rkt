@@ -1,10 +1,14 @@
 #lang racket/base
 
 (require racket/generic
-         racket/contract)
+         racket/contract
+
+         syntax/parse/define
+         (for-syntax racket/base))
 
 (require "../internal/curry.rkt"
-         "../internal/function.rkt")
+         "../internal/function.rkt"
+         "../internal/keyword.rkt")
 
 (provide gen:Monad
          Monad?
@@ -12,7 +16,8 @@
          >>=
          =<<
          >>
-         <<)
+         <<
+         monad/do)
 
 (define-generics Monad
   (monad:bind Monad f)
@@ -29,7 +34,7 @@
                  (-> procedure? procedure? procedure?)
                  (λ (r)
                    (define a (f r))
-                   (g a r)))]))
+                   ((g a) r)))]))
 
 (define >>= (curry/n 2 monad:bind))
 (define =<< (flip >>=))
@@ -39,3 +44,31 @@
   (>>= ma (const mb)))
 
 (define << (flip >>))
+
+(define-syntax-parser *monad/do*
+  ; a <- ma绑定语法
+  [(_ (var:id (~literal <-) e:expr) es:expr ...+)
+   #'(>>= e
+          (λ (var)
+            (*monad/do* es ...)))]
+
+  ; let a = b普通赋值
+  [(_ ((~literal let) var:id (~literal =) e:expr) es:expr ...+)
+   #'(let ([var e])
+       (*monad/do* es ...))]
+
+  ; 副作用
+  [(_ ((~literal !) es:expr ...+) rs:expr ...+)
+   #'(begin
+       es ...
+       (*monad/do* rs ...))]
+
+  ; 最后几句
+  [(_ e1:expr e2:expr es:expr ...)
+   #'(*monad/do* (>> e1 e2) es ...)]
+  ; 最后一句
+  [(_ e:expr) #'e])
+
+(define-syntax-rule (monad/do body ...)
+  (break-wrap
+   (*monad/do* body ...)))
