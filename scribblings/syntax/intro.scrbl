@@ -9,4 +9,3 @@
 @include-section["match.scrbl"]
 @include-section["pipeline.scrbl"]
 @include-section["curry.scrbl"]
-@include-section["maybe-do.scrbl"]
