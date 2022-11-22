@@ -1,14 +1,10 @@
-#lang s-exp "./internal/reader.rkt"
+#lang s-exp "../internal/reader.rkt"
 
-(require "../main.rkt")
+(require "../../main.rkt")
 
 (define maybe-ts
   (test-suite
-   "data : maybe"
-
-   (test-case "<maybe>: maybe-map"
-    (check-equal? (Just 2) (maybe-map add1 (Just 1)))
-    (check-equal? nothing ((maybe-map add1) nothing)))
+   "Maybe"
 
    (test-case "<maybe>: maybe-unwrap"
     (check-equal? 1 (maybe-> 2 (Just 1)))

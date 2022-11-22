@@ -25,7 +25,6 @@
          Just?
          Maybe/c
          maybe?
-         maybe-map
          maybe->
          maybe-then
          maybe-filter
@@ -105,14 +104,6 @@
   (-> any/c boolean?)
   (or (Just? a)
       (Nothing? a)))
-
-(define/curry/contract (maybe-map f a)
-  (-> (-> any/c any/c)
-      (Maybe/c any/c)
-      (Maybe/c any/c))
-  (match a
-    [(Just a) (Just (f a))]
-    [_ a]))
 
 (define/curry (maybe-> b a)
   (match a
