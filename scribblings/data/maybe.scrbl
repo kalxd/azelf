@@ -44,32 +44,6 @@ Maybe构造器。
 (Just #f)
 (->maybe #t)
 ]
-
-}
-
-@defproc[(maybe-map [f (-> any/c any/c)] [a (Maybe/c any/c)]) (Maybe/c any/c)]{
-Functor映射。
-
-@examples[
-#:eval sb
-
-(maybe-map add1 (Just 1))
-(maybe-map add1 nothing)
-]
-}
-
-@defproc[(maybe-then [f (-> any/c (Maybe/c any/c))] [a (Maybe/c any/c)]) (Maybe/c any/c)]{
-Monad的binding。
-
-@examples[
-#:eval sb
-
-(define (f x)
-  (Just (add1 x)))
-
-(maybe-then f (Just 1))
-(maybe-then f nothing)
-]
 }
 
 @defproc[(maybe-filter [f (-> a boolean?)] [ma (Maybe/c a)]) (Maybe/c a)]{
@@ -84,17 +58,6 @@ Monad的binding。
 	(> (length xs) 5))
 (maybe-filter gt (Just (list 1 2 3)))
 (maybe-filter gt (Just (list 1 2 3 4 5 6)))
-]
-}
-
-@defproc[(maybe-replace [x any/c] [ma (Maybe/c any/c)]) (Maybe/c)]{
-替换@racket[Just]的值，遇到@racket[nothing]则不变。
-
-@examples[
-#:eval sb
-(maybe-replace 1 (Just 2))
-(maybe-replace "hello" (Just 1))
-(maybe-replace "hello" nothing)
 ]
 }
 
