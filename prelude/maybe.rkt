@@ -14,6 +14,7 @@
          "../internal/error.rkt"
          "../internal/keyword.rkt"
          "./eq.rkt"
+         "./ord.rkt"
          "./json.rkt")
 
 (provide Nothing
@@ -46,6 +47,11 @@
      [((Nothing) (Nothing)) #t]
      [(_ _) #f])]
 
+  #:methods gen:Ord
+  [(define/match (ord:compare a b)
+     [((Nothing) (Nothing)) 'eq]
+     [((Nothing) _) 'lt])]
+
   #:methods gen:ToJSON
   [(define (->json self)
      (json-null))]
@@ -62,6 +68,12 @@
    (define/match (eq:= a b)
      [((Just a) (Just b)) (self/= a b)]
      [(_ _) #f])]
+
+  #:methods gen:Ord
+  [(define/generic self/compare ord:compare)
+   (define/match (ord:compare a b)
+     [((Just a) (Just b)) (self/compare a b)]
+     [(_ _) 'gt])]
 
   #:methods gen:ToJSON
   [(define/generic self/->json ->json)

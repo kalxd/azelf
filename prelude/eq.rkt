@@ -23,12 +23,6 @@
               [bytes? (define eq:= bytes=?)]
               [symbol? (define eq:= base::eq?)]
               [boolean? (define eq:= equal?)]
-              [pair?
-               (define/generic self/= eq:=)
-               (define/match/contract (eq:= xs ys)
-                 (-> pair? pair? boolean?)
-                 [((cons a b) (cons x y))
-                  (and (self/= a x) (self/= b y))])]
               [list?
                (define/generic self/= eq:=)
                (define/contract (eq:= xs ys)

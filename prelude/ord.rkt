@@ -50,15 +50,6 @@
     (define/contract (ord:compare a b)
       (-> bytes? bytes? Ordering)
       ((generic-compare bytes=? bytes>?) a b))]
-   [pair?
-    (define/generic self/compare ord:compare)
-    (define/match/contract (ord:compare a b)
-      (-> pair? pair? Ordering)
-      [((cons a b) (cons x y))
-       (let ([ordering (self/compare a x)])
-         (if (= 'eq ordering)
-             (self/compare b y)
-             ordering))])]
    [list?
     (define/generic self/compare ord:compare)
     (define/match/contract (ord:compare xs ys)
