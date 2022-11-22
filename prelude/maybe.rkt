@@ -16,6 +16,7 @@
          "./eq.rkt"
          "./ord.rkt"
          "./functor.rkt"
+         "./applicative.rkt"
          "./json.rkt")
 
 (provide Nothing
@@ -59,6 +60,10 @@
   [(define (functor:map f a)
      a)]
 
+  #:methods gen:Applicative
+  [(define (applicative:ap f ma)
+     ma)]
+
   #:property prop:sequence
   (λ (self)
     (in-list '())))
@@ -86,6 +91,11 @@
   #:methods gen:Functor
   [(define/match (functor:map f a)
      [(_ (Just a)) (Just (f a))])]
+
+  #:methods gen:Applicative
+  [(define/match (applicative:ap f ma)
+     [((Just f) (Just a)) (Just (f a))]
+     [((Nothing) _) nothing])]
 
   #:property prop:sequence
   (match-lambda
