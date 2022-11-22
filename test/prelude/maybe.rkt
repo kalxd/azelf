@@ -21,11 +21,6 @@
      (check-equal? nothing (maybe-filter odd? (Just 2)))
      (check-equal? nothing (maybe-filter even? nothing)))
 
-   (test-case "<maybe>: maybe-replace"
-    (check-equal? (Just 1) (maybe-replace 1 (Just "1")))
-    (check-equal? (Just 1) (maybe-replace 1 (Just #f)))
-    (check-equal? nothing (maybe-replace 1 nothing)))
-
    (test-case "<maybe>: maybe-and"
     (check-pred Nothing? (maybe-and (Just 1) nothing))
     (check-pred Nothing? (maybe-and nothing (Just "hello")))

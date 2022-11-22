@@ -28,7 +28,6 @@
          maybe->
          maybe-then
          maybe-filter
-         maybe-replace
          maybe-and
          maybe-alt
          maybe-or
@@ -127,12 +126,6 @@
         (Just a)
         nothing))
   (maybe-then g ma))
-
-(define/curry/contract (maybe-replace a ma)
-  (-> any/c (Maybe/c any/c) (Maybe/c any/c))
-  (match ma
-    [(Just _) (Just a)]
-    [_ ma]))
 
 (define/curry/contract (maybe-and ma mb)
   (-> (Maybe/c any/c) (Maybe/c any/c) (Maybe/c any/c))
