@@ -15,6 +15,7 @@
          "../internal/keyword.rkt"
          "./eq.rkt"
          "./ord.rkt"
+         "./functor.rkt"
          "./json.rkt")
 
 (provide Nothing
@@ -56,6 +57,10 @@
   [(define (->json self)
      (json-null))]
 
+  #:methods gen:Functor
+  [(define (functor:map f a)
+     a)]
+
   #:property prop:sequence
   (λ (self)
     (in-list '())))
@@ -79,6 +84,10 @@
   [(define/generic self/->json ->json)
    (define/match (->json self)
      [((Just a)) (self/->json a)])]
+
+  #:methods gen:Functor
+  [(define/match (functor:map f a)
+     [(_ (Just a)) (Just (f a))])]
 
   #:property prop:sequence
   (match-lambda
