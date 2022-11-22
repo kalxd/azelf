@@ -17,6 +17,7 @@
          "./ord.rkt"
          "./functor.rkt"
          "./applicative.rkt"
+         "./monad.rkt"
          "./json.rkt")
 
 (provide Nothing
@@ -27,7 +28,6 @@
          Maybe/c
          maybe?
          maybe->
-         maybe-then
          maybe-filter
          maybe-and
          maybe-alt
@@ -64,6 +64,10 @@
   [(define (applicative:ap f ma)
      ma)]
 
+  #:methods gen:Monad
+  [(define (monad:bind ma f)
+     ma)]
+
   #:property prop:sequence
   (λ (self)
     (in-list '())))
@@ -97,6 +101,10 @@
      [((Just f) (Just a)) (Just (f a))]
      [((Nothing) _) nothing])]
 
+  #:methods gen:Monad
+  [(define/match (monad:bind ma f)
+     [((Just a) _) (f a)])]
+
   #:property prop:sequence
   (match-lambda
     [(Just a) a]))
@@ -119,14 +127,6 @@
     [(Just a) a]
     [_ b]))
 
-(define/curry/contract (maybe-then f a)
-  (-> (-> any/c (Maybe/c any/c))
-      (Maybe/c any/c)
-      (Maybe/c any/c))
-  (match a
-    [(Just a) (f a)]
-    [_ a]))
-
 (define/curry/contract (maybe-filter f ma)
   (-> (-> any/c boolean?)
       (Maybe/c any/c)
@@ -135,7 +135,7 @@
     (if (f a)
         (Just a)
         nothing))
-  (maybe-then g ma))
+  (=<< g ma))
 
 (define/curry/contract (maybe-and ma mb)
   (-> (Maybe/c any/c) (Maybe/c any/c) (Maybe/c any/c))

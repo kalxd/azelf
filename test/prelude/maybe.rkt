@@ -6,16 +6,6 @@
   (test-suite
    "Maybe"
 
-   (test-case "<maybe>: maybe-unwrap"
-    (check-equal? 1 (maybe-> 2 (Just 1)))
-    (check-equal? 2 (maybe-> 2 nothing)))
-
-   (test-case "<maybe>: maybe-then"
-    (define (f x)
-      (Just (add1 x)))
-    (check-equal? (Just 2) (maybe-then f (Just 1)))
-    (check-equal? nothing (maybe-then f nothing)))
-
    (test-case "<maybe>: maybe-filter"
      (check-equal? (Just 2) (maybe-filter even? (Just 2)))
      (check-equal? nothing (maybe-filter odd? (Just 2)))
