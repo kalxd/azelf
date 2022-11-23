@@ -10,5 +10,3 @@
 @include-section["monad.scrbl"]
 @include-section["json.scrbl"]
 @include-section["maybe.scrbl"]
-@; @include-section["list.scrbl"]
-
