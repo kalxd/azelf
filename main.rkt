@@ -25,4 +25,5 @@
              "./prelude/functor.rkt"
              "./prelude/applicative.rkt"
              "./prelude/monad.rkt"
-             "./prelude/maybe.rkt")
+             "./prelude/maybe.rkt"
+             "./prelude/array.rkt")
