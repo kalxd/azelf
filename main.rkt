@@ -19,11 +19,11 @@
              "./internal/match.rkt"
              "./internal/function.rkt"
 
-             "./prelude/eq.rkt"
-             "./prelude/ord.rkt"
-             "./prelude/json.rkt"
-             "./prelude/functor.rkt"
-             "./prelude/applicative.rkt"
-             "./prelude/monad.rkt"
-             "./prelude/maybe.rkt"
-             "./prelude/array.rkt")
+             "./type/eq.rkt"
+             "./type/ord.rkt"
+             "./type/json.rkt"
+             "./type/functor.rkt"
+             "./type/applicative.rkt"
+             "./type/monad.rkt"
+             "./type/maybe.rkt"
+             "./type/array.rkt")
