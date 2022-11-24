@@ -3,8 +3,10 @@
 (require racket/contract
          racket/generic
          racket/match
+         racket/struct
 
-         (prefix-in base:: racket/base))
+         (prefix-in base:: racket/base)
+         (for-syntax racket/base))
 
 (require "../internal/match.rkt")
 
@@ -19,64 +21,90 @@
          Array?
          Array/c
 
+         array
          list->array
-         array->list)
+         mempty
+         singleton)
 
-(struct Array [ref]
+;;; 基本类型定义 ;;;
+(struct InnerArray [ref]
   #:transparent
+
+  #:methods gen:custom-write
+  [(define write-proc
+     (make-constructor-style-printer
+      (λ (_) 'Array)
+      (match-lambda
+        [(InnerArray xs) xs])))]
 
   #:methods gen:ToJSON
   [(define/generic self/->json ->json)
    (define/match1 ->json
-     [(Array xs) (self/->json xs)])]
+     [(InnerArray xs) (self/->json xs)])]
 
   #:methods gen:Eq
   [(define/generic self/= eq:=)
    (define/match (eq:= a b)
-     [((Array xs) (Array ys)) (self/= xs ys)])]
+     [((InnerArray xs) (InnerArray ys)) (self/= xs ys)])]
 
   #:methods gen:Ord
   [(define/generic self/compare ord:compare)
    (define/match (ord:compare a b)
-     [((Array xs) (Array ys)) (self/compare xs ys)])]
+     [((InnerArray xs) (InnerArray ys)) (self/compare xs ys)])]
 
   #:methods gen:Functor
   [(define/generic self/map functor:map)
    (define/match (functor:map f b)
-     [(_ (Array ys)) (Array (self/map f ys))])]
+     [(_ (InnerArray ys)) (InnerArray (self/map f ys))])]
 
   #:methods gen:Applicative
   [(define/generic self/ap applicative:ap)
    (define/match (applicative:ap a b)
-     [((Array xs) (Array ys)) (Array (self/ap xs ys))])]
+     [((InnerArray xs) (InnerArray ys)) (InnerArray (self/ap xs ys))])]
 
   #:methods gen:Monad
   [(define/generic self/bind monad:bind)
    (define/match (monad:bind a f)
-     [((Array xs) _)
+     [((InnerArray xs) _)
       (base::foldl (λ (x acc)
-                     (match-define (Array acc-) acc)
-                     (match-define (Array ys) (f x))
-                     (Array (append acc- ys)))
-                   (Array (list))
+                     (match-define (InnerArray acc-) acc)
+                     (match-define (InnerArray ys) (f x))
+                     (InnerArray (base::append acc- ys)))
+                   (InnerArray (list))
                    xs)])])
 
+(define Array? InnerArray?)
+
 (define (Array/c a)
-  (struct/c Array a))
+  (struct/c InnerArray a))
+
+(define-match-expander Array
+  (λ (stx)
+    (syntax-case stx ()
+      [(_ pat ...)
+       #'(InnerArray (list pat ...))])))
+;;; end ;;;
+
+;;; 构建 ;;;
+(define (array . xs)
+  (InnerArray (apply list xs)))
 
 (define/contract list->array
   (-> list? Array?)
-  Array)
-
-(define/match1/contract array->list
-  (-> Array? list?)
-  [(Array xs) xs])
-
-(define/contract singleton
-  (-> any/c (Array/c any/c))
-  (compose Array
-           list))
+  InnerArray)
 
 (define/contract mempty
   (Array/c any/c)
-  (Array (list)))
+  (InnerArray (list)))
+
+(define/contract singleton
+  (-> any/c (Array/c any/c))
+  (compose InnerArray
+           list))
+;;; end ;;;
+
+;;; 解构 ;;;
+(define/match1/contract array->list
+  (-> Array? list?)
+  [(InnerArray xs) xs])
+;;; end ;;;
