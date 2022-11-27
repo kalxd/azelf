@@ -12,25 +12,39 @@
 
 (provide (all-defined-out))
 
+(module inner racket/base
+  (provide (all-defined-out)))
+
+(require (prefix-in inner:: 'inner))
+
 ;;; 合并 ;;;
 (define/curry/contract (++ xs ys)
   (-> Array? Array? Array?)
   (match-define (Array as ...) xs)
   (match-define (Array bs ...) ys)
-  (array (base::append as bs)))
+  (list->array (base::append as bs)))
 
 (define/curry/contract (: x xs)
   (-> any/c Array? Array?)
-  (match xs
-    [(Array ls ...) (apply array (cons x ls))]))
+  (++ (array x) xs))
 
 (define/curry/contract (<:> x xs)
   (-> any/c Array? Array?)
-  (++ xs (singleton x)))
+  (++ xs (array x)))
+;;; end ;;;
 
-(define/contract (list->array xs)
-  (-> list? Array?)
-  (apply array xs))
+(define/curry/contract (repeat n a)
+  (-> (or/c zero? positive?)
+      any/c
+      Array?)
+  (list->array
+   (for/list ([_ (in-range n)]) a)))
+
+;;; 构造 ;;;
+(define/curry/contract (range start end)
+  (-> number? number? Array?)
+  (list->array
+   (for/list ([x (in-range start end)]) x)))
 
 (define/contract empty
   (Array/c any/c)
@@ -42,7 +56,4 @@
 ;;; end ;;;
 
 ;;; 解构 ;;;
-(define/match1/contract array->list
-  (-> Array? list?)
-  [(Array xs ...) xs])
 ;;; end ;;;

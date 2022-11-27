@@ -26,4 +26,6 @@
              "./type/applicative.rkt"
              "./type/monad.rkt"
              "./type/maybe.rkt"
-             "./type/array.rkt")
+             "./type/array.rkt"
+
+             "./prelude/array.rkt")

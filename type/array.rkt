@@ -20,7 +20,9 @@
 (provide Array
          Array?
          Array/c
-         array)
+         array
+         list->array
+         array->list)
 
 (struct InnerArray [ref]
   #:transparent
@@ -79,5 +81,10 @@
       [(_ pat ...)
        #'(InnerArray (list pat ...))])))
 
+(define list->array InnerArray)
+
 (define (array . xs)
   (InnerArray (apply list xs)))
+
+(define/match1 array->list
+  [(InnerArray xs) xs])
