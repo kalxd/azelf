@@ -128,3 +128,17 @@
 (<:> 1 (array 2 3))
 ]
 }
+
+@section[#:tag "array-subarray"]{子列表操作}
+
+@defproc*[([(head [xs (Array/c a)]) (Maybe/c a)]
+           [(tail [xs (Array/c a)]) (Maybe/c a)])]{
+@examples[
+#:eval sb
+(head (array))
+(head (range 10 20))
+
+(tail (array))
+(tail (range 10 20))
+]
+}

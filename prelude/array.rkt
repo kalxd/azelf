@@ -3,12 +3,15 @@
 (require racket/match
          racket/contract
 
-         (prefix-in base:: racket/base))
+         (prefix-in base:: racket/base)
+         (prefix-in list:: racket/list))
 
 (require "../type/array.rkt"
          "../type/maybe.rkt"
          "../internal/curry.rkt"
-         "../internal/match.rkt")
+         "../internal/match.rkt"
+         "../internal/pipeline.rkt"
+         "../internal/keyword.rkt")
 
 (provide (all-defined-out))
 
@@ -53,6 +56,26 @@
 (define/contract (singleton x)
   (-> any/c (Array/c any/c))
   (array x))
+;;; end ;;;
+
+;;; 子列表 ;;;
+(define/match1/contract head
+  (-> Array? (Maybe/c any/c))
+  [(Array) nothing]
+  [(Array a xs ...) (Just a)])
+
+(define/match1/contract tail
+  (-> Array? (Maybe/c any/c))
+  [(Array) nothing]
+  [_ (->> (array->list it)
+          list::last
+          Just)])
+
+(define/match1/contract uncons
+  (-> Array? (Maybe/c (cons/c any/c any/c)))
+  [(Array) nothing]
+  [(Array a xs ...)
+   (Just (cons a xs))])
 ;;; end ;;;
 
 ;;; 解构 ;;;
