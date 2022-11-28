@@ -129,6 +129,28 @@
 ]
 }
 
+@section[#:tag "array-property"]{列表属性}
+
+@defproc[(length [xs (Array/c any/c)]) exact-nonnegative-integer?]{
+数组长度。
+
+@examples[
+#:eval sb
+(length (array))
+(length (array 1 2 3))
+]
+}
+
+@defproc[(empty? [xs (Array/c any/c)]) boolean?]{
+是否是空数组。
+
+@examples[
+#:eval sb
+(empty? (array))
+(empty? (array 1))
+]
+}
+
 @section[#:tag "array-subarray"]{子列表操作}
 
 @defproc*[([(head [xs (Array/c a)]) (Maybe/c a)]
@@ -140,5 +162,25 @@
 
 (tail (array))
 (tail (range 10 20))
+]
+}
+
+@defproc*[([(take-while [f (-> a boolean?)] [xs (Array/c a)]) (Array/c a)]
+           [(drop-while [f (-> a boolean?)] [xs (Array/c a)]) (Array/c a)])]{
+@examples[
+#:eval sb
+(take-while even? (array 2 4 7 8 10))
+(drop-while even? (array 2 4 7 8 10))
+]
+}
+
+@defproc*[([(take [n exact-integer?] [xs (Array/c a)]) (Array/c a)]
+           [(take-right [n exact-integer?] [xs (Array/c a)]) (Array/c a)]
+           [(drop [n exact-integer?] [xs (Array/c a)]) (Array/c a)]
+           [(drop-right [n exact-integer?] [xs (Array/c a)]) (Array/c a)])]{
+@examples[
+#:eval sb
+(take 10 (array 1 2 3 4))
+(drop -1 (array 1 2 3 4))
 ]
 }

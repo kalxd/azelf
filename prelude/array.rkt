@@ -8,6 +8,7 @@
 
 (require "../type/array.rkt"
          "../type/maybe.rkt"
+         "../type/ord.rkt"
          "../internal/curry.rkt"
          "../internal/match.rkt"
          "../internal/pipeline.rkt"
@@ -58,6 +59,16 @@
   (array x))
 ;;; end ;;;
 
+;;; 基本属性 ;;;
+(define/match1/contract length
+  (-> Array? exact-nonnegative-integer?)
+  [(Array xs ...) (base::length xs)])
+
+(define/match1/contract empty?
+  (-> Array? boolean?)
+  [(Array xs ...) (list::empty? xs)])
+;;; end ;;;
+
 ;;; 子列表 ;;;
 (define/match1/contract head
   (-> Array? (Maybe/c any/c))
@@ -71,11 +82,61 @@
           list::last
           Just)])
 
-(define/match1/contract uncons
-  (-> Array? (Maybe/c (cons/c any/c any/c)))
-  [(Array) nothing]
-  [(Array a xs ...)
-   (Just (cons a xs))])
+(define/curry/contract (take-while f xs)
+  (-> (-> any/c boolean?)
+      Array?
+      Array?)
+  (match xs
+    [(Array xs ...)
+     (list->array (list::takef xs f))]))
+
+(define/curry/contract (take n xs)
+  (-> exact-integer?
+      Array?
+      Array?)
+  (if (>= 0 n)
+      empty
+      (match-let ([(Array xs ...) xs]
+                  [m (min (length xs) n)])
+        (list->array (list::take xs m)))))
+
+(define/curry/contract (take-right n xs)
+  (-> exact-integer?
+      Array?
+      Array?)
+  (if (>= 0 n)
+      empty
+      (match-let ([(Array xs ...) xs]
+                  [m (min (length xs) n)])
+        (list->array (list::take-right xs m)))))
+
+(define/curry/contract (drop-while f xs)
+  (-> (-> any/c boolean?)
+      Array?
+      Array?)
+  (match xs
+    [(Array xs ...)
+     (list->array (list::dropf xs f))]))
+
+(define/curry/contract (drop n xs)
+  (-> exact-integer?
+      Array?
+      Array?)
+  (if (>= 0 n)
+      empty
+      (match-let ([(Array xs ...) xs]
+                  [m (min (length xs) n)])
+        (list->array (list::drop xs m)))))
+
+(define/curry/contract (drop-right n xs)
+  (-> exact-integer?
+      Array?
+      Array?)
+  (if (>= 0 n)
+      empty
+      (match-let ([(Array xs ...) xs]
+                  [m (min (length xs) n)])
+        (list->array (list::drop-right xs m)))))
 ;;; end ;;;
 
 ;;; 解构 ;;;
