@@ -68,7 +68,11 @@
                      (match-define (InnerArray ys) (f x))
                      (InnerArray (base::append acc- ys)))
                    (InnerArray (list))
-                   xs)])])
+                   xs)])]
+
+  #:property prop:sequence
+  (match-lambda
+    [(InnerArray xs) xs]))
 
 (define Array? InnerArray?)
 
