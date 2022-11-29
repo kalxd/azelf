@@ -184,3 +184,16 @@
 (drop -1 (array 1 2 3 4))
 ]
 }
+
+@section[#:tag "array-syntax"]{数组特有语法}
+
+@defform*[((for/array (条件 ...) (代码体 ...))
+           (for*/array (条件 ...) (代码体 ...)))]{
+类似@racket[for/list]、@racket[for*/list]，结果产生的是@racket[array]。
+
+@examples[
+#:eval sb
+(for/array ([n (in-range 1 10)]) (+ n n))
+(for*/array ([n (in-range 1 10)] [m (array "hello" "world")]) (array n m))
+]
+}

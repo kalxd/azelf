@@ -4,7 +4,10 @@
          racket/contract
 
          (prefix-in base:: racket/base)
-         (prefix-in list:: racket/list))
+         (prefix-in list:: racket/list)
+
+         (for-syntax racket/base
+                     syntax/for-body))
 
 (require "../type/array.rkt"
          "../type/maybe.rkt"
@@ -140,4 +143,34 @@
 ;;; end ;;;
 
 ;;; 解构 ;;;
+;;; end ;;;
+
+;;; 一些宏、语法 ;;;
+(define-syntax (for/array stx)
+  (syntax-case stx ()
+    [(_ clauses body ... tail-expr)
+     (with-syntax ([original stx]
+                   [((pre-body ...) (post-body ...))
+                    (split-for-body stx #'(body ... tail-expr))])
+       #'(for/fold/derived original
+           ([acc empty])
+           clauses
+           pre-body ...
+           (let ([x post-body ...])
+             (<:> x acc))))]))
+
+(define-syntax (for*/array stx)
+  (syntax-case stx ()
+    [(_ clauses body ... tail-expr)
+     (with-syntax ([original stx]
+                   [((pre-body ...) (post-body ...))
+                    (split-for-body stx #'(body ... tail-expr))])
+       #'(let-values ([(acc k)
+                       (for*/fold/derived original
+                         ([acc empty] [k empty])
+                         clauses
+                         pre-body ...
+                         (let ([xs post-body ...])
+                           (values (++ acc xs) xs)))])
+           acc))]))
 ;;; end ;;;
