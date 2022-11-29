@@ -185,6 +185,17 @@
 ]
 }
 
+@defproc*[([(filter [f (-> a boolean?)] [xs (Array/c a)]) (Array/c a)]
+           [(reject [f (-> a boolean?)] [xs (Array/c a)]) (Array/c a)])]{
+过滤列表。
+
+@examples[
+#:eval sb
+(filter even? (array 1 2 3 4))
+(reject even? (array 1 2 3 4))
+]
+}
+
 @section[#:tag "array-syntax"]{数组特有语法}
 
 @defform*[((for/array (条件 ...) (代码体 ...))

@@ -40,6 +40,7 @@
   (++ xs (array x)))
 ;;; end ;;;
 
+;;; 构造 ;;;
 (define/curry/contract (repeat n a)
   (-> (or/c zero? positive?)
       any/c
@@ -47,7 +48,6 @@
   (list->array
    (for/list ([_ (in-range n)]) a)))
 
-;;; 构造 ;;;
 (define/curry/contract (range start end)
   (-> number? number? Array?)
   (list->array
@@ -140,6 +140,22 @@
       (match-let ([(Array xs ...) xs]
                   [m (min (length xs) n)])
         (list->array (list::drop-right xs m)))))
+
+(define/curry/contract (filter f xs)
+  (-> (-> any/c boolean?)
+      Array?
+      Array?)
+  (match xs
+    [(Array xs ...)
+     (list->array (base::filter f xs))]))
+
+(define/curry/contract (reject f xs)
+  (-> (-> any/c boolean?)
+      Array?
+      Array?)
+  (->> (array->list xs)
+       (list::filter-not f it)
+       list->array))
 ;;; end ;;;
 
 ;;; 解构 ;;;
