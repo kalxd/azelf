@@ -11,6 +11,7 @@
 
 (require "../type/array.rkt"
          "../type/maybe.rkt"
+         "../type/eq.rkt"
          "../type/ord.rkt"
          "../internal/curry.rkt"
          "../internal/match.rkt"
@@ -156,6 +157,21 @@
   (->> (array->list xs)
        (list::filter-not f it)
        list->array))
+;;; end ;;;
+
+;;; 查找 ;;;
+(define/curry/contract (find f xs)
+  (-> (-> any/c boolean?)
+      Array?
+      (Maybe/c any/c))
+  (match xs
+    [(Array xs ...)
+     (->maybe (base::findf f xs))]))
+
+(define/curry/contract (member? x xs)
+  (-> Eq? (Array/c Eq?) boolean?)
+  (->> (find (= x) xs)
+       Just?))
 ;;; end ;;;
 
 ;;; 解构 ;;;

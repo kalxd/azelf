@@ -196,6 +196,25 @@
 ]
 }
 
+@section[#:tag "array-search"]{数组查找}
+
+@defproc[(find [f (-> a boolean?)] [xs (Array/c a)]) (Maybe/c a)]{
+@examples[
+#:eval sb
+(find (= 1) (array 3 1 2))
+(find (= (Just 1)) (array nothing nothing (Just 2)))
+(find (= nothing) (array nothing nothing (Just 2)))
+]
+}
+
+@defproc[(member? [a Eq?] [xs (Array/c Eq?)]) (Maybe/c Eq?)]{
+@examples[
+#:eval sb
+(member? 1 (array))
+(member? 2 (array 1 2 3))
+]
+}
+
 @section[#:tag "array-syntax"]{数组特有语法}
 
 @defform*[((for/array (条件 ...) (代码体 ...))
