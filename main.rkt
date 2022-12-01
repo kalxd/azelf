@@ -28,4 +28,5 @@
              "./type/maybe.rkt"
              "./type/array.rkt"
 
+             "./prelude/maybe.rkt"
              "./prelude/array.rkt")
