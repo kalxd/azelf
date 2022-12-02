@@ -8,7 +8,6 @@
 
 (require "../internal/curry.rkt"
          "../internal/error.rkt"
-         "../internal/keyword.rkt"
          "./eq.rkt"
          "./ord.rkt"
          "./functor.rkt"

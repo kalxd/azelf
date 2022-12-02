@@ -4,7 +4,8 @@
 (require "../internal/pipeline.rkt"
          "../internal/keyword.rkt"
          "../internal/curry.rkt"
-         "../type/maybe.rkt")
+         "../type/maybe.rkt"
+         "../prelude/maybe.rkt")
 
 (require racket/contract
          racket/file

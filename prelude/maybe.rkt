@@ -2,8 +2,8 @@
 
 (require racket/contract
          racket/match
-         syntax/parse/define
          racket/stxparam
+         syntax/parse/define
          (for-syntax racket/base))
 
 (require "../type/maybe.rkt"
@@ -75,21 +75,21 @@
        [(Just var) (*maybe/do* es ...)])]
 
   ; let a = b 普通赋值语法
-  [(_ ((~literal let) var:id (~literal =) e:expr) es:expr ...)
+  [(_ ((~datum let) var:id (~datum =) e:expr) es:expr ...)
    #'(let ([var e])
        (*maybe/do* es ...))]
 
   ; 副作用
-  [(_ ((~literal !) es:expr ...) rs:expr ...+)
+  [(_ ((~datum !) es:expr ...) rs:expr ...+)
    #'(begin
        es ...
        (*maybe/do* rs ...))]
 
   ; 多条语句。
   [(_ e1:expr e2:expr ...+)
-   #'(begin
-       e1
-       (*maybe/do* e2 ...))]
+   #'(match (*->maybe* e1)
+       [(Nothing) nothing]
+       [_ (*maybe/do* e2 ...)])]
 
   ; 最后一条语句
   [(_ e:expr) #'(*->maybe* e)])
