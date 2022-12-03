@@ -175,6 +175,27 @@
 ;;; end ;;;
 
 ;;; 解构 ;;;
+(define/curry/contract (at i xs)
+  (-> exact-nonnegative-integer?
+      Array?
+      (Maybe/c any/c))
+  (match xs
+    [(Array) nothing]
+    [(Array xs ...)
+     (let ([xs-len (base::length xs)])
+       (if (>= i xs-len)
+           nothing
+           (->> (base::list-ref xs i)
+                ->maybe)))]))
+
+(define/curry/contract (index x xs)
+  (-> Eq?
+      (Array/c Eq?)
+      (Maybe/c exact-nonnegative-integer?))
+  (match xs
+    [(Array xs ...)
+     (->> (list::index-of xs x)
+          ->maybe)]))
 ;;; end ;;;
 
 ;;; 一些宏、语法 ;;;

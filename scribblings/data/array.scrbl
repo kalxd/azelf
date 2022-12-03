@@ -215,6 +215,27 @@
 ]
 }
 
+@section[#:tag "array-destruction"]{数组解构}
+
+@defproc[(at [i exact-nonnegative-integer?] [xs (Array/c a)]) (Maybe/c a)]{
+获取第@racket[i] - 1个元素。
+@examples[
+#:eval sb
+(at 0 empty)
+(at 10 (array 1 2 3))
+(at 1 (array 1 2 3))
+]
+}
+
+@defproc[(index [a Eq?] [xs (Array/c Eq?)]) (Maybe/c exact-nonnegative-integer?)]{
+查看元素在哪个位置。
+@examples[
+#:eval sb
+(index 'a empty)
+(index (Just "a") (array nothing (Just "b") (Just "a")))
+]
+}
+
 @section[#:tag "array-syntax"]{数组特有语法}
 
 @defform*[((for/array (条件 ...) (代码体 ...))
