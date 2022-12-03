@@ -27,6 +27,7 @@
              "./type/monad.rkt"
              "./type/maybe.rkt"
              "./type/array.rkt"
+             "./type/map.rkt"
 
              "./prelude/maybe.rkt"
              "./prelude/array.rkt")

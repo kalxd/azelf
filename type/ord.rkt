@@ -2,7 +2,8 @@
 
 (require racket/generic
          racket/contract
-         (prefix-in base:: racket/base))
+         (prefix-in base:: racket/base)
+         (prefix-in list:: racket/list))
 
 (require "./eq.rkt"
          "../internal/match.rkt"
@@ -78,8 +79,8 @@
     (define/generic self/compare ord:compare)
     (define/contract (ord:compare xs ys)
       (-> hash? hash? Ordering)
-      (define hxs (hash->list xs))
-      (define hys (hash->list ys))
+      (define hxs (list::flatten (hash->list xs)))
+      (define hys (list::flatten (hash->list ys)))
       (self/compare hxs hys))]))
 
 (define compare (curry/n 2 ord:compare))
