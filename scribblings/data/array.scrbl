@@ -215,6 +215,20 @@
 ]
 }
 
+@section[#:tag "array-transform"]{数组转换}
+
+@defproc[(reverse [xs (Array/c a)]) (Array/c a)]{
+反转数组。
+}
+
+@defproc[(partition [f (-> a boolean?)] [xs (Array/c a)]) (cons (Array/c a) (Array/c a))]{
+挑出两堆数组，左组满足@racket[f]条件，右组不足。
+}
+
+@defproc[(group-by [f (-> a a boolean?)] [xs (Array/c)]) (Array/c (Array/c a))]{
+按条件@racket[f]分组。
+}
+
 @section[#:tag "array-destruction"]{数组解构}
 
 @defproc[(at [i exact-nonnegative-integer?] [xs (Array/c a)]) (Maybe/c a)]{
