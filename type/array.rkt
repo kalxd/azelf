@@ -77,7 +77,7 @@
 (define Array? InnerArray?)
 
 (define (Array/c a)
-  (struct/c InnerArray a))
+  (struct/c InnerArray (listof a)))
 
 (define-match-expander Array
   (λ (stx)

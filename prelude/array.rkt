@@ -21,24 +21,55 @@
 (provide (all-defined-out))
 
 (module inner racket/base
-  (provide (all-defined-out)))
+  (require racket/match
+           "../type/array.rkt"
+           (prefix-in base:: racket/base)
+           (prefix-in list:: racket/list))
+  (provide (all-defined-out))
+
+  (define (++ xs ys)
+    (match-define (Array as ...) xs)
+    (match-define (Array bs ...) ys)
+    (list->array (base::append as bs)))
+
+  (define (: x xs)
+      (++ (array x) xs))
+
+  (define (<:> x xs)
+    (++ xs (array x)))
+
+  (define (partition f xs)
+    (match xs
+      [(Array xs ...)
+       (let-values ([(as bs) (list::partition f xs)])
+         (cons (list->array as)
+               (list->array bs)))]))
+
+  (define/match (group-by f xs acc)
+    [(_ (Array) _) acc]
+    [(_ (Array a ys ...) _)
+     (match-let ([(cons xs ys)
+                  (partition (λ (y)
+                               (f a y))
+                             (list->array ys))])
+       (group-by f
+                 ys
+                 (<:> (: a xs) acc)))]))
 
 (require (prefix-in inner:: 'inner))
 
 ;;; 合并 ;;;
 (define/curry/contract (++ xs ys)
   (-> Array? Array? Array?)
-  (match-define (Array as ...) xs)
-  (match-define (Array bs ...) ys)
-  (list->array (base::append as bs)))
+  (inner::++ xs ys))
 
 (define/curry/contract (: x xs)
   (-> any/c Array? Array?)
-  (++ (array x) xs))
+  (inner::: x xs))
 
 (define/curry/contract (<:> x xs)
   (-> any/c Array? Array?)
-  (++ xs (array x)))
+  (inner::<:> x xs))
 ;;; end ;;;
 
 ;;; 构造 ;;;
@@ -172,6 +203,26 @@
   (-> Eq? (Array/c Eq?) boolean?)
   (->> (find (= x) xs)
        Just?))
+;;; end ;;;
+
+;;; 转换 ;;;
+(define/match1/contract reverse
+  (-> Array? Array?)
+  [(Array xs ...)
+   (->> (base::reverse xs)
+        list->array)])
+
+(define/curry/contract (partition f xs)
+  (-> (-> any/c boolean?)
+      Array?
+      (cons/c Array? Array?))
+  (inner::partition f xs))
+
+(define/curry/contract (group-by f xs)
+  (-> (-> any/c any/c boolean?)
+      Array?
+      (Array/c Array?))
+  (inner::group-by f xs empty))
 ;;; end ;;;
 
 ;;; 解构 ;;;
