@@ -228,6 +228,19 @@
   (-> Array?
       (Array/c Array?))
   (group-by = xs))
+
+(define/curry/contract (update-at i x xs)
+  (-> exact-nonnegative-integer?
+      any/c
+      (Array/c any/c)
+      Array?)
+  (define len (length xs))
+  (if (>= i len)
+      xs
+      (match xs
+        [(Array xs ...)
+         (->> (list::list-set xs i x)
+              list->array)])))
 ;;; end ;;;
 
 ;;; 解构 ;;;

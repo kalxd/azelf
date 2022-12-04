@@ -230,6 +230,10 @@
 按条件@racket[f]分组。
 }
 
+@defproc[(update-at [i exact-nonnegative-integer?] [x a] [xs (Array/c a)]) (Array/c a)]{
+更新@racket[i]元素。
+}
+
 @section[#:tag "array-destruction"]{数组解构}
 
 @defproc[(at [i exact-nonnegative-integer?] [xs (Array/c a)]) (Maybe/c a)]{
