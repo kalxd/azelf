@@ -252,6 +252,24 @@
     [(Array xs ...)
      (->> (list::index-of xs x)
           ->maybe)]))
+
+(define/curry/contract (foldl f acc xs)
+  (-> (-> any/c any/c any/c)
+      any/c
+      (Array/c any/c)
+      any/c)
+  (match xs
+    [(Array xs ...)
+     (base::foldl f acc xs)]))
+
+(define/curry/contract (foldr f acc xs)
+  (-> (-> any/c any/c any/c)
+      any/c
+      (Array/c any/c)
+      any/c)
+  (match xs
+    [(Array xs ...)
+     (base::foldr f acc xs)]))
 ;;; end ;;;
 
 ;;; 一些宏、语法 ;;;

@@ -251,6 +251,10 @@
 ]
 }
 
+@defproc*[([(foldl [f (-> a b a)] [acc a] [xs (Array/c b)]) a]
+           [(foldr [f (-> b a a)] [acc a] [xs (Array/c b)]) a])]{
+}
+
 @section[#:tag "array-syntax"]{数组特有语法}
 
 @defform*[((for/array (条件 ...) (代码体 ...))
