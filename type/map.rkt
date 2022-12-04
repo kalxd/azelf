@@ -3,7 +3,9 @@
 (require racket/match
          racket/contract
          racket/generic
-         racket/struct)
+         racket/struct
+
+         (for-syntax racket/base))
 
 (require "./json.rkt"
          "./eq.rkt"
@@ -12,9 +14,12 @@
          "../internal/match.rkt")
 
 (provide Map?
+         Map/c
+         Map
          list->map
-         ->map
-         map->list)
+         hashmap
+         map->list
+         map->hash)
 
 (struct InnerMap [ref]
   #:transparent
@@ -55,14 +60,29 @@
 
 (define Map? InnerMap?)
 
+(define (Map/c k v)
+  (struct/c InnerMap (hash/c k v)))
+
+(define-match-expander Map
+  (λ (stx)
+    (syntax-case stx ()
+      [(_ pat ...)
+       #'(InnerMap (hash-table pat ...))])))
+
+(define (hashmap . xs)
+  (InnerMap (apply hash xs)))
+
+(define hash->map InnerMap)
+
 (define/contract (list->map xs)
   (-> (listof (cons/c any/c any/c))
       Map?)
   (InnerMap (make-hash xs)))
 
-(define (->map . xs)
-  (InnerMap (apply hash xs)))
-
 (define/match1/contract map->list
   (-> Map? (listof (cons/c any/c any/c)))
   [(InnerMap h) (hash->list h)])
+
+(define/match1/contract map->hash
+  (-> Map? hash?)
+  [(InnerMap h) h])
