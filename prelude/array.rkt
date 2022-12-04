@@ -33,7 +33,7 @@
     (list->array (base::append as bs)))
 
   (define (: x xs)
-      (++ (array x) xs))
+    (++ (array x) xs))
 
   (define (<:> x xs)
     (++ xs (array x)))
@@ -223,6 +223,11 @@
       Array?
       (Array/c Array?))
   (inner::group-by f xs empty))
+
+(define/curry/contract (group xs)
+  (-> Array?
+      (Array/c Array?))
+  (group-by = xs))
 ;;; end ;;;
 
 ;;; 解构 ;;;

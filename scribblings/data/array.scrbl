@@ -225,7 +225,8 @@
 挑出两堆数组，左组满足@racket[f]条件，右组不足。
 }
 
-@defproc[(group-by [f (-> a a boolean?)] [xs (Array/c)]) (Array/c (Array/c a))]{
+@defproc*[([(group-by [f (-> a a boolean?)] [xs (Array/c)]) (Array/c (Array/c a))]
+           [(group [xs (Array/c a)]) (Array/c (Array/c a))])]{
 按条件@racket[f]分组。
 }
 
