@@ -16,6 +16,7 @@
 (provide Map?
          Map/c
          Map
+         hash->map
          list->map
          hashmap
          map->list
