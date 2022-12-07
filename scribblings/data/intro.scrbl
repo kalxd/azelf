@@ -11,3 +11,4 @@
 @include-section["json.scrbl"]
 @include-section["maybe.scrbl"]
 @include-section["array.scrbl"]
+@include-section["map.scrbl"]

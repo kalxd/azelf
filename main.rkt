@@ -30,4 +30,5 @@
              "./type/map.rkt"
 
              "./prelude/maybe.rkt"
-             "./prelude/array.rkt")
+             "./prelude/array.rkt"
+             "./prelude/map.rkt")

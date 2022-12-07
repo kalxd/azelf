@@ -1,6 +1,7 @@
 #lang racket/base
 
-(require racket/contract)
+(require racket/contract
+         (prefix-in hash:: racket/hash))
 
 (require "../type/map.rkt"
          "../type/eq.rkt"
@@ -8,7 +9,8 @@
          "../type/array.rkt"
          "../internal/curry.rkt"
          "../internal/pipeline.rkt"
-         "../internal/keyword.rkt")
+         "../internal/keyword.rkt"
+         "../internal/function.rkt")
 
 (provide (all-defined-out))
 
@@ -65,4 +67,15 @@
   (-> Map? exact-nonnegative-integer?)
   (->> (map->hash m)
        hash-count))
+;;; end ;;;
+
+;;; 多个map交互 ;;;
+(define/contract (map-union a b)
+  (-> Map? Map? Map?)
+  (let ([ha (map->hash a)]
+        [hb (map->hash b)])
+    (->> (hash::hash-union hb
+                           ha
+                           #:combine const)
+         hash->map)))
 ;;; end ;;;
