@@ -47,18 +47,18 @@
 
 (define-syntax-parser *monad/do*
   ; a <- ma绑定语法
-  [(_ (var:id (~literal <-) e:expr) es:expr ...+)
+  [(_ (var:id (~datum <-) e:expr) es:expr ...+)
    #'(>>= e
           (λ (var)
             (*monad/do* es ...)))]
 
   ; let a = b普通赋值
-  [(_ ((~literal let) var:id (~literal =) e:expr) es:expr ...+)
+  [(_ ((~datum let) var:id (~datum =) e:expr) es:expr ...+)
    #'(let ([var e])
        (*monad/do* es ...))]
 
   ; 副作用
-  [(_ ((~literal !) es:expr ...+) rs:expr ...+)
+  [(_ ((~datum !) es:expr ...+) rs:expr ...+)
    #'(begin
        es ...
        (*monad/do* rs ...))]
