@@ -38,16 +38,16 @@
 
   ; 副作用。
   [(_ f:expr ((~literal !) eff:expr ...+) fs:expr ...+)
-   #'(compose (compose>-> f)
+   #'(compose (>-> f)
               (λ (a)
                 (pipeline->> a
                              (! eff ...)))
-              (compose>-> fs ...))]
+              (>-> fs ...))]
 
   ; 许多句。
   [(_ f:expr fs:expr ...)
-   #'(compose (compose>-> fs ...)
-              (compose>-> f))])
+   #'(compose (>-> fs ...)
+              (>-> f))])
 
 (define-syntax (<-< stx)
   (define fs (reverse (cdr (syntax->datum stx))))
