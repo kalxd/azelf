@@ -138,3 +138,13 @@ Map总键值对数量。
 (map->hash (hashmap 1 2 3 4))
 ]
 }
+
+@section[#:tag "map-syntax"]{Map语法糖}
+
+@racketmodname[azelf]提供了类似于JavaScript的object定义语法：
+
+@codeblock{
+{ 1 2 }
+{ 1 (array 1 2) }
+(map-size {})
+}

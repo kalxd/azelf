@@ -5,7 +5,8 @@
          racket/generic
          racket/struct
 
-         (for-syntax racket/base))
+         (for-syntax racket/base
+                     syntax/parse))
 
 (require "./json.rkt"
          "./eq.rkt"
@@ -20,7 +21,8 @@
          list->map
          hashmap
          map->list
-         map->hash)
+         map->hash
+         *app*)
 
 (struct InnerMap [ref]
   #:transparent
@@ -87,3 +89,17 @@
 (define/match1/contract map->hash
   (-> Map? hash?)
   [(InnerMap h) h])
+
+(define-syntax (*app* stx)
+  (syntax-parse stx
+    ; { key val }字面量
+    [(_ x:expr ...)
+     #:when (eq? (syntax-property stx 'paren-shape) #\{)
+     #'(hashmap x ...)]
+
+    ; 普通语法
+    [(_ x:expr ...)
+     #'(#%app x ...)]))
+
+(module+ test
+  (define-syntax #%app (make-rename-transformer #'*app*)))

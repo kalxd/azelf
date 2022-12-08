@@ -9,7 +9,9 @@
 (provide it
          break
 
-         (all-from-out racket/base))
+         (except-out (all-from-out racket/base)
+                     #%app)
+         (rename-out [*app* #%app]))
 
 (export-from racket/contract
              racket/match
