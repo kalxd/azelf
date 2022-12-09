@@ -98,8 +98,5 @@
      #'(hashmap x ...)]
 
     ; 普通语法
-    [(_ x:expr ...)
-     #'(#%app x ...)]))
-
-(module+ test
-  (define-syntax #%app (make-rename-transformer #'*app*)))
+    [(_ f x ...)
+     #'(#%app f x ...)]))
