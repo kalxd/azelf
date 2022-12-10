@@ -129,6 +129,14 @@
 ]
 }
 
+@defproc[(zip-with [f (-> a b c)] [xs (Array/c a)] [ys (Array/c b)]) (Array/c c)]{
+合并两条数组。
+}
+
+@defproc[(zip [xs (Array/c a)] [ys (Array/c b)]) (Array/c (cons/c a b))]{
+合并两条数组。
+}
+
 @section[#:tag "array-property"]{列表属性}
 
 @defproc[(length [xs (Array/c any/c)]) exact-nonnegative-integer?]{
@@ -219,6 +227,29 @@
 
 @defproc[(reverse [xs (Array/c a)]) (Array/c a)]{
 反转数组。
+}
+
+@defproc*[([(sort-by [f (-> a a boolean?)] [xs (Array/c a)]) (Array/c a)]
+           [(sort [xs (Array/c a)]) (Array/c a)])]{
+@racket[sort]默认升序排序。
+
+@codeblock{
+(define sort (sort-by <))
+}
+}
+
+@defproc[(filter-map [f (-> a (Maybe/c b))] [xs (Array/c a)]) (Array/c b)]{
+即要@racket[filter]又要@racket[map]。
+
+@examples[
+#:eval sb
+(define (f x)
+  (if (< x 0)
+      nothing
+      (Just (add1 x))))
+
+(filter-map f (array -1 1 -2 2))
+]
 }
 
 @defproc[(partition [f (-> a boolean?)] [xs (Array/c a)]) (cons (Array/c a) (Array/c a))]{

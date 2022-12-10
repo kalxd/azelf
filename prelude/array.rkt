@@ -23,6 +23,7 @@
 (module inner racket/base
   (require racket/match
            "../type/array.rkt"
+           "../type/maybe.rkt"
            (prefix-in base:: racket/base)
            (prefix-in list:: racket/list))
   (provide (all-defined-out))
@@ -54,7 +55,14 @@
                              (list->array ys))])
        (group-by f
                  ys
-                 (<:> (: a xs) acc)))]))
+                 (<:> (: a xs) acc)))])
+
+  (define/match (filter-map f xs acc)
+    [(_ (list) _) acc]
+    [(_ (list a ys ...) _)
+     (match (f a)
+       [(Just a) (filter-map f ys (append acc (list a)))]
+       [_ (filter-map f ys acc)])]))
 
 (require (prefix-in inner:: 'inner))
 
@@ -70,6 +78,22 @@
 (define/curry/contract (<:> x xs)
   (-> any/c Array? Array?)
   (inner::<:> x xs))
+
+(define/curry/contract (zip-with f xs ys)
+  (-> (-> any/c any/c any/c)
+      Array?
+      Array?
+      Array?)
+  (match-define (Array as ...) xs)
+  (match-define (Array bs ...) ys)
+  (list->array
+   (for/list ([x as]
+              [y bs])
+     (f x y))))
+
+(define/curry/contract (zip xs ys)
+  (-> Array? Array? Array?)
+  (zip-with cons xs ys))
 ;;; end ;;;
 
 ;;; 构造 ;;;
@@ -211,6 +235,26 @@
   [(Array xs ...)
    (->> (base::reverse xs)
         list->array)])
+
+(define/curry/contract (sort-by f xs)
+  (-> (-> any/c any/c boolean?)
+      Array?
+      Array?)
+  (match-define (Array as ...) xs)
+  (->> (base::sort as f)
+       list->array))
+
+(define/contract sort
+  (-> Array? Array?)
+  (sort-by <))
+
+(define/curry/contract (filter-map f xs)
+  (-> (-> any/c (Maybe/c any/c))
+      Array?
+      Array?)
+  (->> (array->list xs)
+       (inner::filter-map f it (list))
+       list->array))
 
 (define/curry/contract (partition f xs)
   (-> (-> any/c boolean?)
