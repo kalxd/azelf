@@ -45,7 +45,7 @@
       [(Array y ys ...)
        (if (f y)
            (span f (list->array ys) (<:> y acc))
-           (cons acc (list->array xs)))]))
+           (cons acc xs))]))
 
   (define (partition f xs)
     (match xs
@@ -56,14 +56,14 @@
 
   (define/match (group-by f xs acc)
     [(_ (Array) _) acc]
-    [(_ (Array a ys ...) _)
-     (match-let ([(cons xs ys)
-                  (partition (λ (y)
-                               (f a y))
-                             (list->array ys))])
-       (group-by f
-                 ys
-                 (<:> (: a xs) acc)))])
+    [(_ (Array a as ...) _)
+     (match-define (cons ys zs)
+       (span (λ (y) (f a y))
+             xs
+             (array)))
+     (group-by f
+               zs
+               (<:> ys acc))])
 
   (define/match (filter-map f xs acc)
     [(_ (list) _) acc]
