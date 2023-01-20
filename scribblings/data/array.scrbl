@@ -256,6 +256,16 @@
 挑出两堆数组，左组满足@racket[f]条件，右组不足。
 }
 
+@defproc[(span [f (-> a boolean?)] [xs (Array/c a)]) (cons/c (array a) (array a))]{
+从头寻找满足@racket[f]的元素，直到未满足为止；返回一组满足元素的集合，及剩下元素集合。
+
+@examples[
+#:eval sb
+(span (λ (x) (< x 3)) (array 1 2 3 4 1 2 3 4))
+(span (λ (x) (< x 9)) (array 1 2 3))
+]
+}
+
 @defproc*[([(group-by [f (-> a a boolean?)] [xs (Array/c)]) (Array/c (Array/c a))]
            [(group [xs (Array/c a)]) (Array/c (Array/c a))])]{
 按条件@racket[f]分组。
