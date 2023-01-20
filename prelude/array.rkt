@@ -39,6 +39,14 @@
   (define (<:> x xs)
     (++ xs (array x)))
 
+  (define (span f xs acc)
+    (match xs
+      [(Array) (cons acc (array))]
+      [(Array y ys ...)
+       (if (f y)
+           (span f (list->array ys) (<:> y acc))
+           (cons acc (list->array xs)))]))
+
   (define (partition f xs)
     (match xs
       [(Array xs ...)
@@ -261,6 +269,12 @@
       Array?
       (cons/c Array? Array?))
   (inner::partition f xs))
+
+(define/curry/contract (span f xs)
+  (-> (-> any/c boolean?)
+      Array?
+      (cons/c Array? Array?))
+  (inner::span f xs (array)))
 
 (define/curry/contract (group-by f xs)
   (-> (-> any/c any/c boolean?)
