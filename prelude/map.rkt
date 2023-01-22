@@ -1,10 +1,11 @@
 #lang racket/base
 
 (require racket/contract
+         racket/match
          (prefix-in hash:: racket/hash))
 
 (require "../type/map.rkt"
-         "../type/eq.rkt"
+         "../type/ord.rkt"
          "../type/maybe.rkt"
          "../type/array.rkt"
          "../internal/curry.rkt"
@@ -32,20 +33,41 @@
        hash->map))
 
 (define/curry/contract (map-remove k m)
-  (-> Eq? Map? Map?)
+  (-> Ord? Map? Map?)
   (->> (map->hash m)
        (hash-remove it k)
        hash->map))
+
+(define/curry/contract (map-adjust f k m)
+  (-> (-> any/c any/c)
+      Ord?
+      Map?
+      Map?)
+  (->> (map-get k m)
+       (match it
+         [(Just v) (map-insert k (f v) m)]
+         [_ m])))
+
+(define/curry/contract (map-alter f k m)
+  (-> (-> (Maybe/c any/c) (Maybe/c any/c))
+      Ord?
+      Map?
+      Map?)
+  (->> (map-get k m)
+       f
+       (match it
+         [(Just v) (map-insert k v m)]
+         [_ (map-remove k m)])))
 ;;; end ;;;
 
 ;;; 取值 ;;;
 (define/curry/contract (map-key? k m)
-  (-> Eq? (Map/c Eq? any/c) boolean?)
+  (-> Ord? (Map/c Ord? any/c) boolean?)
   (->> (map->hash m)
        (hash-has-key? it k)))
 
 (define/curry/contract (map-get k m)
-  (-> Eq? (Map/c Eq? any/c) (Maybe/c any/c))
+  (-> Ord? (Map/c Ord? any/c) (Maybe/c any/c))
   (->> (map->hash m)
        (if (hash-has-key? it k)
            (Just (hash-ref it k))

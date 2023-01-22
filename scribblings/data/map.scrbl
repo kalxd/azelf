@@ -80,6 +80,33 @@ Map模式匹配关键字，使用与@racket[hash-table]一致。
 ]
 }
 
+@defproc[(map-adjust [f (-> v v)] [k Ord?] [hash (Map/c k v)]) (Map/c k v)]{
+
+@examples[
+#:eval sb
+(define (++ s) (string-append "new" s))
+
+(map-adjust ++ 5 (hashmap 5 "a" 3 "b"))
+(map-adjust ++ 7 (hashmap 5 "a" 3 "b"))
+(map-adjust ++ 7 map-empty)
+]
+}
+
+@defproc[(map-alter [f (-> (Maybe/c v) (Maybe/c v))] [k Ord?] [hash (Map/c k v)]) (hash (Map/c k v))]{
+集增、删、改一体的函数，具体行为由@racket[f]控制。
+
+@examples[
+#:eval sb
+(define h (hashmap 1 2 3 4))
+
+(define (remove-key v) nothing)
+
+(define (update-key v) (Just 10))
+(map-alter remove-key 3 h)
+(map-alter update-key 1 h)
+]
+}
+
 @section[#:tag "map-lookup"]{Map取值}
 
 @defproc[(map-key? [key k] [hash (Map/c k v)]) boolean?]{
