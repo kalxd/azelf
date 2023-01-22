@@ -56,8 +56,8 @@ Maybe构造器。
 
 (define (gt xs)
 	(> (length xs) 5))
-(maybe-filter gt (Just (list 1 2 3)))
-(maybe-filter gt (Just (list 1 2 3 4 5 6)))
+(maybe-filter gt (Just (array 1 2 3)))
+(maybe-filter gt (Just (array 1 2 3 4 5 6)))
 ]
 }
 
