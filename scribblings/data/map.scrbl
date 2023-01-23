@@ -92,6 +92,22 @@ Map模式匹配关键字，使用与@racket[hash-table]一致。
 ]
 }
 
+@defproc[(map-update [f (-> v (Maybe/c v))] [k Ord?] [hash (Map/c k v)]) (Map/c k v)]{
+@racket[f]返回@racket[Nothing]表示删除该键值；返回@racket[Just]表示更新。
+
+@examples[
+#:eval sb
+(define (madd1 x)
+  (if (= x "a")
+      (Just "new a")
+      nothing))
+
+(map-update madd1 5 (hashmap 5 "a" 3 "b"))
+(map-update madd1 7 (hashmap 5 "a" 3 "b"))
+(map-update madd1 3 (hashmap 5 "a" 3 "b"))
+]
+}
+
 @defproc[(map-alter [f (-> (Maybe/c v) (Maybe/c v))] [k Ord?] [hash (Map/c k v)]) (hash (Map/c k v))]{
 集增、删、改一体的函数，具体行为由@racket[f]控制。
 

@@ -8,6 +8,7 @@
          "../type/ord.rkt"
          "../type/maybe.rkt"
          "../type/array.rkt"
+         "../type/monad.rkt"
          "../internal/curry.rkt"
          "../internal/pipeline.rkt"
          "../internal/keyword.rkt"
@@ -47,6 +48,17 @@
        (match it
          [(Just v) (map-insert k (f v) m)]
          [_ m])))
+
+(define/curry/contract (map-update f k m)
+  (-> (-> any/c (Maybe/c any/c))
+      Ord?
+      Map?
+      Map?)
+  (->> (map-get k m)
+       (=<< f)
+       (match it
+         [(Just v) (map-insert k v m)]
+         [_ (map-remove k m)])))
 
 (define/curry/contract (map-alter f k m)
   (-> (-> (Maybe/c any/c) (Maybe/c any/c))
