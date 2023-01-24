@@ -2,7 +2,8 @@
 
 (require racket/contract
          racket/match
-         (prefix-in hash:: racket/hash))
+         (prefix-in hash:: racket/hash)
+         (prefix-in base:: racket/base))
 
 (require "../type/map.rkt"
          "../type/ord.rkt"
@@ -103,7 +104,27 @@
        hash-count))
 ;;; end ;;;
 
-;;; 多个map交互 ;;;
+;;; Map转换 ;;;
+(define/curry/contract (map-filter f h)
+  (-> (-> any/c boolean?)
+      Map?
+      Map?)
+  (define/match (g x)
+    [((cons _ v)) (f v)])
+  (->> (map->list h)
+       (base::filter g it)
+       list->map))
+
+(define/curry/contract (map-filter-key f h)
+  (-> (-> any/c boolean?)
+      Map?
+      Map?)
+  (define/match (g x)
+    [((cons k _)) (f k)])
+  (->> (map->list h)
+       (base::filter g it)
+       list->map))
+
 (define/contract (map-union a b)
   (-> Map? Map? Map?)
   (let ([ha (map->hash a)]

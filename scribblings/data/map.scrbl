@@ -155,7 +155,18 @@ Map总键值对数量。
 ]
 }
 
-@section[#:tag "map-interactivate"]{Map相互交互}
+@section[#:tag "map-transform"]{Map转换}
+
+@defproc*[([(map-filter [f (-> v boolean?)] [hash (Map/c k v)]) (Map/c k v)]
+           [(map-filter-key [f (-> k boolean?)] [hash (Map/c k v)]) (Map/c k v)])]{
+过滤@racket[Map]。
+
+@examples[
+#:eval sb
+(map-filter-key odd? (hashmap 1 3 2 2 4 5 7 6))
+(map-filter-key even? (hashmap 1 3 2 2 4 5 7 6))
+]
+}
 
 @defproc[(map-union [ha (Map/c k v)] [hb (Map/c k v)]) (Map/c k v)]{
 合并两个Map，@racket[hb]向@racket[ha]覆盖。
