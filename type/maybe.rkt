@@ -12,6 +12,7 @@
 (require "../internal/curry.rkt"
          "../internal/error.rkt"
          "../internal/keyword.rkt"
+         "./show.rkt"
          "./eq.rkt"
          "./ord.rkt"
          "./functor.rkt"
@@ -33,6 +34,9 @@
 
 (struct Nothing []
   #:transparent
+
+  #:methods gen:Show
+  [(define show:show generic-fmt-show)]
 
   #:methods gen:Eq
   [(define/match (eq:= a b)
@@ -66,6 +70,9 @@
 
 (struct Just [value]
   #:transparent
+
+  #:methods gen:Show
+  [(define show:show generic-fmt-show)]
 
   #:methods gen:Eq
   [(define/generic self/= eq:=)

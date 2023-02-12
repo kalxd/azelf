@@ -12,6 +12,7 @@
          "./eq.rkt"
          "./ord.rkt"
          "./functor.rkt"
+         "./show.rkt"
          "../internal/match.rkt")
 
 (provide Map?
@@ -33,6 +34,9 @@
       (λ (_) 'Map)
       (match-lambda
         [(InnerMap h) (hash->list h)])))]
+
+  #:methods gen:Show
+  [(define show:show generic-fmt-show)]
 
   #:methods gen:ToJSON
   [(define/generic self/->json ->json)

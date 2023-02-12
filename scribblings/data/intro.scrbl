@@ -3,6 +3,7 @@
 @title[#:style '(toc) #:tag "data"]{数据结构}
 
 @include-section["function.scrbl"]
+@include-section["show.scrbl"]
 @include-section["eq.scrbl"]
 @include-section["ord.scrbl"]
 @include-section["functor.scrbl"]

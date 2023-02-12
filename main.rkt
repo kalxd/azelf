@@ -21,6 +21,7 @@
              "./internal/match.rkt"
              "./internal/function.rkt"
 
+             "./type/show.rkt"
              "./type/eq.rkt"
              "./type/ord.rkt"
              "./type/json.rkt"

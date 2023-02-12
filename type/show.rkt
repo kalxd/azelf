@@ -5,10 +5,14 @@
          (only-in racket/function
                   identity))
 
-(provide show)
+(provide gen:Show
+         Show?
+         show:show
+         show
+         generic-fmt-show)
 
 (define (generic-fmt-show a)
-  (format "~a" a))
+  (format "~v" a))
 
 (define-generics Show
   (show:show Show)

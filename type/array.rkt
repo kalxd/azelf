@@ -10,7 +10,8 @@
 
 (require "../internal/match.rkt")
 
-(require "./json.rkt"
+(require "./show.rkt"
+         "./json.rkt"
          "./eq.rkt"
          "./ord.rkt"
          "./functor.rkt"
@@ -33,6 +34,9 @@
       (λ (_) 'Array)
       (match-lambda
         [(InnerArray xs) xs])))]
+
+  #:methods gen:Show
+  [(define show:show generic-fmt-show)]
 
   #:methods gen:ToJSON
   [(define/generic self/->json ->json)
