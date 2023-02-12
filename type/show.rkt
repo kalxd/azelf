@@ -7,20 +7,8 @@
 
 (provide show)
 
-(define/match (show-list-inner acc xs)
-  [(_ (list)) (string-append acc "]")]
-  [(_ (list a as ...))
-   (let ([acc- (string-append acc
-                              ","
-                              (show:show a))])
-     (show-list-inner acc- as))])
-
-(define/match (show-list xs)
-  [((list)) "[]"]
-  [((list a as ...))
-   (string-append "["
-                  (show:show a)
-                  (show-list-inner "" as))])
+(define (generic-fmt-show a)
+  (format "~a" a))
 
 (define-generics Show
   (show:show Show)
@@ -28,6 +16,14 @@
   #:defaults ([string? (define show:show identity)]
               [char? (define show:show string)]
               [number? (define show:show number->string)]
-              [list? (define show:show show-list)]))
+              [symbol? (define show:show symbol->string)]
+              [bytes? (define show:show bytes->string/utf-8)]
+              [boolean?
+               (define/match (show:show a)
+                 [(#t) "true"]
+                 [(#f) "false"])]
+              [list? (define show:show generic-fmt-show)]
+              [vector? (define show:show generic-fmt-show)]
+              [hash? (define show:show generic-fmt-show)]))
 
 (define show show:show)
