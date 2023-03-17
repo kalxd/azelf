@@ -270,6 +270,16 @@
       (cons/c Array? Array?))
   (inner::partition f xs))
 
+(define/curry/contract (split-at n xs)
+  (-> exact-nonnegative-integer?
+      Array?
+      (cons/c Array? Array?))
+  (define m (min (length xs) n))
+  (match-let ([(Array ys ...) xs])
+    (define-values (as bs) (list::split-at ys m))
+    (cons (list->array as)
+          (list->array bs))))
+
 (define/curry/contract (span f xs)
   (-> (-> any/c boolean?)
       Array?

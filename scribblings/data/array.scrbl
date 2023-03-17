@@ -266,6 +266,17 @@
 ]
 }
 
+@defproc[(split-at [n exact-nonnegative-integer?] [xs (Array/c a)]) (cons (Array/c a) (Array/c a))]{
+按位置分割一个数组。
+
+@examples[
+#:eval sb
+(split-at 0 (array 1 2 3))
+(split-at 10 (array 1 2 3))
+(split-at 2 (array 1 2 3))
+]
+}
+
 @defproc*[([(group-by [f (-> a a boolean?)] [xs (Array/c)]) (Array/c (Array/c a))]
            [(group [xs (Array/c a)]) (Array/c (Array/c a))])]{
 按条件@racket[f]分组。
