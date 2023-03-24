@@ -34,4 +34,5 @@
 
              "./prelude/maybe.rkt"
              "./prelude/array.rkt"
-             "./prelude/map.rkt")
+             "./prelude/map.rkt"
+             "./prelude/json.rkt")
