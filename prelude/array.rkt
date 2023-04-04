@@ -297,7 +297,21 @@
       (Array/c Array?))
   (group-by = xs))
 
-(define/curry/contract (update-at i x xs)
+(define/curry/contract (array-adjust f i xs)
+  (-> (-> any/c any/c)
+      exact-nonnegative-integer?
+      (Array/c any/c)
+      (Array/c any/c))
+  (match-define (Array ys ...) xs)
+  (define l (base::length ys))
+  (if (>= i l)
+      xs
+      (->> (base::list-ref ys i)
+           f
+           (list::list-set ys i it)
+           list->array)))
+
+(define/curry/contract (array-update i x xs)
   (-> exact-nonnegative-integer?
       any/c
       (Array/c any/c)
@@ -312,7 +326,7 @@
 ;;; end ;;;
 
 ;;; 解构 ;;;
-(define/curry/contract (at i xs)
+(define/curry/contract (array-get i xs)
   (-> exact-nonnegative-integer?
       Array?
       (Maybe/c any/c))
@@ -325,7 +339,7 @@
            (->> (base::list-ref xs i)
                 ->maybe)))]))
 
-(define/curry/contract (index x xs)
+(define/curry/contract (array-index x xs)
   (-> Eq?
       (Array/c Eq?)
       (Maybe/c exact-nonnegative-integer?))
