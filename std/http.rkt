@@ -3,10 +3,13 @@
 (require "../internal/pipeline.rkt"
          "../internal/match.rkt"
          "../internal/keyword.rkt"
+         "../internal/function.rkt"
 
          "../type/functor.rkt"
+         "../type/monad.rkt"
          "../type/maybe.rkt"
          "../type/array.rkt"
+         "../type/ord.rkt"
          "../prelude/array.rkt")
 
 (require racket/contract
@@ -15,8 +18,7 @@
 
 (provide (all-from-out net/url))
 
-(provide url/clear-pathname
-         url/rename-path-with)
+(provide (all-defined-out))
 
 (module inner racket/base
   (require "../internal/pipeline.rkt"
@@ -54,9 +56,16 @@
        tail
        (map path/param-path)))
 
+(define/contract (url/filename-without-ext url-link)
+  (-> url? (Maybe/c string?))
+  (monad/do
+   (filename <- (url/filename url-link))
+   (Just (->> (path-replace-extension filename #"")
+              path->string))))
+
 ;;; end ;;;
 
-(define/contract (url/rename-path-with f url-link)
+(define/contract (url/rename-with f url-link)
   (-> (-> string? string?)
       url?
       url?)
@@ -65,9 +74,14 @@
          list->array))
   (define last-index
     (->> (length path-segments)
-         sub1))
+         sub1
+         (max 0)))
   (define/match1 adjust
     [(path/param path param)
      (path/param (f path) param)])
   (->> (array-adjust adjust last-index path-segments)
        (struct-copy url url-link [path (array->list it)])))
+
+(define/contract (url/rename-to filename url-link)
+  (-> string? url? url?)
+  (url/rename-with (const filename) url-link))
