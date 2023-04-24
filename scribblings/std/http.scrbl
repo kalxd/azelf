@@ -20,13 +20,33 @@
 ]
 }
 
-@defproc[(url/rename-path-with [f (-> string? string?)] [url-link url?]) url?]{
+@defproc*[([(url/filename [url-link url?]) (Maybe/c string?)]
+           [(url/filename-without-ext [url-link url?]) (Maybe/c string?)])]{
+
+@examples[
+#:eval sb
+(require azelf/std/http)
+(url/filename (string->url "http://www.baidu.com"))
+(url/filename (string->url "http://www.baidu.com/a/b.mp3"))
+(url/filename (string->url "http://www.baidu.com/"))
+]
+}
+
+@defproc[(url/rename-with [f (-> string? string?)] [url-link url?]) url?]{
 为链接重命名，此处用的是高阶函数@racket[f]，避免手动再获取一次。
 
 @codeblock{
 (define url-link (string->url "http://baidu.com/a/b/c.jpg"))
 
-(url/rename-path-with string-upcase url-link)
+(url/rename-with string-upcase url-link)
 ; http://baidu.com/a/b/C.jpg
 }
+}
+
+@defproc[(url/rename-to [filename string?] [url-link url?]) url?]{
+
+@examples[
+#:eval sb
+(url/rename-to "404.gif" (string->url "http://www.baidu.com/file.html"))
+]
 }
