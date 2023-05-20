@@ -27,8 +27,9 @@
                  (-> list?
                      (-> any/c list?)
                      list?)
-                 (for*/list ([a ma])
-                   (f a)))]
+                 (for/foldr ([acc (list)])
+                            ([a ma])
+                   (append (f a) acc)))]
               [procedure?
                (define/contract (monad:bind f g)
                  (-> procedure? procedure? procedure?)
