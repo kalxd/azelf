@@ -7,8 +7,7 @@
 
 (require "./eq.rkt"
          "../internal/match.rkt"
-         "../internal/curry.rkt"
-         "../internal/function.rkt")
+         "../internal/curry.rkt")
 
 (provide Ordering
          gen:Ord
@@ -54,7 +53,9 @@
    [symbol?
     (define/contract (ord:compare a b)
       (-> symbol? symbol? Ordering)
-      (generic-compare = (flip symbol<?) a b))]
+      (define (symbol>? a b)
+        (not (symbol<? a b)))
+      (generic-compare eq? symbol>? a b))]
    [list?
     (define/generic self/compare ord:compare)
     (define/match/contract (ord:compare xs ys)

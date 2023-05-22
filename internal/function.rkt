@@ -12,11 +12,8 @@
 (define/curry (const a b)
   a)
 
-(define (flip f)
-  (define (flipped b a)
-    (f a b))
-  (curry flipped))
-
+(define/curry (flip f a b)
+  (f b a))
 
 (module+ test
   (define/curry (f a b)
