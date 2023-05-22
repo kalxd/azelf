@@ -7,7 +7,8 @@
 
 (require "./eq.rkt"
          "../internal/match.rkt"
-         "../internal/curry.rkt")
+         "../internal/curry.rkt"
+         "../internal/function.rkt")
 
 (provide Ordering
          gen:Ord
@@ -24,12 +25,11 @@
 (define Ordering
   (or/c 'lt 'gt 'eq))
 
-(define-syntax-rule (generic-compare eq-method gt-method)
-  (λ (a b)
-    (cond
-      [(eq-method a b) 'eq]
-      [(gt-method a b) 'gt]
-      [else 'lt])))
+(define-syntax-rule (generic-compare eq-method gt-method a b)
+  (cond
+    [(eq-method a b) 'eq]
+    [(gt-method a b) 'gt]
+    [else 'lt]))
 
 (define-generics Ord
   (ord:compare Ord a)
@@ -38,19 +38,23 @@
   ([number?
     (define/contract (ord:compare a b)
       (-> number? number? Ordering)
-      ((generic-compare base::= base::>) a b))]
+      (generic-compare base::= base::> a b))]
    [string?
     (define/contract (ord:compare a b)
       (-> string? string? Ordering)
-      ((generic-compare string=? string>?) a b))]
+      (generic-compare string=? string>? a b))]
    [char?
     (define/contract (ord:compare a b)
       (-> char? char? Ordering)
-      ((generic-compare char=? char>?) a b))]
+      (generic-compare char=? char>? a b))]
    [bytes?
     (define/contract (ord:compare a b)
       (-> bytes? bytes? Ordering)
-      ((generic-compare bytes=? bytes>?) a b))]
+      (generic-compare bytes=? bytes>? a b))]
+   [symbol?
+    (define/contract (ord:compare a b)
+      (-> symbol? symbol? Ordering)
+      (generic-compare = (flip symbol<?) a b))]
    [list?
     (define/generic self/compare ord:compare)
     (define/match/contract (ord:compare xs ys)
