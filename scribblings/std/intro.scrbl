@@ -8,4 +8,3 @@
 
 @include-section["config.scrbl"]
 @include-section["http.scrbl"]
-@include-section["file.scrbl"]
