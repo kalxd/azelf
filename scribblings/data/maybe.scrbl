@@ -118,7 +118,16 @@ Maybe构造器。
 (maybe-> 1 nothing) ;; 1
 (maybe-> 1 (Just 2)) ;; 2
 ]
+}
 
+@defproc[(maybe-just [msg string?] [x (Maybe/c a)]) a]{
+解包@racket[Maybe]，遇到@racket[nothing]抛异常，异常信息为@racket[msg]。
+
+@examples[
+#:eval sb
+(maybe-just "这里不会显示" (Just 1))
+(maybe-just "我不能啊" (Nothing))
+]
 }
 
 @defproc[(maybe-unwrap [x (Maybe/c y)]) y]{

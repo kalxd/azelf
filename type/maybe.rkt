@@ -29,6 +29,7 @@
          maybe?
          maybe->
          ->maybe
+         maybe-just
          maybe-unwrap
          maybe/do)
 
@@ -130,9 +131,15 @@
     [(Just a) a]
     [_ b]))
 
-(define/match (maybe-unwrap a)
-  [((Just a)) a]
-  [(_) (raise-unwrap-error "maybe-unwrap: 试图解包nothing！")])
+(define/curry/contract (maybe-just msg ma)
+  (-> string? (Maybe/c any/c) any/c)
+  (match ma
+    [(Just a) a]
+    [_ (raise-unwrap-error msg)]))
+
+(define/contract maybe-unwrap
+  (-> (Maybe/c any/c) any/c)
+  (maybe-just "maybe-unwrap: 试图解包nothing！"))
 
 ;;; 将a包装成Maybe，已经是了就不用再包装一层。
 (define (*->maybe* a)
