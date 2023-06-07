@@ -4,6 +4,7 @@
          "../internal/match.rkt"
          "../internal/keyword.rkt"
          "../internal/function.rkt"
+         "../internal/curry.rkt"
 
          "../type/functor.rkt"
          "../type/monad.rkt"
@@ -13,12 +14,14 @@
          "../prelude/array.rkt")
 
 (require racket/contract
+         racket/match
          net/url
          racket/path)
 
 (provide (all-from-out net/url))
 
-(provide (all-defined-out))
+(provide (except-out (all-defined-out)
+                     priv/send))
 
 (module inner racket/base
   (require "../internal/pipeline.rkt"
@@ -85,3 +88,22 @@
 (define/contract (url/rename-to filename url-link)
   (-> string? url? url?)
   (url/rename-with (const filename) url-link))
+
+(struct RequestOption [redirect]
+  #:transparent)
+
+(struct Request [url header body option]
+  #:transparent)
+
+(define/curry (priv/send f data)
+  (match-define [Request url header body option] data)
+  (f url header #:redirecttions (maybe-> 0 option)))
+
+(define/contract (http/get request)
+  (-> Request? input-port?)
+  (priv/send get-pure-port request))
+
+(define http/get/url (curry/n 1 get-pure-port))
+(define http/head/url (curry/n 1 head-pure-port))
+(define http/delete/url (curry/n 1 delete-pure-port))
+(define http/options/url (curry/n 1 options-pure-port))
