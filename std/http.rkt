@@ -16,12 +16,17 @@
 (require racket/contract
          racket/match
          net/url
-         racket/path)
+         racket/path
+         (only-in json
+                  read-json))
 
 (provide (all-from-out net/url))
 
-(provide (except-out (all-defined-out)
-                     priv/send))
+(provide url/clear-pathname
+         url/filename
+         url/filename-without-ext
+         url/rename-with
+         url/rename-to)
 
 (module inner racket/base
   (require "../internal/pipeline.rkt"
@@ -89,21 +94,30 @@
   (-> string? url? url?)
   (url/rename-with (const filename) url-link))
 
-(struct RequestOption [redirect]
+(struct RequestPlain
+  [url header redirect]
   #:transparent)
 
-(struct Request [url header body option]
-  #:transparent)
-
-(define/curry (priv/send f data)
-  (match-define [Request url header body option] data)
-  (f url header #:redirecttions (maybe-> 0 option)))
+(define/curry/contract (priv/send f data)
+  (-> procedure? RequestPlain? input-port?)
+  (match-define [RequestPlain url header redirect] data)
+  (let ([header (maybe-> '() header)])
+    (f url header
+       #:redirecttions redirect)))
 
 (define/contract (http/get request)
-  (-> Request? input-port?)
+  (-> RequestPlain? input-port?)
   (priv/send get-pure-port request))
 
-(define http/get/url (curry/n 1 get-pure-port))
-(define http/head/url (curry/n 1 head-pure-port))
-(define http/delete/url (curry/n 1 delete-pure-port))
-(define http/options/url (curry/n 1 options-pure-port))
+(define/contract (http/url string-or-url)
+  (-> (or/c string? url?) RequestPlain?)
+  (define req-url
+    (if (url? string-or-url)
+        string-or-url
+        (string->url string-or-url)))
+  (RequestPlain req-url nothing nothing nothing 0))
+
+(define http/get-url (curry/n 1 get-pure-port))
+(define http/head-url (curry/n 1 head-pure-port))
+(define http/delete-url (curry/n 1 delete-pure-port))
+(define http/options-url (curry/n 1 options-pure-port))
