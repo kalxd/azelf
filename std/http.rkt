@@ -11,14 +11,18 @@
          "../type/maybe.rkt"
          "../type/array.rkt"
          "../type/ord.rkt"
+         "../type/map.rkt"
+         "../prelude/map.rkt"
          "../prelude/array.rkt")
 
 (require racket/contract
          racket/match
          net/url
          racket/path
+         racket/struct
          (only-in json
-                  read-json))
+                  read-json)
+         (prefix-in list:: racket/list))
 
 (provide (all-from-out net/url))
 
@@ -94,28 +98,32 @@
   (-> string? url? url?)
   (url/rename-with (const filename) url-link))
 
-(struct RequestPlain
-  [url header redirect]
-  #:transparent)
+;;; HTTP Client ;;;
 
-(define/curry/contract (priv/send f data)
-  (-> procedure? RequestPlain? input-port?)
-  (match-define [RequestPlain url header redirect] data)
-  (let ([header (maybe-> '() header)])
-    (f url header
-       #:redirecttions redirect)))
+(struct RequestBase [url query redirect]
+  #:methods gen:custom-write
+  [(define write-proc
+     (make-constructor-style-printer
+      (λ (_) 'Url)
+      (match-lambda
+        [(RequestBase url query redirect)
+         (cond
+           [(= (map-size query) 0)
+            (list (url->string url))]
+           [else (->> (format "~A&~A"
+                              (url->string url)
+                              query)
+                      list)])])))])
 
-(define/contract (http/get request)
-  (-> RequestPlain? input-port?)
-  (priv/send get-pure-port request))
-
-(define/contract (http/url string-or-url)
-  (-> (or/c string? url?) RequestPlain?)
-  (define req-url
-    (if (url? string-or-url)
-        string-or-url
-        (string->url string-or-url)))
-  (RequestPlain req-url nothing nothing nothing 0))
+(define/contract (priv/req-base-url input)
+  (-> (or/c url? string?) RequestBase?)
+  (define link-url
+    (if (url? input) input (string->url input)))
+  (define-values (plain-url query)
+    (let ([query (->> (url-query link-url) list->map)]
+          [plain-url (struct-copy url link-url [query '()])])
+      (values plain-url query)))
+  (RequestBase plain-url query 0))
 
 (define http/get-url (curry/n 1 get-pure-port))
 (define http/head-url (curry/n 1 head-pure-port))
