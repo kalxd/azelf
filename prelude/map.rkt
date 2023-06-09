@@ -79,6 +79,10 @@
   (->> (map->hash m)
        (hash-has-key? it k)))
 
+(define/contract (map-empty? m)
+  (-> Map? boolean?)
+  (= (map-size m) 0))
+
 (define/curry/contract (map-get k m)
   (-> Ord? (Map/c Ord? any/c) (Maybe/c any/c))
   (->> (map->hash m)
