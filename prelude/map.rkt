@@ -150,4 +150,22 @@
     (f acc k v))
   (->> (map->list m)
        (base::foldl g a it)))
+
+(define/curry/contract (map-fold/key f a m)
+  (-> (-> any/c any/c any/c)
+      any/c
+      Map?
+      any/c)
+  (define (g acc k v)
+    (f acc k))
+  (map-fold g a m))
+
+(define/curry/contract (map-fold/value f a m)
+  (-> (-> any/c any/c any/c)
+      any/c
+      Map?
+      any/c)
+  (define (g acc k v)
+    (f acc v))
+  (map-fold g a m))
 ;;; end ;;;
