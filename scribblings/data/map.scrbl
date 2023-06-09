@@ -193,6 +193,18 @@ Map总键值对数量。
 ]
 }
 
+@defproc*[([(map-fold [f (-> a k v a)] [acc a] [h (Map/c k v)]) a]
+           [(map-fold/key [f (-> a k a)] [acc a] [h (Map/c k v)]) a]
+           [(map-fold/value [f (-> a v a)] [acc a] [h (Map/c k v)]) a])]{
+类似于@racket[foldl]，不过它作用在@racket[map?]上。
+
+@examples[
+#:eval sb
+(map-fold list '() (hashmap "a" "b" "c" "d"))
+(map-fold/value list '() (hashmap "a" "b" "c" "d"))
+]
+}
+
 @section[#:tag "map-syntax"]{Map语法糖}
 
 @racketmodname[azelf]提供了类似于JavaScript的object定义语法：
