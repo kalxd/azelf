@@ -138,3 +138,16 @@
                            #:combine const)
          hash->map)))
 ;;; end ;;;
+
+;;; 解构 ;;;
+(define/curry/contract (map-fold f a m)
+  (-> (-> any/c any/c any/c any/c)
+      any/c
+      Map?
+      any/c)
+  (define (g a acc)
+    (match-define (cons k v) a)
+    (f acc k v))
+  (->> (map->list m)
+       (base::foldl g a it)))
+;;; end ;;;
