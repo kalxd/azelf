@@ -5,6 +5,7 @@
          "../internal/keyword.rkt"
          "../internal/function.rkt"
          "../internal/curry.rkt"
+         "../internal/mod.rkt"
 
          "../type/functor.rkt"
          "../type/monad.rkt"
@@ -18,13 +19,10 @@
 (require racket/contract
          racket/match
          net/url
-         racket/path
-         racket/struct
-         (only-in json
-                  read-json)
-         (prefix-in list:: racket/list))
+         racket/path)
 
 (provide (all-from-out net/url))
+(export-from "./internal/http.rkt")
 
 (provide url/clear-pathname
          url/filename
@@ -97,35 +95,3 @@
 (define/contract (url/rename-to filename url-link)
   (-> string? url? url?)
   (url/rename-with (const filename) url-link))
-
-;;; HTTP Client ;;;
-
-(struct RequestBase [url query redirect]
-  #:methods gen:custom-write
-  [(define write-proc
-     (make-constructor-style-printer
-      (λ (_) 'Url)
-      (match-lambda
-        [(RequestBase url query redirect)
-         (cond
-           [(= (map-size query) 0)
-            (list (url->string url))]
-           [else (->> (format "~A&~A"
-                              (url->string url)
-                              query)
-                      list)])])))])
-
-(define/contract (priv/req-base-url input)
-  (-> (or/c url? string?) RequestBase?)
-  (define link-url
-    (if (url? input) input (string->url input)))
-  (define-values (plain-url query)
-    (let ([query (->> (url-query link-url) list->map)]
-          [plain-url (struct-copy url link-url [query '()])])
-      (values plain-url query)))
-  (RequestBase plain-url query 0))
-
-(define http/get-url (curry/n 1 get-pure-port))
-(define http/head-url (curry/n 1 head-pure-port))
-(define http/delete-url (curry/n 1 delete-pure-port))
-(define http/options-url (curry/n 1 options-pure-port))

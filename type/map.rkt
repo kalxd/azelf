@@ -84,7 +84,7 @@
 (define/contract (list->map xs)
   (-> (listof (cons/c any/c any/c))
       Map?)
-  (InnerMap (make-hash xs)))
+  (InnerMap (make-immutable-hash xs)))
 
 (define/match1/contract map->list
   (-> Map? (listof (cons/c any/c any/c)))

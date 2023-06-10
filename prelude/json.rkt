@@ -10,15 +10,20 @@
 (require racket/contract
          json)
 
-(provide jsexpr->primitive)
+(provide json/->primitive
+         json/read)
 
-(define/contract (jsexpr->primitive j)
+(define/contract (json/->primitive j)
   (-> jsexpr? any/c)
   (cond [(list? j)
-         (->> (map jsexpr->primitive j)
+         (->> (map json/->primitive j)
               list->array)]
         [(hash? j)
-         (->> (map jsexpr->primitive j)
+         (->> (map json/->primitive j)
               hash->map)]
         [(equal? j (json-null)) nothing]
         [else j]))
+
+(define/contract json/read
+  (-> input-port? any/c)
+  (>-> read-json json/->primitive))

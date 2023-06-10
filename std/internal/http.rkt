@@ -6,7 +6,8 @@
 (require racket/contract
          racket/match
          (only-in "../../internal/pipeline.rkt"
-                  ->>)
+                  ->>
+                  >->)
          (only-in "../../internal/keyword.rkt"
                   it)
          (only-in "../../internal/curry.rkt"
@@ -15,19 +16,32 @@
                   identity)
          (only-in "../../internal/match.rkt"
                   define/match1)
-         (only-in "../../type/maybe.rkt"
-                  Just
-                  nothing)
+         "../../type/maybe.rkt"
+         "../../type/json.rkt"
+         "../../type/show.rkt"
+         "../../type/map.rkt"
          (only-in "../../prelude/maybe.rkt"
                   maybe-else)
-         "../../type/json.rkt"
-         (only-in "../../type/show.rkt"
-                  Show?
-                  show)
-         (only-in "../../type/map.rkt"
-                  list->map
-                  map->list)
-         "../../prelude/map.rkt")
+         (only-in "../../prelude/json.rkt"
+                  json/read)
+         (only-in "../../prelude/map.rkt"
+                  map-insert
+                  map-empty
+                  map-empty?
+                  map-fold))
+
+(provide http/url
+         http/set-query
+         http/set-header
+         http/set-body
+         http/get
+         http/get/json
+         http/head
+         http/head/json
+         http/delete
+         http/delete/json
+         http/options
+         http/options/json)
 
 (struct BaseRequest [url query header]
   #:transparent)
@@ -45,9 +59,9 @@
   (BaseRequest raw-url query map-empty))
 
 (define/curry/contract (http/set-query key value base)
-  (-> Show? Show? BaseRequest? BaseRequest?)
+  (-> symbol? Show? BaseRequest? BaseRequest?)
   (->> (BaseRequest-query base)
-       (map-insert (show key) (show value))
+       (map-insert key (show value))
        (struct-copy BaseRequest base [query it])))
 
 (define/curry/contract (http/set-header key value base)
@@ -134,16 +148,32 @@
 
 (define/contract http/get
   (-> ToPlainRequest? input-port?)
-  (make-plain-request get-impure-port))
+  (make-plain-request get-pure-port))
+
+(define/contract http/get/json
+  (-> ToPlainRequest? any/c)
+  (>-> http/get json/read))
 
 (define/contract http/head
   (-> ToPlainRequest? input-port?)
   (make-plain-request head-pure-port))
 
+(define/contract http/head/json
+  (-> ToPlainRequest? any/c)
+  (>-> http/head json/read))
+
 (define/contract http/delete
   (-> ToPlainRequest? input-port?)
   (make-plain-request delete-pure-port))
 
+(define/contract http/delete/json
+  (-> ToPlainRequest? any/c)
+  (>-> http/delete json/read))
+
 (define/contract http/options
   (-> ToPlainRequest? input-port?)
   (make-plain-request options-pure-port))
+
+(define/contract http/options/json
+  (-> ToPlainRequest? any/c)
+  (>-> http/options json/read))
