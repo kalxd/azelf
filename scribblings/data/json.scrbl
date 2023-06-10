@@ -40,14 +40,18 @@
 
 @section[#:tag "json-ext"]{JSON扩展方法}
 
-@defproc[(jsexpr->primitive [value jsexpr?]) any/c]{
+@defproc[(json/->primitive [value jsexpr?]) any/c]{
 将JSON转化为原始类型数据。
 
 @examples[
 #:eval sb
 
-(jsexpr->primitive (list 1 2 3))
-(jsexpr->primitive 'null)
-(jsexpr->primitive (hash 'a (list 1 2 3) 'b (hash 'name 2 'age 4)))
+(json/->primitive (list 1 2 3))
+(json/->primitive 'null)
+(json/->primitive (hash 'a (list 1 2 3) 'b (hash 'name 2 'age 4)))
 ]
+}
+
+@defproc[(json/read [port input-port?]) any/c]{
+从@racket[input-port?]中读取出json。
 }
