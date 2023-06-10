@@ -18,6 +18,8 @@
          (only-in "../../type/maybe.rkt"
                   Just
                   nothing)
+         (only-in "../../prelude/maybe.rkt"
+                  maybe-else)
          "../../type/json.rkt"
          (only-in "../../type/show.rkt"
                   Show?
@@ -99,22 +101,40 @@
   (->> (->body-request base)
        (struct-copy BodyRequest it [body (Just body)])))
 
-(define/curry/contract (make-plain-request f base-option)
-  (-> procedure? ToPlainRequest? input-port?)
-  (match-define (PlainRequest req-url query header redirect)
-    (->plain-request base-option))
+(define/curry/contract (make-correct-url base-option)
+  (-> BaseRequest? (values url? (listof string?)))
+  (match-define (BaseRequest base-url query header) base-option)
   (define final-url
     (->> (map->list query)
-         (struct-copy url req-url [query it])))
-  (define (make-header acc key value)
-    (cons (format "~a: ~a" key value) acc))
-  (f final-url
-     (map-fold make-header '() header)
-     #:redirections redirect))
+         (struct-copy url base-url [query it])))
+  (define (make-header-pair acc k v)
+    (->> (format "~a: ~a" k v)
+         (cons it acc)))
+  (define header-list
+    (map-fold make-header-pair '() header))
+  (values final-url header-list))
+
+(define/curry/contract (make-plain-request f base-option)
+  (-> procedure? ToPlainRequest? input-port?)
+  (define option (->plain-request base-option))
+  (match-define (PlainRequest req-url query header redirect) option)
+  (define-values (final-url header-list)
+    (make-correct-url option))
+  (f final-url header-list))
+
+(define/curry/contract (make-body-request f base-option)
+  (-> procedure? ToBodyRequest? input-port?)
+  (define option (->plain-request base-option))
+  (match-define (BodyRequest req-url query header body) option)
+  (define-values (final-url header-list)
+    (make-correct-url option))
+  (define body-byte
+    (maybe-else #"" json->byte))
+  (f final-url body-byte header-list))
 
 (define/contract http/get
   (-> ToPlainRequest? input-port?)
-  (make-plain-request get-pure-port))
+  (make-plain-request get-impure-port))
 
 (define/contract http/head
   (-> ToPlainRequest? input-port?)
