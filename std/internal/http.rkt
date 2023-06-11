@@ -1,10 +1,13 @@
 #lang racket/base
 
 (require racket/generic
-         net/url)
+         net/url
+         (for-syntax racket/base
+                     racket/syntax))
 
 (require racket/contract
          racket/match
+         racket/port
          (only-in "../../internal/pipeline.rkt"
                   ->>
                   >->)
@@ -36,12 +39,22 @@
          http/set-body
          http/get
          http/get/json
+         http/get/html
          http/head
          http/head/json
+         http/head/html
          http/delete
          http/delete/json
+         http/head/html
          http/options
-         http/options/json)
+         http/options/json
+         http/options/html
+         http/post
+         http/post/json
+         http/post/html
+         http/put
+         http/put/json
+         http/put/html)
 
 (struct BaseRequest [url query header]
   #:transparent)
@@ -162,34 +175,46 @@
     (maybe-else #"" json->byte))
   (f final-url body-byte header-list))
 
-(define/contract http/get
-  (-> ToPlainRequest? input-port?)
-  (make-plain-request get-pure-port))
+(define-syntax (make-plain-function stx)
+  (syntax-case stx ()
+    [(_ name)
+     (with-syntax ([method-name (format-id #'name "http/~a" #'name)]
+                   [method-name/json (format-id #'name "http/~a/json" #'name)]
+                   [method-name/html (format-id #'name "http/~a/html" #'name)]
+                   [function-name (format-id #'name "~a-pure-port" #'name)])
+       #'(begin
+           (define/contract method-name
+             (-> ToPlainRequest? input-port?)
+             (make-plain-request function-name))
+           (define/contract method-name/json
+             (-> ToPlainRequest? any/c)
+             (>-> method-name json/read))
+           (define/contract method-name/html
+             (-> ToPlainRequest? string?)
+             (>-> method-name port->string))))]))
 
-(define/contract http/get/json
-  (-> ToPlainRequest? any/c)
-  (>-> http/get json/read))
+(define-syntax (make-body-function stx)
+  (syntax-case stx ()
+    [(_ name)
+     (with-syntax ([method-name (format-id #'name "http/~a" #'name)]
+                   [method-name/json (format-id #'name "http/~a/json" #'name)]
+                   [method-name/html (format-id #'name "http/~a/html" #'name)]
+                   [function-name (format-id #'name "~a-pure-port" #'name)])
+       #'(begin
+           (define/contract method-name
+             (-> ToBodyRequest? input-port?)
+             (make-body-request function-name))
+           (define/contract method-name/json
+             (-> ToBodyRequest? any/c)
+             (>-> method-name json/read))
+           (define/contract method-name/html
+             (-> ToBodyRequest? string?)
+             (>-> method-name port->string))))]))
 
-(define/contract http/head
-  (-> ToPlainRequest? input-port?)
-  (make-plain-request head-pure-port))
+(make-plain-function get)
+(make-plain-function head)
+(make-plain-function delete)
+(make-plain-function options)
 
-(define/contract http/head/json
-  (-> ToPlainRequest? any/c)
-  (>-> http/head json/read))
-
-(define/contract http/delete
-  (-> ToPlainRequest? input-port?)
-  (make-plain-request delete-pure-port))
-
-(define/contract http/delete/json
-  (-> ToPlainRequest? any/c)
-  (>-> http/delete json/read))
-
-(define/contract http/options
-  (-> ToPlainRequest? input-port?)
-  (make-plain-request options-pure-port))
-
-(define/contract http/options/json
-  (-> ToPlainRequest? any/c)
-  (>-> http/options json/read))
+(make-body-function post)
+(make-body-function put)

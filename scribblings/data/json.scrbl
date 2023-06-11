@@ -10,6 +10,10 @@
 转成json的接口，需最小实现@racket[->json]。
 }
 
+@defproc[(ToJSON? [a any/c]) boolean?]{
+是否实现了@racket[gen:ToJSON]。
+}
+
 @defproc[(->json [a gen:ToJSON]) jsexpr?]{
 将可转的数据，转成@racket[jsexpr?]。
 }
