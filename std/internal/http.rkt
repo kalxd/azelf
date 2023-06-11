@@ -80,7 +80,15 @@
   (->plain-request ToPlainRequest)
 
   #:defaults
-  ([BaseRequest?
+  ([string?
+    (define/generic self/->plain-request ->plain-request)
+    (define ->plain-request
+      (>-> http/url self/->plain-request))]
+   [url?
+    (define/generic self/->plain-request ->plain-request)
+    (define ->plain-request
+      (>-> http/url self/->plain-request))]
+   [BaseRequest?
     (define/match1 ->plain-request
       [(BaseRequest url query header)
        (PlainRequest url query header 0)])]
@@ -95,7 +103,15 @@
   (->body-request ToBodyRequest)
 
   #:defaults
-  ([BaseRequest?
+  ([string?
+    (define/generic self/->body-request ->body-request)
+    (define ->body-request
+      (>-> http/url self/->body-request))]
+   [url?
+    (define/generic self/->body-request ->body-request)
+    (define ->body-request
+      (>-> http/url self/->body-request))]
+   [BaseRequest?
     (define/match1 ->body-request
       [(BaseRequest url query header)
        (BodyRequest url query header nothing)])]
