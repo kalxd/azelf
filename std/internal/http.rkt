@@ -54,7 +54,8 @@
          http/post/html
          http/put
          http/put/json
-         http/put/html)
+         http/put/html
+         http/download-to)
 
 (struct BaseRequest [url query header]
   #:transparent)
@@ -218,3 +219,12 @@
 
 (make-body-function post)
 (make-body-function put)
+
+(define/contract (http/download-to url-link save-path)
+  (-> ToPlainRequest? path-string? void?)
+  (->> (http/get url-link)
+       port->bytes
+       (call-with-output-file
+         (λ (port)
+           (write-bytes it port))
+         #:exists 'replace)))

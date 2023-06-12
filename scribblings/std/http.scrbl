@@ -99,3 +99,7 @@
 @defproc[(http/set-body [body ToJSON?] [option BodyRequest?]) BodyRequest?]{
 设定请求body，仅对put这类请求有效。
 }
+
+@defproc[(http/download-to [link ToPlainRequest?] [save-path path-string?]) void?]{
+保存网络资源到本地。
+}
