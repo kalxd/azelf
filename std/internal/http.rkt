@@ -224,7 +224,8 @@
   (-> ToPlainRequest? path-string? void?)
   (->> (http/get url-link)
        port->bytes
-       (call-with-output-file
+       (call-with-output-file save-path
          (λ (port)
            (write-bytes it port))
-         #:exists 'replace)))
+         #:exists 'replace)
+       void))
