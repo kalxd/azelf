@@ -34,8 +34,8 @@
                   map-fold))
 
 (provide http/url
-         http/set-query
-         http/set-header
+         ; http/set-query
+         ; http/set-header
          http/set-body
          http/get
          http/get/json
@@ -72,6 +72,7 @@
       (values raw-url query)))
   (BaseRequest raw-url query map-empty))
 
+#|
 (define/curry/contract (http/set-query key value base)
   (-> symbol? Show? BaseRequest? BaseRequest?)
   (->> (BaseRequest-query base)
@@ -82,13 +83,48 @@
   (-> Show? Show? BaseRequest? BaseRequest?)
   (->> (BaseRequest-header base)
        (map-insert (show key) (show value))
-       (struct-copy BaseRequest base [header it])))
+(struct-copy BaseRequest base [header it])))
+|#
 
 (struct PlainRequest BaseRequest [redirect]
   #:transparent)
 
 (struct BodyRequest BaseRequest [body]
   #:transparent)
+
+(define-generics Requestable
+  (request/->base-request Requestable)
+  (request/set-header k v Requestable)
+  (request/set-query k v Requestable)
+
+  #:defaults
+  ([url?
+    (define/contract (request/->base-request self)
+      (-> url? BaseRequest?)
+      (define-values (raw-url query)
+        (let ([query (->> (url-query self)
+                          list->map)]
+              [raw-url (struct-copy url self
+                                    [query '()])])
+          (values raw-url query)))
+      (BaseRequest raw-url query map-empty))]
+   [string?
+    (define/generic self/priv/->base-request request/->base-request)
+    (define/contract request/->base-request
+      (-> string? BaseRequest?)
+      (>-> string->url self/priv/->base-request))
+    (define/contract (request/set-header k v url)
+      (-> symbol? Show? string? BaseRequest?)
+      (define base (http/url url))
+      (->> (BaseRequest-header base)
+           (map-insert k (show v))
+           (struct-copy BaseRequest base [header it])))
+    (define/contract (request/set-query k v url)
+      (-> Show? Show? string? BaseRequest?)
+      (define base (http/url url))
+      (->> (BaseRequest-query base)
+           (map-insert (show k) (show v))
+           (struct-copy BaseRequest base [query it])))]))
 
 (define-generics ToPlainRequest
   (->plain-request ToPlainRequest)
@@ -189,7 +225,8 @@
              (make-plain-request function-name))
            (define/contract method-name/json
              (-> ToPlainRequest? any/c)
-             (>-> method-name json/read))
+             (>-> method-name
+                  json/read))
            (define/contract method-name/html
              (-> ToPlainRequest? string?)
              (>-> method-name port->string))))]))
@@ -207,7 +244,8 @@
              (make-body-request function-name))
            (define/contract method-name/json
              (-> ToBodyRequest? any/c)
-             (>-> method-name json/read))
+             (>-> method-name
+                  json/read))
            (define/contract method-name/html
              (-> ToBodyRequest? string?)
              (>-> method-name port->string))))]))
