@@ -56,7 +56,7 @@
          http/put
          http/put/json
          http/put/html
-         http/download-to)
+         http/download)
 
 (struct RequestOption [uri
                      query
@@ -277,7 +277,7 @@
 
 (make-all-function)
 
-(define/curry/contract (http/download-to save-path source)
+(define/curry/contract (http/download save-path source)
   (-> path-string? Requestable? void?)
   (->> (http/get source)
        port->bytes

@@ -55,51 +55,40 @@
 
 创建一个简易的客户端实现，目前只返回响应体，没有响应头。因为发送请求不算是个纯函数，所以下面只列出必要的函数说明。
 
-@defproc*[([(http/get [option ToPlainRequest?]) input-port?]
-           [(http/head [option ToPlainRequest?]) input-port?]
-           [(http/delete [option ToPlainRequest?]) input-port?]
-           [(http/options [option ToPlainRequest?]) input-port?]
-           [(http/get/json [option ToPlainRequest?]) any/c]
-           [(http/head/json [option ToPlainRequest?]) any/c]
-           [(http/delete/json [option ToPlainRequest?]) any/c]
-           [(http/options/json [option ToPlainRequest?]) any/c]
-           [(http/get/html [option ToPlainRequest?]) string?]
-           [(http/head/html [option ToPlainRequest?]) string?]
-           [(http/delete/html [option ToPlainRequest?]) string?]
-           [(http/options/html [option ToPlainRequest?]) string?])]{
-发送不带任何body的请求。这些方法之间有，仅method和返回数据结构的不同。
-
-@codeblock{
-(http/get "www.baidu.com")
-}
-}
-
-@defproc*[([(http/post [option ToBodyRequest?]) input-port?]
+@defproc*[([(http/get [option Requestable?]) input-port?]
+           [(http/head [option Requestable?]) input-port?]
+           [(http/delete [option Requestable?]) input-port?]
+           [(http/options [option Requestable?]) input-port?]
+           [(http/get/json [option Requestable?]) any/c]
+           [(http/head/json [option Requestable?]) any/c]
+           [(http/delete/json [option Requestable?]) any/c]
+           [(http/options/json [option Requestable?]) any/c]
+           [(http/get/html [option Requestable?]) string?]
+           [(http/head/html [option Requestable?]) string?]
+           [(http/delete/html [option Requestable?]) string?]
+           [(http/options/html [option Requestable?]) string?]
+           [(http/post [option ToBodyRequest?]) input-port?]
            [(http/put [option ToBodyRequest?]) input-port?]
            [(http/post/json [option ToBodyRequest?]) any/c]
            [(http/put/json [option ToBodyRequest?]) any/c]
            [(http/post/html [option ToBodyRequest?]) string?]
            [(http/put/html [option ToBodyRequest?]) string?])]{
-使用方式同上，不同在于多出一个body。
+发送请求。这些方法之间，仅method和返回数据结构的不同。
 
 @codeblock{
+(http/get "www.baidu.com")
 (http/post/json "www.baidu.com")
+(http/delete (string->url "www.google.com"))
 }
 }
 
-@defproc*[([(http/set-query [key symbol?] [value Show?] [option BaseRequest?]) BaseRequest?]
-           [(http/set-header [key Show?] [value Show?] [option BaseRequest?]) BaseRequest?])]{
+@defproc*[([(http/set-query [key symbol?] [value Show?] [option Requestable?]) RequestOption?]
+           [(http/set-header [key Show?] [value Show?] [option Requestable?]) RequestOption?]
+           [(http/set-redirect [redirect exact-nonnegative-integer?] [option Requestable?]) RequestOption?]
+           [(http/set-body [body ToJSON?] [option Requestable?]) RequestOption?])]{
 一些常规的请求设定，字面意思。
 }
 
-@defproc[(http/set-redirect [redirect exact-nonnegative-integer?] [option PlainRequest?]) ToPlainRequest?]{
-设定大最跳转，仅对get这类请求有效。
-}
-
-@defproc[(http/set-body [body ToJSON?] [option BodyRequest?]) BodyRequest?]{
-设定请求body，仅对put这类请求有效。
-}
-
-@defproc[(http/download-to [link ToPlainRequest?] [save-path path-string?]) void?]{
+@defproc[(http/download [save-path path-string?] [link Requestable?]) void?]{
 保存网络资源到本地。
 }
