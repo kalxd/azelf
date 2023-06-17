@@ -277,9 +277,9 @@
 
 (make-all-function)
 
-(define/contract (http/download-to url-link save-path)
-  (-> Requestable? path-string? void?)
-  (->> (http/get url-link)
+(define/curry/contract (http/download-to save-path source)
+  (-> path-string? Requestable? void?)
+  (->> (http/get source)
        port->bytes
        (call-with-output-file save-path
          (λ (port)
