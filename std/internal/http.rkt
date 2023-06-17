@@ -34,10 +34,10 @@
                   map-empty?
                   map-fold))
 
-(provide http/url
-         ; http/set-query
-         ; http/set-header
+(provide http/set-query
+         http/set-header
          http/set-body
+         http/set-redirect
          http/get
          http/get/json
          http/get/html
@@ -57,157 +57,17 @@
          http/put/json
          http/put/html
          http/download-to)
-#|
-(define/curry/contract (http/set-query key value base)
-  (-> symbol? Show? BaseRequest? BaseRequest?)
-  (->> (BaseRequest-query base)
-       (map-insert key (show value))
-       (struct-copy BaseRequest base [query it])))
 
-(define/curry/contract (http/set-header key value base)
-  (-> Show? Show? BaseRequest? BaseRequest?)
-  (->> (BaseRequest-header base)
-       (map-insert (show key) (show value))
-(struct-copy BaseRequest base [header it])))
-|#
-
-(struct BaseRequest [url query header]
+(struct RequestOption [uri
+                     query
+                     header
+                     body
+                     redirect]
   #:transparent)
-(struct PlainRequest BaseRequest [redirect]
-  #:transparent)
-(struct BodyRequest BaseRequest [body]
-  #:transparent)
-
-(define/match1/contract baserequest->plainrequest
-  (-> BaseRequest? PlainRequest?)
-  [(BaseRequest a b c) (PlainRequest a b c 0)])
-
-(define/match1/contract baserequest->bodyrequest
-  (-> BaseRequest? BodyRequest?)
-  [(BaseRequest a b c) (BodyRequest a b c nothing)])
-
-(define/contract (http/url input)
-  (-> (or/c string? url?) BaseRequest?)
-  (define url-link
-    (if (url? input) input (string->url input)))
-  (define-values (raw-url query)
-    (let ([query (->> (url-query url-link)
-                      list->map)]
-          [raw-url (struct-copy url url-link
-                                [query '()])])
-      (values raw-url query)))
-  (BaseRequest raw-url query map-empty))
-
-(define-generics Requestable
-  (request/->base-request Requestable)
-  (request/set-header k v Requestable)
-  (request/set-query k v Requestable)
-  (request/get Requestable)
-
-  #:defaults
-  ([string?
-    (define/generic self/->base-request request/->base-request)
-    (define/generic self/set-query request/set-query)
-    (define/generic self/set-header request/set-header)
-    (define/contract request/->base-request
-      (-> string? BaseRequest?)
-      (>-> string->url self/->base-request))
-    (define/contract (request/set-header k v url-link)
-      (-> symbol? Show? string? BaseRequest?)
-      (->> (request/->base-request url-link)
-           (self/set-header k v it)))
-    (define/contract (request/set-query k v url-link)
-      (-> Show? Show? string? BaseRequest?)
-      (->> (request/->base-request url-link)
-           (self/set-query k v it)))]
-   [url?
-    (define/generic self/set-header request/set-header)
-    (define/contract (request/->base-request self)
-      (-> url? BaseRequest?)
-      (define-values (raw-url query)
-        (let ([query (->> (url-query self)
-                          list->map)]
-              [raw-url (struct-copy url self
-                                    [query '()])])
-          (values raw-url query)))
-      (BaseRequest raw-url query map-empty))
-    (define/contract (request/set-header k v self)
-      (-> symbol? Show? url? BaseRequest?)
-      (->> (request/->base-request self)
-           (self/set-header k v it)))]
-   [BaseRequest?
-    (define/contract request/->base-request
-      (-> BaseRequest? BaseRequest?)
-      identity)
-    (define/contract (request/set-query k v self)
-      (-> symbol? Show? BaseRequest? BaseRequest?)
-      (->> (BaseRequest-query self)
-           (map-insert k (show v))
-           (struct-copy BaseRequest self [query it])))
-    (define/contract (request/set-header k v self)
-      (-> Show? Show? BaseRequest? BaseRequest?)
-      (->> (BaseRequest-header self)
-           (map-insert (show k) (show v))
-           (struct-copy BaseRequest self [header it])))]))
-
-(define-generics ToPlainRequest
-  (->plain-request ToPlainRequest)
-
-  #:defaults
-  ([string?
-    (define/generic self/->plain-request ->plain-request)
-    (define ->plain-request
-      (>-> http/url self/->plain-request))]
-   [url?
-    (define/generic self/->plain-request ->plain-request)
-    (define ->plain-request
-      (>-> http/url self/->plain-request))]
-   [BaseRequest?
-    (define/match1 ->plain-request
-      [(BaseRequest url query header)
-       (PlainRequest url query header 0)])]
-   [PlainRequest?
-    (define ->plain-request identity)]
-   [BodyRequest?
-    (define/match1 ->plain-request
-      [(BodyRequest url query header _)
-       (PlainRequest url query header 0)])]))
-
-(define-generics ToBodyRequest
-  (->body-request ToBodyRequest)
-
-  #:defaults
-  ([string?
-    (define/generic self/->body-request ->body-request)
-    (define ->body-request
-      (>-> http/url self/->body-request))]
-   [url?
-    (define/generic self/->body-request ->body-request)
-    (define ->body-request
-      (>-> http/url self/->body-request))]
-   [BaseRequest?
-    (define/match1 ->body-request
-      [(BaseRequest url query header)
-       (BodyRequest url query header nothing)])]
-   [PlainRequest?
-    (define/match1 ->body-request
-      [(PlainRequest url query header _)
-       (BodyRequest url query header nothing)])]
-   [BodyRequest? (define ->body-request identity)]))
-
-(define/curry/contract (http/set-redirect redirect base)
-  (-> exact-nonnegative-integer? ToPlainRequest? PlainRequest?)
-  (->> (->plain-request base)
-       (struct-copy PlainRequest it [redirect redirect])))
-
-(define/curry/contract (http/set-body body base)
-  (-> ToJSON? ToBodyRequest? BodyRequest?)
-  (->> (->body-request base)
-       (struct-copy BodyRequest it [body (Just body)])))
 
 (define/curry/contract (make-correct-url base-option)
-  (-> BaseRequest? (values url? (listof string?)))
-  (match-define (BaseRequest base-url query header) base-option)
+  (-> RequestOption? (values url? (listof string?)))
+  (match-define (RequestOption base-url query header _ _) base-option)
   (define final-url
     (->> (map->list query)
          (struct-copy url base-url [query it])))
@@ -218,72 +78,207 @@
     (map-fold make-header-pair '() header))
   (values final-url header-list))
 
-(define/curry/contract (make-plain-request f base-option)
-  (-> procedure? ToPlainRequest? input-port?)
-  (define option (->plain-request base-option))
-  (match-define (PlainRequest req-url query header redirect) option)
+(define/curry/contract (make-plain-request f option)
+  (-> procedure? RequestOption? input-port?)
+  (match-define (RequestOption req-url query header _ redirect) option)
   (define-values (final-url header-list)
     (make-correct-url option))
   (f final-url header-list))
 
-(define/curry/contract (make-body-request f base-option)
-  (-> procedure? ToBodyRequest? input-port?)
-  (define option (->plain-request base-option))
-  (match-define (BodyRequest req-url query header body) option)
+(define/curry/contract (make-body-request f option)
+  (-> procedure? RequestOption? input-port?)
+  (match-define (RequestOption req-url query header body _) option)
   (define-values (final-url header-list)
     (make-correct-url option))
   (define body-byte
     (maybe-else #"" json->byte))
   (f final-url body-byte header-list))
 
-(define-syntax (make-plain-function stx)
-  (syntax-case stx ()
-    [(_ name)
-     (with-syntax ([method-name (format-id #'name "http/~a" #'name)]
-                   [method-name/json (format-id #'name "http/~a/json" #'name)]
-                   [method-name/html (format-id #'name "http/~a/html" #'name)]
-                   [function-name (format-id #'name "~a-pure-port" #'name)])
-       #'(begin
-           (define/contract method-name
-             (-> ToPlainRequest? input-port?)
-             (make-plain-request function-name))
-           (define/contract method-name/json
-             (-> ToPlainRequest? any/c)
-             (>-> method-name
-                  json/read))
-           (define/contract method-name/html
-             (-> ToPlainRequest? string?)
-             (>-> method-name port->string))))]))
+(define-generics Requestable
+  (request/make-url Requestable)
+  (request/set-header k v Requestable)
+  (request/set-query k v Requestable)
+  (request/set-redirect n Requestable)
+  (request/set-body n Requestable)
+  (request/get Requestable)
+  (request/head Requestable)
+  (request/delete Requestable)
+  (request/options Requestable)
+  (request/post Requestable)
+  (request/put Requestable)
 
-(define-syntax (make-body-function stx)
-  (syntax-case stx ()
-    [(_ name)
-     (with-syntax ([method-name (format-id #'name "http/~a" #'name)]
-                   [method-name/json (format-id #'name "http/~a/json" #'name)]
-                   [method-name/html (format-id #'name "http/~a/html" #'name)]
-                   [function-name (format-id #'name "~a-pure-port" #'name)])
-       #'(begin
-           (define/contract method-name
-             (-> ToBodyRequest? input-port?)
-             (make-body-request function-name))
-           (define/contract method-name/json
-             (-> ToBodyRequest? any/c)
-             (>-> method-name
-                  json/read))
-           (define/contract method-name/html
-             (-> ToBodyRequest? string?)
-             (>-> method-name port->string))))]))
+  #:defaults
+  ([string?
+    (define/generic self/make-url request/make-url)
+    (define/generic self/set-query request/set-query)
+    (define/generic self/set-header request/set-header)
+    (define/generic self/set-redirect request/set-redirect)
+    (define/generic self/get request/get)
+    (define/generic self/head request/head)
+    (define/generic self/delete request/delete)
+    (define/generic self/options request/options)
+    (define/generic self/post request/post)
+    (define/generic self/put request/put)
+    (define/contract request/make-url
+      (-> string? RequestOption?)
+      (>-> string->url self/make-url))
+    (define/contract (request/set-query k v self)
+      (-> symbol? Show? string? RequestOption?)
+      (->> (request/make-url self)
+           (self/set-query k v it)))
+    (define/contract (request/set-header k v self)
+      (-> Show? Show? string? RequestOption?)
+      (->> (request/make-url self)
+           (self/set-header k v it)))
+    (define/contract (request/set-redirect n self)
+      (-> exact-nonnegative-integer? string? RequestOption?)
+      (->> (request/make-url self)
+           (self/set-redirect n it)))
+    (define/contract request/get
+      (-> string? input-port?)
+      (>-> request/make-url self/get))
+    (define/contract request/head
+      (-> string? input-port?)
+      (>-> request/make-url self/head))
+    (define/contract request/delete
+      (-> string? input-port?)
+      (>-> request/make-url self/delete))
+    (define/contract request/options
+      (-> string? input-port?)
+      (>-> request/make-url self/options))
+    (define/contract request/post
+      (-> string? input-port?)
+      (>-> request/make-url self/post))
+    (define/contract request/put
+      (-> string? input-port?)
+      (>-> request/make-url self/put))]
 
-(make-plain-function get)
-(make-plain-function head)
-(make-plain-function delete)
-(make-plain-function options)
+   [url?
+    (define/generic self/set-query request/set-query)
+    (define/generic self/set-header request/set-header)
+    (define/generic self/set-redirect request/set-redirect)
+    (define/generic self/set-body request/set-body)
+    (define/generic self/get request/get)
+    (define/generic self/head request/head)
+    (define/generic self/delete request/delete)
+    (define/generic self/options request/options)
+    (define/generic self/post request/post)
+    (define/generic self/put request/put)
+    (define/contract (request/make-url self)
+      (-> url? RequestOption?)
+      (define-values (raw-url query)
+        (let ([query (->> (url-query self)
+                          list->map)]
+              [raw-url (struct-copy url self
+                                    [query '()])])
+          (values raw-url query)))
+      (RequestOption raw-url query map-empty nothing 0))
+    (define/contract (request/set-header k v self)
+      (-> symbol? Show? url? RequestOption?)
+      (->> (request/make-url self)
+           (self/set-header k v it)))
+    (define/contract (request/set-query k v self)
+      (-> Show? Show? url? RequestOption?)
+      (->> (request/make-url self)
+           (self/set-query k v it)))
+    (define/contract request/get
+      (-> url? input-port?)
+      (>-> request/make-url self/get))
+    (define/contract request/head
+      (-> url? input-port?)
+      (>-> request/make-url self/head))
+    (define/contract request/delete
+      (-> url? input-port?)
+      (>-> request/make-url self/delete))
+    (define/contract request/options
+      (-> url? input-port?)
+      (>-> request/make-url self/options))
+    (define/contract request/post
+      (-> url? input-port?)
+      (>-> request/make-url self/post))
+    (define/contract request/put
+      (-> url? input-port?)
+      (>-> request/make-url self/put))]
 
-(make-body-function post)
-(make-body-function put)
+   [RequestOption?
+    (define/generic self/set-redirect request/set-redirect)
+    (define/generic self/set-body request/set-body)
+    (define/contract request/make-url
+      (-> RequestOption? RequestOption?)
+      identity)
+    (define/contract (request/set-query key value base)
+      (-> symbol? Show? RequestOption? RequestOption?)
+      (->> (RequestOption-query base)
+           (map-insert key (show value))
+           (struct-copy RequestOption base [query it])))
+    (define/contract (request/set-header key value base)
+      (-> Show? Show? RequestOption? RequestOption?)
+      (->> (RequestOption-header base)
+           (map-insert (show key) (show value))
+           (struct-copy RequestOption base [header it])))
+    (define/contract (request/set-redirect n self)
+      (-> exact-nonnegative-integer? RequestOption? RequestOption?)
+      (struct-copy RequestOption self [redirect n]))
+    (define/contract (request/set-body body self)
+      (-> ToJSON? RequestOption? RequestOption?)
+      (struct-copy RequestOption self [body (Just body)]))
+    (define/contract request/get
+      (-> RequestOption? input-port?)
+      (make-plain-request get-pure-port))
+    (define/contract request/head
+      (-> RequestOption? input-port?)
+      (make-plain-request head-pure-port))
+    (define/contract request/delete
+      (-> RequestOption? input-port?)
+      (make-plain-request delete-pure-port))
+    (define/contract request/options
+      (-> RequestOption? input-port?)
+      (make-plain-request options-pure-port))
+    (define/contract request/post
+      (-> RequestOption? input-port?)
+      (make-body-request post-pure-port))
+    (define/contract request/put
+      (-> RequestOption? input-port?)
+      (make-body-request put-pure-port))]))
+
+(define-syntax (make-all-function stx)
+  #`(begin
+      #,@(for/list ([x '(get head delete options post put)])
+           (with-syntax ([origin (format-id stx "request/~a" x)]
+                         [http-name (format-id stx "http/~a" x)]
+                         [http-json (format-id stx "http/~a/json" x)]
+                         [http-html (format-id stx "http/~a/html" x)])
+             #`(begin
+                 (define/contract http-name
+                   (-> Requestable? input-port?)
+                   origin)
+                 (define/contract (http-json source)
+                   (-> Requestable? any/c)
+                   (>-> http-name json/read))
+                 (define/contract (http-html source)
+                   (-> Requestable? string)
+                   (>-> http-name port->string)))))))
+
+(define/curry/contract (http/set-query k v source)
+  (-> symbol? Show? Requestable? RequestOption?)
+  (request/set-query k v source))
+
+(define/curry/contract (http/set-header k v source)
+  (-> Show? Show? Requestable? RequestOption?)
+  (request/set-header k v source))
+
+(define/curry/contract (http/set-body body source)
+  (-> ToJSON? Requestable? RequestOption?)
+  (request/set-body body source))
+
+(define/curry/contract (http/set-redirect n source)
+  (-> exact-nonnegative-integer? Requestable? RequestOption?)
+  (request/set-redirect n source))
+
+(make-all-function)
 
 (define/contract (http/download-to url-link save-path)
-  (-> ToPlainRequest? path-string? void?)
+  (-> Requestable? path-string? void?)
   (->> (http/get url-link)
        port->bytes
        (call-with-output-file save-path
