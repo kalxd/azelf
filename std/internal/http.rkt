@@ -18,7 +18,8 @@
          (only-in "../../internal/function.rkt"
                   identity)
          (only-in "../../internal/match.rkt"
-                  define/match1)
+                  define/match1
+                  define/match1/contract)
          "../../type/maybe.rkt"
          "../../type/json.rkt"
          "../../type/show.rkt"
@@ -56,10 +57,6 @@
          http/put/json
          http/put/html
          http/download-to)
-
-(struct BaseRequest [url query header]
-  #:transparent)
-
 #|
 (define/curry/contract (http/set-query key value base)
   (-> symbol? Show? BaseRequest? BaseRequest?)
@@ -74,11 +71,20 @@
 (struct-copy BaseRequest base [header it])))
 |#
 
+(struct BaseRequest [url query header]
+  #:transparent)
 (struct PlainRequest BaseRequest [redirect]
   #:transparent)
-
 (struct BodyRequest BaseRequest [body]
   #:transparent)
+
+(define/match1/contract baserequest->plainrequest
+  (-> BaseRequest? PlainRequest?)
+  [(BaseRequest a b c) (PlainRequest a b c 0)])
+
+(define/match1/contract baserequest->bodyrequest
+  (-> BaseRequest? BodyRequest?)
+  [(BaseRequest a b c) (BodyRequest a b c nothing)])
 
 (define/contract (http/url input)
   (-> (or/c string? url?) BaseRequest?)
@@ -96,6 +102,7 @@
   (request/->base-request Requestable)
   (request/set-header k v Requestable)
   (request/set-query k v Requestable)
+  (request/get Requestable)
 
   #:defaults
   ([string?
