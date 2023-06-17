@@ -30,7 +30,7 @@ jobs:
         with:
           architecture: 'x64'
           distribution: 'full'
-          version: '8.1'
+          version: '8.7'
 
       - name: Install Dependencies
         run: raco pkg install --batch --auto
