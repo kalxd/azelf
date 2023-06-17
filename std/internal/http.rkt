@@ -60,18 +60,6 @@
 (struct BaseRequest [url query header]
   #:transparent)
 
-(define/contract (http/url input)
-  (-> (or/c string? url?) BaseRequest?)
-  (define url-link
-    (if (url? input) input (string->url input)))
-  (define-values (raw-url query)
-    (let ([query (->> (url-query url-link)
-                      list->map)]
-          [raw-url (struct-copy url url-link
-                                [query '()])])
-      (values raw-url query)))
-  (BaseRequest raw-url query map-empty))
-
 #|
 (define/curry/contract (http/set-query key value base)
   (-> symbol? Show? BaseRequest? BaseRequest?)
@@ -92,13 +80,41 @@
 (struct BodyRequest BaseRequest [body]
   #:transparent)
 
+(define/contract (http/url input)
+  (-> (or/c string? url?) BaseRequest?)
+  (define url-link
+    (if (url? input) input (string->url input)))
+  (define-values (raw-url query)
+    (let ([query (->> (url-query url-link)
+                      list->map)]
+          [raw-url (struct-copy url url-link
+                                [query '()])])
+      (values raw-url query)))
+  (BaseRequest raw-url query map-empty))
+
 (define-generics Requestable
   (request/->base-request Requestable)
   (request/set-header k v Requestable)
   (request/set-query k v Requestable)
 
   #:defaults
-  ([url?
+  ([string?
+    (define/generic self/->base-request request/->base-request)
+    (define/generic self/set-query request/set-query)
+    (define/generic self/set-header request/set-header)
+    (define/contract request/->base-request
+      (-> string? BaseRequest?)
+      (>-> string->url self/->base-request))
+    (define/contract (request/set-header k v url-link)
+      (-> symbol? Show? string? BaseRequest?)
+      (->> (request/->base-request url-link)
+           (self/set-header k v it)))
+    (define/contract (request/set-query k v url-link)
+      (-> Show? Show? string? BaseRequest?)
+      (->> (request/->base-request url-link)
+           (self/set-query k v it)))]
+   [url?
+    (define/generic self/set-header request/set-header)
     (define/contract (request/->base-request self)
       (-> url? BaseRequest?)
       (define-values (raw-url query)
@@ -107,24 +123,25 @@
               [raw-url (struct-copy url self
                                     [query '()])])
           (values raw-url query)))
-      (BaseRequest raw-url query map-empty))]
-   [string?
-    (define/generic self/priv/->base-request request/->base-request)
+      (BaseRequest raw-url query map-empty))
+    (define/contract (request/set-header k v self)
+      (-> symbol? Show? url? BaseRequest?)
+      (->> (request/->base-request self)
+           (self/set-header k v it)))]
+   [BaseRequest?
     (define/contract request/->base-request
-      (-> string? BaseRequest?)
-      (>-> string->url self/priv/->base-request))
-    (define/contract (request/set-header k v url)
-      (-> symbol? Show? string? BaseRequest?)
-      (define base (http/url url))
-      (->> (BaseRequest-header base)
+      (-> BaseRequest? BaseRequest?)
+      identity)
+    (define/contract (request/set-query k v self)
+      (-> symbol? Show? BaseRequest? BaseRequest?)
+      (->> (BaseRequest-query self)
            (map-insert k (show v))
-           (struct-copy BaseRequest base [header it])))
-    (define/contract (request/set-query k v url)
-      (-> Show? Show? string? BaseRequest?)
-      (define base (http/url url))
-      (->> (BaseRequest-query base)
+           (struct-copy BaseRequest self [query it])))
+    (define/contract (request/set-header k v self)
+      (-> Show? Show? BaseRequest? BaseRequest?)
+      (->> (BaseRequest-header self)
            (map-insert (show k) (show v))
-           (struct-copy BaseRequest base [query it])))]))
+           (struct-copy BaseRequest self [header it])))]))
 
 (define-generics ToPlainRequest
   (->plain-request ToPlainRequest)
