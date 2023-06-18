@@ -42,13 +42,6 @@
   (-> Applicative? Applicative? Applicative?)
   (<*> (<$ identity fa) fb))
 
-(define/curry/contract (liftA2 f fa fb)
-  (-> procedure?
-      Applicative?
-      Applicative?
-      Applicative?)
-  (<*> (map f fa) fb))
-
 (define/curry/contract (<* fa fb)
   (-> Applicative? Applicative? Applicative?)
-  (liftA2 const fa fb))
+  (<*> (<$ identity fb) fa))
