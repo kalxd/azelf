@@ -31,12 +31,6 @@ Applicative最小实现。
 ]
 }
 
-@defproc[(liftA2 [f (-> a b c)] [fa Applicative?] [fb Applicative?]) Applicative?]{
-@codeblock{
-(define liftA2 (<*> const))
-}
-}
-
 @defproc*[([(<* [fa Applicative?] [fb Applicative?]) Applicative?]
            [(*> [fb Applicative?] [fa Applicative?]) Applicative?])]{
 @examples[
