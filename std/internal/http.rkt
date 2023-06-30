@@ -254,7 +254,9 @@
                    origin)
                  (define/contract (http-json source)
                    (-> Requestable? any/c)
-                   (>-> http-name json/read))
+                   (>-> http-name
+                        (http/set-header "Content-Type" "application/json")
+                        json/read))
                  (define/contract (http-html source)
                    (-> Requestable? string)
                    (>-> http-name port->string)))))))
