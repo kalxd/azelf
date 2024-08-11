@@ -37,6 +37,7 @@
 (provide http/set-query
          http/set-header
          http/set-body
+         http/set-json
          http/set-redirect
          http/get
          http/get/json
@@ -93,10 +94,7 @@
   (define-values (final-url header-list)
     (make-correct-url option))
   (define body-byte
-    (maybe-else #"" json->byte body))
-  (displayln header-list)
-  (displayln (length header-list))
-  (displayln body-byte)
+    (maybe-> #"" body))
   (f final-url body-byte header-list))
 
 (define-generics Requestable
@@ -105,6 +103,7 @@
   (request/set-query k v Requestable)
   (request/set-redirect n Requestable)
   (request/set-body n Requestable)
+  (request/set-json n Requestable)
   (request/get Requestable)
   (request/head Requestable)
   (request/delete Requestable)
@@ -119,6 +118,7 @@
     (define/generic self/set-header request/set-header)
     (define/generic self/set-redirect request/set-redirect)
     (define/generic self/set-body request/set-body)
+    (define/generic self/set-json request/set-json)
     (define/generic self/get request/get)
     (define/generic self/head request/head)
     (define/generic self/delete request/delete)
@@ -141,9 +141,13 @@
       (->> (request/make-url self)
            (self/set-redirect n it)))
     (define/contract (request/set-body body self)
-      (-> ToJSON? string? RequestOption?)
+      (-> bytes? string? RequestOption?)
       (->> (request/make-url self)
            (self/set-body body it)))
+    (define/contract (request/set-json body self)
+      (-> ToJSON? string? RequestOption?)
+      (->> (request/make-url self)
+           (self/set-json body it)))
     (define/contract request/get
       (-> string? input-port?)
       (>-> request/make-url self/get))
@@ -168,6 +172,7 @@
     (define/generic self/set-header request/set-header)
     (define/generic self/set-redirect request/set-redirect)
     (define/generic self/set-body request/set-body)
+    (define/generic self/set-json request/set-json)
     (define/generic self/get request/get)
     (define/generic self/head request/head)
     (define/generic self/delete request/delete)
@@ -192,9 +197,13 @@
       (->> (request/make-url self)
            (self/set-query k v it)))
     (define/contract (request/set-body body self)
-      (-> ToJSON? url? RequestOption?)
+      (-> bytes? url? RequestOption?)
       (->> (request/make-url self)
            (self/set-body body it)))
+    (define/contract (request/set-json body self)
+      (-> ToJSON? url? RequestOption?)
+      (->> (request/make-url self)
+           (self/set-json body it)))
     (define/contract request/get
       (-> url? input-port?)
       (>-> request/make-url self/get))
@@ -234,8 +243,12 @@
       (-> exact-nonnegative-integer? RequestOption? RequestOption?)
       (struct-copy RequestOption self [redirect n]))
     (define/contract (request/set-body body self)
-      (-> ToJSON? RequestOption? RequestOption?)
+      (-> bytes? RequestOption? RequestOption?)
       (struct-copy RequestOption self [body (Just body)]))
+    (define/contract (request/set-json body self)
+      (-> ToJSON? RequestOption? RequestOption?)
+      (->> (json->byte body)
+           (self/set-body it self)))
     (define/contract request/get
       (-> RequestOption? input-port?)
       (make-plain-request get-pure-port))
@@ -284,8 +297,12 @@
   (request/set-header k v source))
 
 (define/curry/contract (http/set-body body source)
-  (-> ToJSON? Requestable? RequestOption?)
+  (-> bytes? Requestable? RequestOption?)
   (request/set-body body source))
+
+(define/curry/contract (http/set-json body source)
+  (-> ToJSON? Requestable? RequestOption?)
+  (request/set-json body source))
 
 (define/curry/contract (http/set-redirect n source)
   (-> exact-nonnegative-integer? Requestable? RequestOption?)
@@ -302,22 +319,3 @@
            (write-bytes it port))
          #:exists 'replace)
        void))
-
-(module+ test
-  (require net/base64)
-
-  (define password "UYAzwDJ84BidDe4X")
-  (define username "null")
-
-  (define bear
-    (->> (string-append password username)
-         string->bytes/utf-8
-         base64-encode))
-
-  (define rsp
-    (->> "http://localhost:3000/json"
-         (http/set-header "Content-Type" "application/x-www-form-urlencoded")
-         (http/set-header "Authorization" (format "Basic ~a" bear))
-         (http/set-body "a=b")
-         (! (displayln it))
-         request/post)))
