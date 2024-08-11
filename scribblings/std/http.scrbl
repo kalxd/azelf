@@ -85,8 +85,16 @@
 @defproc*[([(http/set-query [key symbol?] [value Show?] [option Requestable?]) RequestOption?]
            [(http/set-header [key Show?] [value Show?] [option Requestable?]) RequestOption?]
            [(http/set-redirect [redirect exact-nonnegative-integer?] [option Requestable?]) RequestOption?]
-           [(http/set-body [body ToJSON?] [option Requestable?]) RequestOption?])]{
+           [(http/set-json [body ToJSON?] [option Requestable?]) RequestOption?]
+           [(http/set-body [body bytes?] [option Requestable?]) RequestOption?])]{
 一些常规的请求设定，字面意思。
+
+@codeblock{
+(->> "http://localhost"
+     (http/set-header "Auth" "yes")
+     (http/set-json (hashmap 'a "b" 'c "d"))
+     (http/post))
+}
 }
 
 @defproc[(http/download [save-path path-string?] [link Requestable?]) void?]{
