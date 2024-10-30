@@ -84,7 +84,8 @@
   (match-define (RequestOption _ _ _ _ redirect) option)
   (define-values (final-url header-list)
     (make-correct-url option))
-  (f final-url header-list redirect))
+  (f final-url header-list
+     #:redirections redirect))
 
 (define/curry/contract (make-body-request f option)
   (-> (-> url? bytes? (listof string?) input-port?)
