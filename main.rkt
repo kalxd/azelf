@@ -1,3 +1,16 @@
+#lang typed/racket/base
+
+(provide (all-defined-out)
+         (all-from-out typed/racket/base))
+
+(require "./other.rkt")
+
+(: add (-> Real Real Real))
+(define (add x y)
+  (+ x y))
+
+#|
+
 #lang racket/base
 
 (require (only-in "./internal/mod.rkt"
@@ -36,3 +49,4 @@
              "./prelude/array.rkt"
              "./prelude/map.rkt"
              "./prelude/json.rkt")
+|#

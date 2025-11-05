@@ -5,7 +5,7 @@
 (define version "0.6.7")
 (define pkg-authors '(XGLey))
 
-(define deps '(["base" #:version "8.7"]))
+(define deps '(["base" #:version "8.16"]))
 
 (define build-deps '("scribble-lib"
                      "racket-doc"
