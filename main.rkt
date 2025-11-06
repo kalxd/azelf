@@ -1,13 +1,10 @@
 #lang typed/racket/base
 
+(require "./syntax/pipe.rkt")
+
 (provide (all-defined-out)
-         (all-from-out typed/racket/base))
-
-(require "./other.rkt")
-
-(: add (-> Real Real Real))
-(define (add x y)
-  (+ x y))
+         (all-from-out typed/racket/base)
+         (all-from-out "./syntax/pipe.rkt"))
 
 #|
 
