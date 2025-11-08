@@ -1,10 +1,12 @@
 #lang typed/racket/base
 
-(require "./syntax/pipe.rkt")
+(require "./syntax/pipe.rkt"
+         "./primitive/option.rkt")
 
 (provide (all-defined-out)
          (all-from-out typed/racket/base)
-         (all-from-out "./syntax/pipe.rkt"))
+         (all-from-out "./syntax/pipe.rkt"
+                       "./primitive/option.rkt"))
 
 #|
 
