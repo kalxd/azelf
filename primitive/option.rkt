@@ -3,8 +3,7 @@
 (require (for-syntax racket/base
                      syntax/parse))
 
-(provide Option
-         option/map
+(provide option/map
          option/unwrap-exn
          option/unwrap-error
          option/unwrap
@@ -16,8 +15,6 @@
     (cond
       [(eq? ma #f) (handle ...)]
       [else ma])))
-
-(define-type (Option a) (U #f a))
 
 (: option/map
    (All (a b) (-> (Option a)
