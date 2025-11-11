@@ -46,6 +46,14 @@
   (error "无法从#f的Option中取值！"))
 
 (define-syntax (do? stx)
+  (define-syntax-class define-bind
+    #:description "define绑定"
+    #:literals (define :)
+    (pattern (define key:id e:expr)
+             #:with expr #'(define key e))
+    (pattern (define key:id : ty:expr e:expr)
+             #:with expr #'(define key : ty e)))
+
   (syntax-parse stx
     ; 绑定
     [(_ (val:id (~literal <-) e:expr) es:expr ...+)
@@ -54,14 +62,9 @@
            [(eq? #f val) #f]
            [else (do? es ...)]))]
     ; 变量绑定
-    [(_ ((~literal define) val:id e:expr) es:expr ...+)
+    [(_ e:define-bind es:expr ...+)
      #'(begin
-         (define val e)
-         (do? es ...))]
-    ; 带类型绑定
-    [(_ ((~literal define) val:id (~literal :) ty:expr e:expr) es:expr ...+)
-     #'(begin
-         (define val : ty e)
+         e.expr
          (do? es ...))]
     ; 多条语句。
     [(_ e:expr es:expr ...+)
