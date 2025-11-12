@@ -21,13 +21,13 @@
 (define-syntax (expand-it stx)
   (if (check-it-syntax (syntax->datum stx))
       (syntax-case stx ()
-        [(_ (op ...))
+        [(_ fn)
          #'(λ (arg)
              (syntax-parameterize ([it (make-rename-transformer #'arg)])
-               #'(op ...)))])
+               #'fn))])
       (syntax-case stx ()
         [(_ fn)
          #'fn])))
 
 (module+ test
-  (expand-it (let ([a 1]) (+ a a))))
+  (expand-it (let ([a 1]) (+ it it))))
