@@ -24,10 +24,7 @@
         [(_ fn)
          #'(λ (arg)
              (syntax-parameterize ([it (make-rename-transformer #'arg)])
-               #'fn))])
+               fn))])
       (syntax-case stx ()
         [(_ fn)
          #'fn])))
-
-(module+ test
-  (expand-it (let ([a 1]) (+ it it))))
