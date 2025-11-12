@@ -3,7 +3,8 @@
 (require (for-syntax racket/base
                      syntax/parse))
 
-(provide option/map
+(provide nothing?
+         option/map
          option/unwrap-exn
          option/unwrap-error
          option/unwrap
@@ -16,13 +17,17 @@
       [(eq? ma #f) (handle ...)]
       [else ma])))
 
+(: nothing? (All (a) (-> (Option a) Boolean : #f)))
+(define (nothing? ma)
+  (eq? #f ma))
+
 (: option/map
    (All (a b) (-> (Option a)
                   (-> a b)
                   (Option b))))
 (define (option/map ma f)
   (cond
-    [(eq? ma #f) #f]
+    [(nothing? ma) #f]
     [else (f ma)]))
 
 (: option/unwrap-exn
