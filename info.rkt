@@ -14,12 +14,6 @@
 (define test-include-paths '("test"))
 (define compile-omit-paths '("test"
                              "scribblings"))
-(define test-omit-paths '("internal"
-                          "syntax"
-                          "type"
-                          "data"
-                          "ext"
-                          "internal"))
 
 (define scribblings '(("scribblings/azelf.scrbl"
                        (multi-page))))
