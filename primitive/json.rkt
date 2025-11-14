@@ -46,11 +46,13 @@
        (let ([msg (format "~a无法转化为boolean" value)])
          (json/unwrap-option it msg))))
 
-(: jobject? (-> JSExpr (Option HashTableTop)))
+(: jobject? (-> JSExpr (Option (Immutable-HashTable Symbol JSExpr))))
 (define (jobject? value)
-  (if-let ([hash? value] value)))
+  (if-let
+   ([hash? value]
+    (cast value (Immutable-HashTable Symbol JSExpr)))))
 
-(: jobject! (-> JSExpr HashTableTop))
+(: jobject! (-> JSExpr (Immutable-HashTable Symbol JSExpr)))
 (define (jobject! value)
   (->> (jobject? value)
        (let ([msg (format "~a无法转化为object" value)])
