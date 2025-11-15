@@ -15,6 +15,9 @@
 
 (struct exn:fail:json exn:fail ())
 
+(define-type JObject
+  (Immutable-HashTable Symbol JSExpr))
+
 (define-syntax-rule (if-let [body result])
   (cond
     [body result]
@@ -46,14 +49,28 @@
        (let ([msg (format "~a无法转化为boolean" value)])
          (json/unwrap-option it msg))))
 
-(: jobject? (-> JSExpr (Option (Immutable-HashTable Symbol JSExpr))))
+(: jobject? (-> JSExpr (Option JObject)))
 (define (jobject? value)
   (if-let
    ([hash? value]
-    (cast value (Immutable-HashTable Symbol JSExpr)))))
+    (cast value JObject))))
 
-(: jobject! (-> JSExpr (Immutable-HashTable Symbol JSExpr)))
+(: jobject! (-> JSExpr JObject))
 (define (jobject! value)
   (->> (jobject? value)
        (let ([msg (format "~a无法转化为object" value)])
          (json/unwrap-option it msg))))
+
+(: object
+   (All (a)
+        (-> (-> JObject a)
+            (-> JSExpr a))))
+(define ((object f) value)
+  (->> (jobject! value)
+       f))
+
+(module+ test
+  (define value : JSExpr 1)
+
+  (struct user ([name : String])
+    #:transparent))
