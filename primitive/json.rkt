@@ -1,8 +1,6 @@
 #lang typed/racket/base
 
 (require typed/json
-         (only-in "./option.rkt"
-                  option/unwrap-exn)
          "../syntax/pipe.rkt"
          "../syntax/it.rkt")
 
@@ -110,12 +108,18 @@
   (cond
     [(hash-has-key? obj name)
      (->> (hash-ref obj name)
-          trans)]
+          (with-handlers ([exn:fail:json?
+                           (λ ([e : JsonError])
+                             (let ([msg (format "~a字段解析出错：~a" name (exn-message e))]
+                                   [stack (exn-continuation-marks e)])
+                               (raise (exn:fail:json msg stack))))])
+            (trans it)))]
     [else (let ([msg (format "~a没有~a字段！" obj name)])
             (raise (json-err msg)))]))
 
 (module+ test
-  (define value : JSExpr 1)
+  (define value : JSExpr
+    #hash((name . 10)))
 
   (struct user ([name : String])
     #:transparent
