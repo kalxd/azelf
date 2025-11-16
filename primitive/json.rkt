@@ -14,7 +14,8 @@
          nullable->option
          nullable/unwrap-or
          nullable/unwrap
-         object
+         jobject?
+         jobject!
          jfield)
 
 (struct exn:fail:json exn:fail ()
@@ -25,6 +26,9 @@
 
 (define-type JObject
   (Immutable-HashTable Symbol JSExpr))
+
+(define-type JArray
+  (Listof JSExpr))
 
 (define-syntax-rule (raise-json-error msg)
   (raise (exn:fail:json msg (current-continuation-marks))))
@@ -87,26 +91,27 @@
        (let ([msg (format "~a无法转化为boolean" value)])
          (nullable/unwrap-err it msg))))
 
-(: jobject? (-> JSExpr (Nullable JObject)))
-(define (jobject? value)
+(: jobject?
+   (All (a)
+        (-> (-> JObject (Nullable a))
+            (-> JSExpr (Nullable a)))))
+(define ((jobject? f) value)
   (if-let
    ([hash? value]
-    (cast value JObject))))
+    (->> (cast value JObject)
+         f))))
 
-(: jobject! (-> JSExpr JObject))
-(define (jobject! value)
-  (->> (jobject? value)
-       (let ([msg (format "~a无法转化为object" value)])
-         (nullable/unwrap-err it msg))))
-
-(: object
+(: jobject!
    (All (a)
         (-> (-> JObject a)
             (-> JSExpr a))))
-(define (object f)
-  (λ (value)
-    (->> (jobject! value)
-         f)))
+(define ((jobject! f) value)
+  (cond
+    [(eq? 'null value)
+     (let ([msg (format "~a无法转化为object！" value)])
+       (raise-json-error msg))]
+    [else (->> (cast value JObject)
+               f)]))
 
 (: jfield
    (All (a)
@@ -128,15 +133,15 @@
 
 (module+ test
   (define value : JSExpr
-    #hash((name . 10)))
+    #hash((name . "sb")))
 
   (struct user ([name : (Nullable String)])
     #:transparent
     #:type-name User)
 
   (define json->user
-    (object (λ ([o : JObject])
-              (let ([name (jfield o 'name jstring?)])
-                (user name)))))
+    (jobject! (λ ([o : JObject])
+                (let ([name (jfield o 'name jstring?)])
+                  (user name)))))
 
   (json->user value))
