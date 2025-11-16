@@ -13,33 +13,50 @@
          jboolean?
          jboolean!)
 
-(struct exn:fail:json exn:fail ())
+(struct exn:fail:json exn:fail ()
+  #:type-name JsonError)
+
+(define-type (Nullable a)
+  (U 'null a))
 
 (define-type JObject
   (Immutable-HashTable Symbol JSExpr))
 
+(define-syntax-rule (json-err msg)
+  (exn:fail:json msg (current-continuation-marks)))
+
+(: nullable->option
+   (All (a)
+        (-> (Nullable a) (Option a))))
+(define (nullable->option ma)
+  (cond
+    [(eq? 'null ma) #f]
+    [else ma]))
+
 (define-syntax-rule (if-let [body result])
   (cond
     [body result]
-    [else #f]))
+    [else 'null]))
 
-(: json/unwrap-option
-   (All (a) (-> (Option a) String a)))
-(define (json/unwrap-option ma msg)
-  (option/unwrap-exn ma
-                     (exn:fail:json msg (current-continuation-marks))))
+(: nullable/unwrap-err
+   (All (a) (-> (Nullable a) String a)))
+(define (nullable/unwrap-err ma msg)
+  (cond
+    [(eq? 'null ma)
+     (raise (exn:fail:json msg (current-continuation-marks)))]
+    [else ma]))
 
-(: jstring? (-> JSExpr (Option String)))
+(: jstring? (-> JSExpr (Nullable String)))
 (define (jstring? value)
   (if-let ([string? value] value)))
 
 (: jstring! (-> JSExpr String))
 (define (jstring! json)
   (->> (jstring? json)
-       (json/unwrap-option it
-                           (format "无法将~a转化成string" json))))
+       (let ([msg (format "~a无法转化成string" json)])
+         (nullable/unwrap-err it msg))))
 
-(: jboolean? (-> JSExpr (Option Boolean)))
+(: jboolean? (-> JSExpr (Nullable Boolean)))
 (define (jboolean? value)
   (if-let ([boolean? value] value)))
 
@@ -47,9 +64,9 @@
 (define (jboolean! value)
   (->> (jboolean? value)
        (let ([msg (format "~a无法转化为boolean" value)])
-         (json/unwrap-option it msg))))
+         (nullable/unwrap-err it msg))))
 
-(: jobject? (-> JSExpr (Option JObject)))
+(: jobject? (-> JSExpr (Nullable JObject)))
 (define (jobject? value)
   (if-let
    ([hash? value]
@@ -59,7 +76,7 @@
 (define (jobject! value)
   (->> (jobject? value)
        (let ([msg (format "~a无法转化为object" value)])
-         (json/unwrap-option it msg))))
+         (nullable/unwrap-err it msg))))
 
 (: object
    (All (a)
