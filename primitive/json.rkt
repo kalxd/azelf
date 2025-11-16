@@ -82,12 +82,46 @@
    (All (a)
         (-> (-> JObject a)
             (-> JSExpr a))))
-(define ((object f) value)
-  (->> (jobject! value)
-       f))
+(define (object f)
+  (λ (value)
+    (->> (jobject! value)
+         f)))
+
+(: field?
+   (All (a)
+        (-> JObject
+            Symbol
+            (-> JSExpr (Nullable a))
+            (Nullable a))))
+(define (field? obj name trans)
+  (cond
+    [(hash-has-key? obj name)
+     (let ([val (hash-ref obj name)])
+       (trans val))]
+    [else 'null]))
+
+(: field!
+   (All (a)
+        (-> JObject
+            Symbol
+            (-> JSExpr a)
+            a)))
+(define (field! obj name trans)
+  (cond
+    [(hash-has-key? obj name)
+     (->> (hash-ref obj name)
+          trans)]
+    [else (let ([msg (format "~a没有~a字段！" obj name)])
+            (raise (json-err msg)))]))
 
 (module+ test
   (define value : JSExpr 1)
 
   (struct user ([name : String])
-    #:transparent))
+    #:transparent
+    #:type-name User)
+
+  (define json->user
+    (object (λ ([o : JObject])
+              (let ([name (field! o 'name jstring!)])
+                (user name))))))
