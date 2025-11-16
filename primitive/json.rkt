@@ -16,6 +16,8 @@
          nullable/unwrap
          jobject?
          jobject!
+         jarray?
+         jarray!
          jfield)
 
 (struct exn:fail:json exn:fail ()
@@ -47,9 +49,9 @@
             a
             a)))
 (define (nullable/unwrap-or ma a)
-   (if (eq? 'null ma)
-       a
-       ma))
+  (if (eq? 'null ma)
+      a
+      ma))
 
 (: nullable/unwrap
    (All (a) (-> (Nullable a) a)))
@@ -131,17 +133,42 @@
     [else (let ([msg (format "~a没有~a字段！" obj name)])
             (raise-json-error msg))]))
 
-(module+ test
-  (define value : JSExpr
-    #hash((name . "sb")))
+(: jarray:tranverse
+   (All (a b)
+        (-> (Listof a)
+            (-> a (Nullable b))
+            (Nullable (Listof b)))))
+(define (jarray:tranverse xs f)
+  (define-values (acc is-break)
+    (for/fold ([acc : (Listof b) (list)]
+               [is-break : Boolean #f])
+              ([x xs]
+               #:break is-break)
+      (let ([v (f x)])
+        (if (eq? v 'null)
+            (values acc #t)
+            (values (append acc (list v)) #f)))))
+  (if is-break 'null acc))
 
-  (struct user ([name : (Nullable String)])
-    #:transparent
-    #:type-name User)
+(: jarray?
+   (All (a)
+        (-> (-> JSExpr (Nullable a))
+            (-> JSExpr (Nullable (Listof a))))))
+(define ((jarray? f) value)
+  (if-let
+   [(list? value)
+    (->> (cast value JArray)
+         (jarray:tranverse it f))]))
 
-  (define json->user
-    (jobject! (λ ([o : JObject])
-                (let ([name (jfield o 'name jstring?)])
-                  (user name)))))
-
-  (json->user value))
+(: jarray!
+   (All (a)
+        (-> (-> JSExpr a)
+            (-> JSExpr (Listof a)))))
+(define ((jarray! f) value)
+  (cond
+    [(list? value)
+     (->> (cast value JArray)
+          (map f it))]
+    [else
+     (let ([msg (format "~a无法转化成jarray！" value)])
+       (raise-json-error msg))]))
