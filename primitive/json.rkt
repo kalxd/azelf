@@ -20,8 +20,8 @@
 (define-type JObject
   (Immutable-HashTable Symbol JSExpr))
 
-(define-syntax-rule (json-err msg)
-  (exn:fail:json msg (current-continuation-marks)))
+(define-syntax-rule (raise-json-error msg)
+  (raise (exn:fail:json msg (current-continuation-marks))))
 
 (: nullable->option
    (All (a)
@@ -110,12 +110,11 @@
      (->> (hash-ref obj name)
           (with-handlers ([exn:fail:json?
                            (λ ([e : JsonError])
-                             (let ([msg (format "~a字段解析出错：~a" name (exn-message e))]
-                                   [stack (exn-continuation-marks e)])
-                               (raise (exn:fail:json msg stack))))])
+                             (let ([msg (format "~a字段解析出错：~a" name (exn-message e))])
+                               (raise-json-error msg)))])
             (trans it)))]
     [else (let ([msg (format "~a没有~a字段！" obj name)])
-            (raise (json-err msg)))]))
+            (raise-json-error msg))]))
 
 (module+ test
   (define value : JSExpr
