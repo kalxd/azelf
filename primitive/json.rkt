@@ -9,7 +9,13 @@
          jstring?
          jstring!
          jboolean?
-         jboolean!)
+         jboolean!
+         JObject
+         nullable->option
+         nullable/unwrap-or
+         nullable/unwrap
+         object
+         jfield)
 
 (struct exn:fail:json exn:fail ()
   #:type-name JsonError)
@@ -30,6 +36,23 @@
   (cond
     [(eq? 'null ma) #f]
     [else ma]))
+
+(: nullable/unwrap-or
+   (All (a)
+        (-> (Nullable a)
+            a
+            a)))
+(define (nullable/unwrap-or ma a)
+   (if (eq? 'null ma)
+       a
+       ma))
+
+(: nullable/unwrap
+   (All (a) (-> (Nullable a) a)))
+(define (nullable/unwrap ma)
+  (when (eq? 'null ma)
+    (raise-user-error "尝试从null中转成为普通数据！"))
+  ma)
 
 (define-syntax-rule (if-let [body result])
   (cond
@@ -85,26 +108,13 @@
     (->> (jobject! value)
          f)))
 
-(: field?
-   (All (a)
-        (-> JObject
-            Symbol
-            (-> JSExpr (Nullable a))
-            (Nullable a))))
-(define (field? obj name trans)
-  (cond
-    [(hash-has-key? obj name)
-     (let ([val (hash-ref obj name)])
-       (trans val))]
-    [else 'null]))
-
-(: field!
+(: jfield
    (All (a)
         (-> JObject
             Symbol
             (-> JSExpr a)
             a)))
-(define (field! obj name trans)
+(define (jfield obj name trans)
   (cond
     [(hash-has-key? obj name)
      (->> (hash-ref obj name)
@@ -120,11 +130,13 @@
   (define value : JSExpr
     #hash((name . 10)))
 
-  (struct user ([name : String])
+  (struct user ([name : (Nullable String)])
     #:transparent
     #:type-name User)
 
   (define json->user
     (object (λ ([o : JObject])
-              (let ([name (field! o 'name jstring!)])
-                (user name))))))
+              (let ([name (jfield o 'name jstring?)])
+                (user name)))))
+
+  (json->user value))
