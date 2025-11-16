@@ -10,7 +10,12 @@
          jstring!
          jboolean?
          jboolean!
+         jinteger?
+         jinteger?
+         jfloat?
+         jfloat!
          JObject
+         JArray
          nullable->option
          nullable/unwrap-or
          nullable/unwrap
@@ -91,6 +96,29 @@
 (define (jboolean! value)
   (->> (jboolean? value)
        (let ([msg (format "~a无法转化为boolean" value)])
+         (nullable/unwrap-err it msg))))
+
+(: jinteger? (-> JSExpr (Nullable Integer)))
+(define (jinteger? value)
+  (if-let
+   ([integer? value]
+    (cast value Integer))))
+
+(: jinteger! (-> JSExpr Integer))
+(define (jinteger! value)
+  (->> (jinteger? value)
+       (let ([msg (format "~a无法转成为integer！" value)])
+         (nullable/unwrap-err it msg))))
+
+(: jfloat? (-> JSExpr (Nullable Inexact-Real)))
+(define (jfloat? value)
+  (if-let
+   [(inexact-real? value) value]))
+
+(: jfloat! (-> JSExpr Inexact-Real))
+(define (jfloat! value)
+  (->> (jfloat? value)
+       (let ([msg (format "~a无法转化为float！" value)])
          (nullable/unwrap-err it msg))))
 
 (: jobject?
