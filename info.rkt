@@ -11,9 +11,5 @@
                      "racket-doc"
                      "rackunit-lib"))
 
-(define test-include-paths '("test"))
-(define compile-omit-paths '("test"
-                             "scribblings"))
-
 (define scribblings '(("scribblings/azelf.scrbl"
                        (multi-page))))
