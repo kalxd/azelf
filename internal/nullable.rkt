@@ -24,5 +24,16 @@
   (cond
     [(nullable/nil? ma) ma]
     [else
-     (match-let ([(nullable/some mb) ma])
-       (nullable/some (f mb)))]))
+     (match-let ([(nullable/some b) ma])
+       (nullable/some (f b)))]))
+
+(: nullable->option
+   (All (A)
+        (-> (Nullable A)
+            (Option A))))
+(define (nullable->option ma)
+  (cond
+    [(nullable/nil? ma) #f]
+    [else
+     (match-let ([(nullable/some a) ma])
+       a)]))
