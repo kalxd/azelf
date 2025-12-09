@@ -3,7 +3,11 @@
 (require racket/match)
 
 (provide Nullable
-         nullable/map)
+         nullable/nil?
+         nullable/some?
+         match-nullable?
+         nullable/map
+         nullable/chain)
 
 (struct nullable/nil ()
   #:type-name Nullable/Nil)
@@ -15,17 +19,32 @@
 (define-type (Nullable A)
   (U Nullable/Nil (Nullable/Some A)))
 
+(define-syntax-rule (match-nullable? ma [a (body ...)])
+  (cond
+    [(nullable/nil? ma) ma]
+    [else
+     (match-let ([(nullable/some a) ma])
+       (body ...))]))
+
 (: nullable/map
    (All (A B)
         (-> (Nullable A)
             (-> A B)
             (Nullable B))))
 (define (nullable/map ma f)
-  (cond
-    [(nullable/nil? ma) ma]
-    [else
-     (match-let ([(nullable/some b) ma])
-       (nullable/some (f b)))]))
+  (match-nullable?
+   ma
+   [a (nullable/some (f a))]))
+
+(: nullable/chain
+   (All (A B)
+        (-> (Nullable A)
+            (-> A (Nullable B))
+            (Nullable B))))
+(define (nullable/chain ma f)
+  (match-nullable?
+   ma
+   [a (f a)]))
 
 (: nullable->option
    (All (A)
