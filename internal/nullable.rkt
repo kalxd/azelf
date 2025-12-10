@@ -15,6 +15,7 @@
          nullable/unwrap
          nullable/unwrap-or
          nullable->option
+         option->nullable
          do/nullable?)
 
 (struct nullable/nil ()
@@ -103,6 +104,14 @@
     [else
      (match-let ([(nullable/some a) ma])
        a)]))
+
+(: option->nullable
+   (All (a) (-> (Option a)
+                (Nullable a))))
+(define (option->nullable a)
+  (if a
+      (nullable/some a)
+      (nullable/nil)))
 
 (define-syntax (do/nullable? stx)
   (define-syntax-class define-bind
