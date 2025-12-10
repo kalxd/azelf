@@ -1,10 +1,12 @@
 #lang typed/racket/base
 
-(require racket/match)
+(require racket/match
+         (for-syntax racket/base
+                     syntax/parse))
 
 (provide Nullable
-         nullable/nil?
-         nullable/some?
+         (rename-out [nullable/nil? nullable/has-nil]
+                     [nullable/some nullable/has-some])
          match-nullable?
          nullable/map
          nullable/chain
@@ -12,7 +14,8 @@
          nullable/unwrap-error
          nullable/unwrap
          nullable/unwrap-or
-         nullable->option)
+         nullable->option
+         do/nullable?)
 
 (struct nullable/nil ()
   #:type-name Nullable/Nil)
@@ -100,3 +103,32 @@
     [else
      (match-let ([(nullable/some a) ma])
        a)]))
+
+(define-syntax (do/nullable? stx)
+  (define-syntax-class define-bind
+    #:description "define绑定"
+    #:literals (define :)
+    (pattern (define key:id e:expr)
+             #:with expr #'(define key e))
+    (pattern (define key:id : ty:expr e:expr)
+             #:with expr #'(define key : ty e)))
+
+  (syntax-parse stx
+    ; 绑定
+    [(_ (val:id (~literal <-) e:expr) es:expr ...)
+     #'(match-nullable?
+        e
+        [a (let [(val a)]
+             (do/nullable? es ...))])]
+    ; 变量绑定
+    [(_ e:define-bind es:expr ...+)
+     #'(begin e.expr (do/nullable? es ...))]
+
+    ; 多条语句
+    [(_ e:expr es:expr ...+)
+     #'(match-nullable?
+        e
+        [_ (do/nullable? es ...)])]
+
+    ; 最后一句
+    [(_ e:expr) #'e]))
