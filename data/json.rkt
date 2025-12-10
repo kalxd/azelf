@@ -7,12 +7,12 @@
          jstring?
          jstring!
          jboolean?
-         jboolean!)
-#|
+         jboolean!
          jinteger?
          jinteger?
          jfloat?
-         jfloat!
+         jfloat!)
+#|
          JObject
          JArray
          jobject?
@@ -65,30 +65,24 @@
   (require-json-type (jboolean? value)
                      (format "~a无法转化为boolean" value)))
 
-#|
+
 (: jinteger? (-> JSExpr (Nullable Integer)))
-(define (jinteger? value)
-  (if-let
-   ([integer? value]
-    (cast value Integer))))
+(define jinteger? (predicate-simple-type exact-integer?))
 
 (: jinteger! (-> JSExpr Integer))
 (define (jinteger! value)
-  (->> (jinteger? value)
-       (let ([msg (format "~a无法转成为integer！" value)])
-         (nullable/unwrap-err it msg))))
+  (require-json-type (jinteger? value)
+(format "~a无法转成为integer！" value)))
 
 (: jfloat? (-> JSExpr (Nullable Inexact-Real)))
-(define (jfloat? value)
-  (if-let
-   [(inexact-real? value) value]))
+(define jfloat? (predicate-simple-type inexact-real?))
 
 (: jfloat! (-> JSExpr Inexact-Real))
 (define (jfloat! value)
-  (->> (jfloat? value)
-       (let ([msg (format "~a无法转化为float！" value)])
-         (nullable/unwrap-err it msg))))
+  (require-json-type (jfloat? value)
+                     (format "~a无法转化为float！" value)))
 
+#|
 (: jobject?
    (All (a)
         (-> (-> JObject (Nullable a))
