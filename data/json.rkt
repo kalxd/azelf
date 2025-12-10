@@ -11,12 +11,12 @@
          jinteger?
          jinteger?
          jfloat?
-         jfloat!)
+         jfloat!
+         jobject?
+         jobject!)
 #|
          JObject
          JArray
-         jobject?
-         jobject!
          jarray?
          jarray!
          jfield)
@@ -26,7 +26,7 @@
   #:type-name JsonError)
 
 (define-type JObject
-  (Immutable-HashTable Symbol JSExpr))
+  (HashTable Symbol JSExpr))
 
 (define-type JArray
   (Listof JSExpr))
@@ -82,28 +82,19 @@
   (require-json-type (jfloat? value)
                      (format "~a无法转化为float！" value)))
 
-#|
-(: jobject?
-   (All (a)
-        (-> (-> JObject (Nullable a))
-            (-> JSExpr (Nullable a)))))
-(define ((jobject? f) value)
-  (if-let
-   ([hash? value]
-    (->> (cast value JObject)
-         f))))
 
-(: jobject!
-   (All (a)
-        (-> (-> JObject a)
-            (-> JSExpr a))))
-(define ((jobject! f) value)
-  (cond
-    [(eq? 'null value)
-     (let ([msg (format "~a无法转化为object！" value)])
-       (raise-json-error msg))]
-    [else (->> (cast value JObject)
-               f)]))
+(: jobject? (-> JSExpr (Nullable JObject)))
+(define (jobject? value)
+  (if (hash? value)
+      (some (cast value JObject))
+      nil))
+
+(: jobject! (-> JSExpr JObject))
+(define (jobject! value)
+  (require-json-type (jobject? value)
+                     (format "~a无法转化成object!" value)))
+
+#|
 
 (: jfield
    (All (a)
