@@ -1,35 +1,29 @@
 #lang typed/racket/base
 
 (require typed/json
-         "../syntax/pipe.rkt"
-         "../syntax/it.rkt")
+         "../internal/nullable.rkt")
 
-(provide (all-from-out typed/json)
-         exn:fail:json?
+(provide exn:fail:json?
          jstring?
          jstring!
          jboolean?
-         jboolean!
+         jboolean!)
+#|
          jinteger?
          jinteger?
          jfloat?
          jfloat!
          JObject
          JArray
-         nullable->option
-         nullable/unwrap-or
-         nullable/unwrap
          jobject?
          jobject!
          jarray?
          jarray!
          jfield)
+         |#
 
 (struct exn:fail:json exn:fail ()
   #:type-name JsonError)
-
-(define-type (Nullable a)
-  (U 'null a))
 
 (define-type JObject
   (Immutable-HashTable Symbol JSExpr))
@@ -40,64 +34,38 @@
 (define-syntax-rule (raise-json-error msg)
   (raise (exn:fail:json msg (current-continuation-marks))))
 
-(: nullable->option
+(define-syntax-rule (require-json-type predicate error-msg)
+  (match-nullable predicate
+                  [a a]
+                  (raise-json-error error-msg)))
+
+(: predicate-simple-type
    (All (a)
-        (-> (Nullable a) (Option a))))
-(define (nullable->option ma)
-  (cond
-    [(eq? 'null ma) #f]
-    [else ma]))
-
-(: nullable/unwrap-or
-   (All (a)
-        (-> (Nullable a)
-            a
-            a)))
-(define (nullable/unwrap-or ma a)
-  (if (eq? 'null ma)
-      a
-      ma))
-
-(: nullable/unwrap
-   (All (a) (-> (Nullable a) a)))
-(define (nullable/unwrap ma)
-  (when (eq? 'null ma)
-    (raise-user-error "尝试从null中转成为普通数据！"))
-  ma)
-
-(define-syntax-rule (if-let [body result])
-  (cond
-    [body result]
-    [else 'null]))
-
-(: nullable/unwrap-err
-   (All (a) (-> (Nullable a) String a)))
-(define (nullable/unwrap-err ma msg)
-  (cond
-    [(eq? 'null ma)
-     (raise (exn:fail:json msg (current-continuation-marks)))]
-    [else ma]))
+        (-> (JSExpr -> Boolean : a)
+            (-> JSExpr (Nullable a)))))
+(define ((predicate-simple-type predicat) json)
+  (if (predicat json)
+      (some json)
+      nil))
 
 (: jstring? (-> JSExpr (Nullable String)))
-(define (jstring? value)
-  (if-let ([string? value] value)))
+(define jstring? (predicate-simple-type string?))
 
 (: jstring! (-> JSExpr String))
-(define (jstring! json)
-  (->> (jstring? json)
-       (let ([msg (format "~a无法转化成string" json)])
-         (nullable/unwrap-err it msg))))
+(define (jstring! value)
+  (require-json-type (jstring? value)
+                     (format "~a无法转化成string！" value)))
+
 
 (: jboolean? (-> JSExpr (Nullable Boolean)))
-(define (jboolean? value)
-  (if-let ([boolean? value] value)))
+(define jboolean? (predicate-simple-type boolean?))
 
 (: jboolean! (-> JSExpr Boolean))
 (define (jboolean! value)
-  (->> (jboolean? value)
-       (let ([msg (format "~a无法转化为boolean" value)])
-         (nullable/unwrap-err it msg))))
+  (require-json-type (jboolean? value)
+                     (format "~a无法转化为boolean" value)))
 
+#|
 (: jinteger? (-> JSExpr (Nullable Integer)))
 (define (jinteger? value)
   (if-let
@@ -200,3 +168,4 @@
     [else
      (let ([msg (format "~a无法转化成jarray！" value)])
        (raise-json-error msg))]))
+|#

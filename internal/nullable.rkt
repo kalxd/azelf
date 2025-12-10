@@ -6,8 +6,11 @@
 
 (provide Nullable
          (rename-out [nullable/nil? nullable/has-nil]
-                     [nullable/some nullable/has-some])
-         match-nullable?
+                     [nullable/some? nullable/has-some]
+                     [nullable/some some])
+         nil
+         match-nullable
+         match-some
          nullable/map
          nullable/chain
          nullable/unwrap-exn
@@ -28,12 +31,19 @@
 (define-type (Nullable A)
   (U Nullable/Nil (Nullable/Some A)))
 
-(define-syntax-rule (match-nullable? ma [a (body ...)])
+(define nil (nullable/nil))
+
+(define-syntax-rule (match-nullable ma [a yes] no)
   (cond
-    [(nullable/nil? ma) ma]
+    [(nullable/nil? ma) no]
     [else
      (match-let ([(nullable/some a) ma])
-       (body ...))]))
+       yes)]))
+
+(define-syntax-rule (match-some ma [a (body ...)])
+  (match-nullable ma
+                  [a (body ...)]
+                  ma))
 
 (: nullable/map
    (All (A B)
@@ -41,7 +51,7 @@
             (-> A B)
             (Nullable B))))
 (define (nullable/map ma f)
-  (match-nullable?
+  (match-some
    ma
    [a (nullable/some (f a))]))
 
@@ -51,7 +61,7 @@
             (-> A (Nullable B))
             (Nullable B))))
 (define (nullable/chain ma f)
-  (match-nullable?
+  (match-some
    ma
    [a (f a)]))
 
@@ -125,7 +135,7 @@
   (syntax-parse stx
     ; 绑定
     [(_ (val:id (~literal <-) e:expr) es:expr ...)
-     #'(match-nullable?
+     #'(match-some
         e
         [a (let [(val a)]
              (do/nullable? es ...))])]
@@ -135,7 +145,7 @@
 
     ; 多条语句
     [(_ e:expr es:expr ...+)
-     #'(match-nullable?
+     #'(match-some
         e
         [_ (do/nullable? es ...)])]
 
