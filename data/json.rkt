@@ -15,7 +15,9 @@
          jfloat?
          jfloat!
          jobject?
-         jobject!)
+         jobject!
+         jarray?
+         jarray!)
 
 (struct exn:fail:json exn:fail ()
   #:type-name JsonError)
