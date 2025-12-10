@@ -7,7 +7,8 @@
          nullable/some?
          match-nullable?
          nullable/map
-         nullable/chain)
+         nullable/chain
+         nullable->option)
 
 (struct nullable/nil ()
   #:type-name Nullable/Nil)
