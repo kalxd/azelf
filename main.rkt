@@ -11,4 +11,4 @@
          (all-from-out "./syntax/pipe.rkt"
                        "./internal/option.rkt"
                        "./internal/nullable.rkt"
-                       "./internal/json.rkt"))
+                       "./data/json.rkt"))
