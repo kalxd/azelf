@@ -100,10 +100,10 @@
             (-> JSExpr (Nullable a))
             (Nullable a))))
 (define (jfield? o attr-name f)
-  (unless (hash-has-key? o attr-name)
-    (raise-json-error (format "~a没有~a键值！" o attr-name)))
-  (let ([value (hash-ref o attr-name)])
-    (f value)))
+  (if (hash-has-key? o attr-name)
+      (let ([value (hash-ref o attr-name)])
+        (f value))
+      nil))
 
 (: jfield!
    (All (a)
