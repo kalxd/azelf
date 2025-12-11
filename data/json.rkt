@@ -16,6 +16,8 @@
          jfloat!
          jobject?
          jobject!
+         jfield?
+         jfield!
          jarray?
          jarray!)
 
@@ -90,6 +92,30 @@
 (define (jobject! value)
   (require-json-type (jobject? value)
                      (format "~a无法转化成object！" value)))
+
+(: jfield?
+   (All (a)
+        (-> JObject
+            Symbol
+            (-> JSExpr (Nullable a))
+            (Nullable a))))
+(define (jfield? o attr-name f)
+  (unless (hash-has-key? o attr-name)
+    (raise-json-error (format "~a没有~a键值！" o attr-name)))
+  (let ([value (hash-ref o attr-name)])
+    (f value)))
+
+(: jfield!
+   (All (a)
+        (-> JObject
+            Symbol
+            (-> JSExpr a)
+            a)))
+(define (jfield! o attr-name f)
+  (unless (hash-has-key? o attr-name)
+    (raise-json-error (format "~a没有~a键值！" o attr-name)))
+  (let ([value (hash-ref o attr-name)])
+    (f value)))
 
 (: jarray? (-> JSExpr (Nullable JArray)))
 (define (jarray? value)
