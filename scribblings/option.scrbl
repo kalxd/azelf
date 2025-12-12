@@ -71,6 +71,8 @@
 那么整条语句就会退出，同样只返回@racket[#f]。
 可以把@racket[do?]看成一个巨大的@racket[and]，并且它允许对中间值进行绑定，即@racket[绑定语句]。
 
+可能认为是@racket[and]另一种语法，允许自由地绑定中间变量。
+
 @racketblock[
  (do? (a <- #f)
       (define b : Real 2)
