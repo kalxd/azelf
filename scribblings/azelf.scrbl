@@ -5,11 +5,12 @@
 
 @defmodule[azelf]
 
-超能力工具箱，基于typed racket的脚本语言。
-不要问为什么脚本一定要带类型，问就是为你的代码负责——连简单类型检查都通不过的代码，跟垃圾有什么区别？！
+基于@racketmodname[typed/racket/base]的超能力工具箱。
+专注于静态脚本。
 
-整体设计向原始racket靠拢，尽量不重复造轮子，复用现有生态。
+写脚本也一定要使用静态类型，不然无法保证脚本的正确性。
+一直以来的误区都认为写脚本速度快，实际上忽略了脚本的正确性；写不对脚本没有运行的必要。
 
-这里再添加几句。
+@local-table-of-contents[]
 
 @include-section["option.scrbl"]
