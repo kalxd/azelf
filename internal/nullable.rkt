@@ -2,7 +2,11 @@
 
 (require racket/match
          (for-syntax racket/base
-                     syntax/parse))
+                     syntax/parse)
+         (only-in racket/list
+                  empty?)
+         (only-in racket/match
+                  match-let))
 
 (provide Nullable
          (rename-out [nullable/nil? nullable/has-nil]
@@ -17,6 +21,7 @@
          nullable/unwrap-error
          nullable/unwrap
          nullable/unwrap-or
+         nullable/filter-map
          nullable->option
          option->nullable
          do/nullable?)
@@ -103,6 +108,22 @@
             a)))
 (define-nil-function (nullable/unwrap-or a)
   a)
+
+(: nullable/filter-map
+   (All (a b)
+        (-> (Listof a)
+            (-> a (Nullable b))
+            (Listof b))))
+(define (nullable/filter-map xs f)
+  (let loop ([acc : (Listof b) '()]
+             [xs xs])
+    (if (empty? xs)
+        acc
+        (match-let ([(list a as ...) xs])
+          (match-nullable
+           (f a)
+           [a (loop (append acc (list a)) as)]
+           (loop acc as))))))
 
 (: nullable->option
    (All (A)
