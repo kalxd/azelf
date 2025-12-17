@@ -125,6 +125,15 @@
            [a (loop (append acc (list a)) as)]
            (loop acc as))))))
 
+(: nullable/cat-somes
+   (All (a)
+        (-> (Listof (Nullable a))
+            (Listof a))))
+(define (nullable/cat-somes xs)
+  (nullable/filter-map
+   xs
+   (λ ([x : (Nullable a)]) x)))
+
 (: nullable->option
    (All (A)
         (-> (Nullable A)
