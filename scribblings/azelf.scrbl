@@ -14,3 +14,4 @@
 @local-table-of-contents[]
 
 @include-section["option.scrbl"]
+@include-section["nullable.scrbl"]
