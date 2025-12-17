@@ -18,6 +18,7 @@
          jobject!
          jfield?
          jfield!
+         in-jobject!
          jarray?
          jarray!)
 
@@ -116,6 +117,14 @@
     (raise-json-error (format "~a没有~a键值！" o attr-name)))
   (let ([value (hash-ref o attr-name)])
     (f value)))
+
+(: in-jobject!
+   (All (a)
+        (-> (-> JObject a)
+            (-> JSExpr a))))
+(define ((in-jobject! f) json)
+  (let ([jvalue (jobject! json)])
+    (f jvalue)))
 
 (: jarray? (-> JSExpr (Nullable JArray)))
 (define (jarray? value)
