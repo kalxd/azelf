@@ -22,6 +22,7 @@
          nullable/unwrap
          nullable/unwrap-or
          nullable/filter-map
+         nullable/cat-somes
          nullable->option
          option->nullable
          do/nullable?)

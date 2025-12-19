@@ -66,7 +66,7 @@
                   绑定语句
                   赋值语句)
           (赋值语句 (define datum ...))
-          (绑定语句 (identifer <- datum))]]{
+          (绑定语句 (identifier <- datum))]]{
 @racket[do?]会对每条@racket[do语句]检查，如果该语句返回@racket[#f]，
 那么整条语句就会退出，同样只返回@racket[#f]。
 可以把@racket[do?]看成一个巨大的@racket[and]，并且它允许对中间值进行绑定，即@racket[绑定语句]。
