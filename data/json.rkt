@@ -19,6 +19,7 @@
          jfield?
          jfield!
          in-jobject!
+         in-jobject?
          jarray?
          jarray!)
 
@@ -165,4 +166,3 @@
    (jarray? json)
    (λ ([xs : JArray])
      (nullable/traverse xs f))))
-
