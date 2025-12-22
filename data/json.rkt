@@ -155,14 +155,14 @@
   (let ([jvalue (jarray! json)])
     (map f jvalue)))
 
-#|
+
 (: in-jarray?
    (All (a)
         (-> (-> JSExpr (Nullable a))
-            (-> JSExpr (Listof a)))))
+            (-> JSExpr (Nullable (Listof a))))))
 (define ((in-jarray? f) json)
   (nullable/chain
    (jarray? json)
    (λ ([xs : JArray])
-     (nullable/filter-map xs f))))
-|#
+     (nullable/traverse xs f))))
+
