@@ -145,3 +145,24 @@
 (define (jarray! value)
   (require-json-type (jarray? value)
                      (format "~a无法转化成array！" value)))
+
+
+(: in-jarray!
+   (All (a)
+        (-> (-> JSExpr a)
+            (-> JSExpr (Listof a)))))
+(define ((in-jarray! f) json)
+  (let ([jvalue (jarray! json)])
+    (map f jvalue)))
+
+#|
+(: in-jarray?
+   (All (a)
+        (-> (-> JSExpr (Nullable a))
+            (-> JSExpr (Listof a)))))
+(define ((in-jarray? f) json)
+  (nullable/chain
+   (jarray? json)
+   (λ ([xs : JArray])
+     (nullable/filter-map xs f))))
+|#
