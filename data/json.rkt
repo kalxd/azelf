@@ -126,6 +126,15 @@
   (let ([jvalue (jobject! json)])
     (f jvalue)))
 
+(: in-jobject?
+   (All (a)
+        (-> (-> JObject (Nullable a))
+            (-> JSExpr (Nullable a)))))
+(define ((in-jobject? f) json)
+  (nullable/chain
+   (jobject? json)
+   f))
+
 (: jarray? (-> JSExpr (Nullable JArray)))
 (define (jarray? value)
   (if (list? value)
