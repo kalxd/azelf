@@ -21,6 +21,7 @@
          nullable/unwrap-error
          nullable/unwrap
          nullable/unwrap-or
+         nullable/traverse
          nullable/filter-map
          nullable/cat-somes
          nullable->option
@@ -109,6 +110,22 @@
             a)))
 (define-nil-function (nullable/unwrap-or a)
   a)
+
+(: nullable/traverse
+   (All (a b)
+        (-> (Listof a)
+            (-> a (Nullable b))
+            (Nullable (Listof b)))))
+(define (nullable/traverse xs f)
+  (let loop ([acc : (Listof b) '()]
+             [xs xs])
+    (if (empty? xs)
+        (nullable/some acc)
+        (match-let ([(list a as ...) xs])
+          (nullable/chain (f a)
+                          (λ ([a : b])
+                            (loop (append acc (list a))
+                                  as)))))))
 
 (: nullable/filter-map
    (All (a b)
