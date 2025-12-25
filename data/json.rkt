@@ -70,6 +70,7 @@
 (: jinteger? (-> JSExpr (Nullable Integer)))
 (define jinteger? (predicate-simple-type exact-integer?))
 
+
 (: jinteger! (-> JSExpr Integer))
 (define (jinteger! value)
   (require-json-type (jinteger? value)
