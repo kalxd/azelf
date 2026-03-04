@@ -1,184 +1,186 @@
-#lang typed/racket/base
+#lang racket/base
 
-(require racket/match
-         (for-syntax racket/base
-                     syntax/parse)
-         (only-in racket/list
-                  empty?)
-         (only-in racket/match
-                  match-let))
+(module nullable typed/racket/base
+  (require racket/match
+           (only-in racket/list
+                    empty?)
+           (only-in racket/match
+                    match-let))
 
-(provide Nullable
-         (rename-out [nullable/nil? nullable/has-nil]
-                     [nullable/some? nullable/has-some]
-                     [nullable/some some])
-         nil
-         match-nullable
-         match-some
-         nullable/map
-         nullable/chain
-         nullable/unwrap-exn
-         nullable/unwrap-error
-         nullable/unwrap
-         nullable/unwrap-or
-         nullable/traverse
-         nullable/filter-map
-         nullable/cat-somes
-         nullable->option
-         option->nullable
-         do/nullable?)
+  (provide Nullable
+           (rename-out [nullable/nil? nullable/has-nil]
+                       [nullable/some? nullable/has-some]
+                       [nullable/some some])
+           nil
+           match-nullable
+           match-some
+           nullable/map
+           nullable/chain
+           nullable/unwrap-exn
+           nullable/unwrap-error
+           nullable/unwrap
+           nullable/unwrap-or
+           nullable/traverse
+           nullable/filter-map
+           nullable/cat-somes
+           nullable->option
+           option->nullable)
 
-(struct nullable/nil ()
-  #:type-name Nullable/Nil)
+  (struct nullable/nil ()
+    #:type-name Nullable/Nil)
 
-(struct (A) nullable/some ([value : A])
-  #:type-name Nullable/Some
-  #:transparent)
+  (struct (A) nullable/some ([value : A])
+    #:type-name Nullable/Some
+    #:transparent)
 
-(define-type (Nullable A)
-  (U Nullable/Nil (Nullable/Some A)))
+  (define-type (Nullable A)
+    (U Nullable/Nil (Nullable/Some A)))
 
-(define nil (nullable/nil))
+  (define nil (nullable/nil))
 
-(define-syntax-rule (match-nullable ma [a yes] no)
-  (cond
-    [(nullable/nil? ma) no]
-    [else
-     (match-let ([(nullable/some a) ma])
-       yes)]))
-
-(define-syntax-rule (match-some ma [a (body ...)])
-  (match-nullable ma
-                  [a (body ...)]
-                  ma))
-
-(: nullable/map
-   (All (A B)
-        (-> (Nullable A)
-            (-> A B)
-            (Nullable B))))
-(define (nullable/map ma f)
-  (match-some
-   ma
-   [a (nullable/some (f a))]))
-
-(: nullable/chain
-   (All (A B)
-        (-> (Nullable A)
-            (-> A (Nullable B))
-            (Nullable B))))
-(define (nullable/chain ma f)
-  (match-some
-   ma
-   [a (f a)]))
-
-(define-syntax-rule (define-nil-function (name args ...) body)
-  (define (name ma args ...)
+  (define-syntax-rule (match-nullable ma [a yes] no)
     (cond
-      [(nullable/nil? ma) body]
+      [(nullable/nil? ma) no]
       [else
        (match-let ([(nullable/some a) ma])
-         a)])))
+         yes)]))
 
-(: nullable/unwrap-exn
-   (All (a)
-        (-> (Nullable a)
-            exn
-            a)))
-(define-nil-function (nullable/unwrap-exn e)
-  (raise e))
+  (define-syntax-rule (match-some ma [a (body ...)])
+    (match-nullable ma
+                    [a (body ...)]
+                    ma))
 
-(: nullable/unwrap-error
-   (All (a)
-        (-> (Nullable a)
-            String
-            a)))
-(define-nil-function (nullable/unwrap-error msg)
-  (raise-user-error msg))
+  (: nullable/map
+     (All (A B)
+          (-> (Nullable A)
+              (-> A B)
+              (Nullable B))))
+  (define (nullable/map ma f)
+    (match-some
+     ma
+     [a (nullable/some (f a))]))
 
-(: nullable/unwrap
-   (All (a)
-        (-> (Nullable a)
-            a)))
-(define-nil-function (nullable/unwrap)
-  (raise-user-error "无法从nil中取值！"))
+  (: nullable/chain
+     (All (A B)
+          (-> (Nullable A)
+              (-> A (Nullable B))
+              (Nullable B))))
+  (define (nullable/chain ma f)
+    (match-some
+     ma
+     [a (f a)]))
 
-(: nullable/unwrap-or
-   (All (a)
-        (-> (Nullable a)
-            a
-            a)))
-(define-nil-function (nullable/unwrap-or a)
-  a)
+  (define-syntax-rule (define-nil-function (name args ...) body)
+    (define (name ma args ...)
+      (cond
+        [(nullable/nil? ma) body]
+        [else
+         (match-let ([(nullable/some a) ma])
+           a)])))
 
-(: nullable/traverse
-   (All (a b)
-        (-> (Listof a)
-            (-> a (Nullable b))
-            (Nullable (Listof b)))))
-(define (nullable/traverse xs f)
-  (let loop ([acc : (Listof b) '()]
-             [xs xs])
-    (if (empty? xs)
-        (nullable/some acc)
-        (match-let ([(list a as ...) xs])
-          (nullable/chain (f a)
-                          (λ ([a : b])
-                            (loop (append acc (list a))
-                                  as)))))))
+  (: nullable/unwrap-exn
+     (All (a)
+          (-> (Nullable a)
+              exn
+              a)))
+  (define-nil-function (nullable/unwrap-exn e)
+    (raise e))
 
-(: nullable/filter-map
-   (All (a b)
-        (-> (Listof a)
-            (-> a (Nullable b))
-            (Listof b))))
-(define (nullable/filter-map xs f)
-  (let loop ([acc : (Listof b) '()]
-             [xs xs])
-    (if (empty? xs)
-        acc
-        (match-let ([(list a as ...) xs])
-          (match-nullable
-           (f a)
-           [a (loop (append acc (list a)) as)]
-           (loop acc as))))))
+  (: nullable/unwrap-error
+     (All (a)
+          (-> (Nullable a)
+              String
+              a)))
+  (define-nil-function (nullable/unwrap-error msg)
+    (raise-user-error msg))
 
-(: nullable/cat-somes
-   (All (a)
-        (-> (Listof (Nullable a))
-            (Listof a))))
-(define (nullable/cat-somes xs)
-  (nullable/filter-map
-   xs
-   (λ ([x : (Nullable a)]) x)))
+  (: nullable/unwrap
+     (All (a)
+          (-> (Nullable a)
+              a)))
+  (define-nil-function (nullable/unwrap)
+    (raise-user-error "无法从nil中取值！"))
 
-(: nullable->option
-   (All (A)
-        (-> (Nullable A)
-            (Option A))))
-(define (nullable->option ma)
-  (cond
-    [(nullable/nil? ma) #f]
-    [else
-     (match-let ([(nullable/some a) ma])
-       a)]))
+  (: nullable/unwrap-or
+     (All (a)
+          (-> (Nullable a)
+              a
+              a)))
+  (define-nil-function (nullable/unwrap-or a)
+    a)
 
-(: option->nullable
-   (All (a) (-> (Option a)
-                (Nullable a))))
-(define (option->nullable a)
-  (if a
-      (nullable/some a)
-      (nullable/nil)))
+  (: nullable/traverse
+     (All (a b)
+          (-> (Listof a)
+              (-> a (Nullable b))
+              (Nullable (Listof b)))))
+  (define (nullable/traverse xs f)
+    (let loop ([acc : (Listof b) '()]
+               [xs xs])
+      (if (empty? xs)
+          (nullable/some acc)
+          (match-let ([(list a as ...) xs])
+            (nullable/chain (f a)
+                            (λ ([a : b])
+                              (loop (append acc (list a))
+                                    as)))))))
+
+  (: nullable/filter-map
+     (All (a b)
+          (-> (Listof a)
+              (-> a (Nullable b))
+              (Listof b))))
+  (define (nullable/filter-map xs f)
+    (let loop ([acc : (Listof b) '()]
+               [xs xs])
+      (if (empty? xs)
+          acc
+          (match-let ([(list a as ...) xs])
+            (match-nullable
+             (f a)
+             [a (loop (append acc (list a)) as)]
+             (loop acc as))))))
+
+  (: nullable/cat-somes
+     (All (a)
+          (-> (Listof (Nullable a))
+              (Listof a))))
+  (define (nullable/cat-somes xs)
+    (nullable/filter-map
+     xs
+     (λ ([x : (Nullable a)]) x)))
+
+  (: nullable->option
+     (All (A)
+          (-> (Nullable A)
+              (Option A))))
+  (define (nullable->option ma)
+    (cond
+      [(nullable/nil? ma) #f]
+      [else
+       (match-let ([(nullable/some a) ma])
+         a)]))
+
+  (: option->nullable
+     (All (a) (-> (Option a)
+                  (Nullable a))))
+  (define (option->nullable a)
+    (if a
+        (nullable/some a)
+        (nullable/nil))))
+
+(require (for-syntax racket/base
+                     syntax/parse))
+(require 'nullable)
+(provide (all-from-out 'nullable)
+         do/nullable?)
 
 (define-syntax (do/nullable? stx)
   (define-syntax-class define-bind
     #:description "define绑定"
-    #:literals (define :)
+    #:literals (define)
     (pattern (define key:id e:expr)
-             #:with expr #'(define key e))
-    (pattern (define key:id : ty:expr e:expr)
-             #:with expr #'(define key : ty e)))
+             #:with expr #'(define key e)))
 
   (syntax-parse stx
     ; 绑定
