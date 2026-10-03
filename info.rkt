@@ -5,9 +5,12 @@
 (define version "0.7.2")
 (define pkg-authors '(XGLey))
 
-(define deps '(["base" #:version "8.16"]))
+(define deps '("typed-racket-lib"
+               "typed-racket-more"
+               ["base" #:version "8.16"]))
 
-(define build-deps '("scribble-lib"
+(define build-deps '("typed-racket-doc"
+                     "scribble-lib"
                      "racket-doc"
                      "rackunit-lib"))
 
